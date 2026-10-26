@@ -38,3 +38,6 @@ _Nothing recorded yet._
 | RTO-T15 | 2026-10-26 | feature | open | Release 1.0.0: dist zip of the Owlcat mod folder, built by dotnet build -c Release | — |
 | RTO-T16 | 2026-10-26 | docs | open | Nexus Mods page: header, logo, summary and BBCode description in docs/NEXUS_PAGE.md | — |
 | RTO-T17 | 2026-10-26 | fix | closed | Ship only the hotbar icons in the mod, not the Nexus header and logo | 0fe4406 |
+| RTO-T18 | 2026-10-26 | feature | open | Put Reflex Shot, Overwatch and Suppression on every party member's ability bar (last 3 slots, else later rows), greyed out without a ranged weapon in the active set | — |
+| RTO-T19 | 2026-10-26 | docs | closed | In-game validation guide (docs/TESTING.md) covering every rule and equip situation, with README, DESIGN and Nexus page brought up to date | ffca20e |
+| RTO-T20 | 2026-10-26 | chore | open | Build on RogueTrader.Shared: game paths, references, packaging, sprite loading and logging from the shared source | — |
