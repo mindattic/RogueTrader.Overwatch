@@ -41,3 +41,10 @@ _Nothing recorded yet._
 | RTO-T18 | 2026-10-26 | feature | open | Put Reflex Shot, Overwatch and Suppression on every party member's ability bar (last 3 slots, else later rows), greyed out without a ranged weapon in the active set | — |
 | RTO-T19 | 2026-10-26 | docs | closed | In-game validation guide (docs/TESTING.md) covering every rule and equip situation, with README, DESIGN and Nexus page brought up to date | ffca20e |
 | RTO-T20 | 2026-10-26 | chore | closed | Build on RogueTrader.Shared: game paths, references, packaging, sprite loading and logging from the shared source | d7e8fc7 |
+| RTO-T21 | 2026-10-26 | feature | open | Reflex Shot: pick an expected facing; aim bonus for targets ahead, penalty growing with the turn needed, largest at 180 degrees | — |
+| RTO-T22 | 2026-10-26 | fix | closed | The game skips all the mod's blueprints: the install and the release zip have no Bundles folder, and LoadBundles throws before LoadBlueprints | bdb572b |
+| RTO-T23 | 2026-10-26 | fix | closed | Overwatch cone starts at the clicked cell instead of the shooter: the resize patch passed directional=false | cc99f89 |
+| RTO-T24 | 2026-10-26 | fix | closed | Overwatch never re-shoots anyone while a downed (unconscious) enemy is in the cone: it counted as not yet shot | b61773e |
+| RTO-T25 | 2026-10-26 | fix | closed | Companions recruited or mercenaries hired mid-area get no Overwatch buttons until the next area load | 9bbc68e |
+| RTO-T26 | 2026-10-26 | fix | closed | Suppression: a cancelled or blocked move leaves the target marked, so a later push or dodge draws a shot | 3abbc03 |
+| RTO-T27 | 2026-10-26 | feature | closed | Suppression fires when the target leaves its square by any means (walk, charge, jump, push), once per command | 3abbc03 |
