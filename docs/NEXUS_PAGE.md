@@ -83,7 +83,7 @@ It doesn't invent a new system. Owlcat built a complete overwatch engine into Ro
 [list]
 [*][b]Reflex Shot[/b]: overwatch the way XCOM does it. Pick the direction you expect trouble from; until your next turn, take one shot at the first enemy that moves or acts within 10 cells of you, in any direction. The shot is easier dead ahead (+10 aim) and harder the further you have to turn, down to -30 if you have to spin all the way around. Ends your turn.
 [*][b]Overwatch[/b]: aim a cone and size it with the cursor. Aim close for a short, wide cone that covers a doorway (90° at 3 cells); aim far for a long, narrow lane down to your weapon's range (20°). You get one shot for each Action Point you had left, so holding fire pays. Fire is spread across different enemies first, and an enemy you've already shot is only shot again after it moves at least 2 cells, so nobody takes a full volley one step at a time. Ends your turn.
-[*][b]Suppression[/b]: pin one enemy down. It can stay put and fight, but every time it moves it takes a ranged attack of opportunity. During its turn your hero keeps up covering fire that always misses, to make the threat plain. Ends your turn.
+[*][b]Suppression[/b]: pin one enemy down. It can stay put and fight, but the moment it leaves its square, by walking, charging, jumping or being pushed, it takes a ranged attack of opportunity. During its turn your hero keeps up covering fire that always misses, to make the threat plain. Ends your turn.
 [/list]
 
 [b]Fits the rules:[/b]

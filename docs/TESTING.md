@@ -168,8 +168,9 @@ Expected: the overwatch and the buff end.
 
 ## F. Suppression
 
-Ends your turn. Costs 1 AP. Target one enemy within weapon range. Until your next turn, every move it
-starts draws one real attack from you; acting in place draws nothing.
+Ends your turn. Costs 1 AP. Target one enemy within weapon range. Until your next turn, leaving the
+square it stands on, by any means, draws one real attack from you (once per move or ability, not per
+square); acting in place draws nothing.
 
 **F1. Cast.** Press Suppression, pick an enemy in range.
 Expected: no shot on cast, your turn ends, the enemy gets the "Suppressed" debuff with its icon.
@@ -177,6 +178,9 @@ Expected: no shot on cast, your turn ends, the enemy gets the "Suppressed" debuf
 **F2. Target moves.** On its turn the suppressed enemy moves.
 Expected: one attack at it, early in the move, with normal hit chance and damage. If it moves again
 later in its turn, one more attack for that move (one per move, not one per cell).
+
+**F2a. Leaves by ability or push.** The suppressed enemy charges or jumps, or is pushed off its square.
+Expected: one attack, the same as a move.
 
 **F3. Target acts in place.** It shoots or uses an ability without moving.
 Expected: no attack.

@@ -16,13 +16,13 @@
       "Text": "Suppression"
     },
     "4bd455eb-f1a0-4754-abb6-d18063a5d139": {
-      "Text": "Ends the turn. Pin down the target until the start of your next turn: each time it moves, you make an attack against it with your weapon, using your weapon's normal hit chance. It can stay where it is and act without drawing fire. Only movement triggers the attack."
+      "Text": "Ends the turn. Pin down the target until the start of your next turn: each time it leaves its square, by moving, charging, jumping or being pushed, you make an attack against it with your weapon, using your weapon's normal hit chance. A long move draws one attack, not one per square. It can stay where it is and act without drawing fire."
     },
     "630607d6-8257-4f38-95e2-740d582311c3": {
       "Text": "Suppressed"
     },
     "bc63cd4b-4de3-49f9-bf67-09992c124939": {
-      "Text": "Pinned down. Each time this unit moves, the suppressing attacker fires at it."
+      "Text": "Pinned down. Each time this unit leaves its square, by moving, charging, jumping or being pushed, the suppressing attacker fires at it."
     },
     "7562fc25-f9d9-4f88-86b0-7537272e7b86": {
       "Text": "Overwatch"

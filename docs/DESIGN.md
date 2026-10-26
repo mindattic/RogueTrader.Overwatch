@@ -59,8 +59,9 @@ that moves or acts inside (`Mode: Overwatch`, `HitOnce`), then ends. Ends the tu
 
 ### Suppression (RTO-T8)
 - Target one enemy. Until your next turn, it takes a ranged attack of opportunity (normal hit and
-  damage) each time it moves. Shooting or using abilities in place draws nothing, and other
-  enemies are ignored. Ends the turn.
+  damage) each time it leaves the square it's standing on, by any means: walking, a charge or jump,
+  or being pushed. One shot per command, so a long move is one shot, not one per square. Shooting or
+  using abilities in place draws nothing, and other enemies are ignored. Ends the turn.
 - During that enemy's turn the hero keeps up cosmetic fire: shoot animation and the weapon's
   projectiles, always aimed to miss, with no damage, hit rolls, ammo or combat-log lines. The first
   burst comes 0.6–1.2 s into the turn, then every 1.5–2.5 s while the hero is idle and has line of
@@ -70,9 +71,10 @@ that moves or acts inside (`Mode: Overwatch`, `HitOnce`), then ends. Ends the tu
 - How it's built (`Suppression.cs`): the ability applies a visible **Suppressed** buff to the
   target (1 round, `BuffEndCondition.TurnStartOrCombatEnd`, which `BuffsController` removes when
   the buff's *caster* starts its turn). It doesn't use `PartOverwatch`, so the target's actions
-  can't trigger it. When the target starts a move command (`UnitMoveTo`, `UnitMoveToProper`,
-  `UnitMoveAlongPath`, `UnitMoveContinuously`), its first position change queues one shot per
-  suppressor. A postfix on `OverwatchController.Tick` fires the queue as `UnitOverwatchAttackParams`,
+  can't trigger it. The target's square is recorded when the buff is added (`IUnitBuffHandler`), and
+  rebuilt from the saved buffs after a load. When a position change (`IEntityPositionChangedHandler`)
+  puts it on a different square, one shot per suppressor is queued, unless the target's current
+  command already drew one; a displacement with no command (a push) always draws one. A postfix on `OverwatchController.Tick` fires the queue as `UnitOverwatchAttackParams`,
   the engine's own out-of-turn path, so hit chance and damage are normal. The same tick runs the
   cosmetic fire: `UnitAnimationManager.CreateHandle(MainHandAttack)`, then a `ProjectileLauncher`
   aimed 30 m out past a point 1.6–2.4 m beside the target, with `SetDoNotDeliverHit`, using Unity's

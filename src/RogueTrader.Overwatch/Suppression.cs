@@ -7,6 +7,7 @@ using Kingmaker.Controllers.Projectiles;
 using Kingmaker.Controllers.TurnBased;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Pathfinding;
 using Kingmaker.PubSubSystem;
 using Kingmaker.PubSubSystem.Core;
 using Kingmaker.UnitLogic.Abilities;
@@ -19,11 +20,12 @@ using UnityEngine;
 
 namespace RogueTraderOverwatch;
 
-// Suppression: the ability puts a Suppressed buff on one enemy. Each move command it starts draws one
-// real attack from the buff's caster, on its first step. During its turn the caster also fires cosmetic,
-// always-missing shots. Nothing here touches PartOverwatch, so the target's actions never trigger it.
-// The buff's TurnStartOrCombatEnd end condition removes it when the caster's next turn starts.
-internal sealed class Suppression : IUnitCommandStartHandler, IEntityPositionChangedHandler
+// Suppression: the ability puts a Suppressed buff on one enemy. Leaving the square it stands on, by any means
+// (walking, a charge or jump, being pushed), draws one real attack from the buff's caster: once per command, so a
+// long move is one shot, not one per square. During its turn the caster also fires cosmetic, always-missing shots.
+// Nothing here touches PartOverwatch, so the target's actions never trigger it. The buff's TurnStartOrCombatEnd end
+// condition removes it when the caster's next turn starts.
+internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHandler, IAreaHandler
 {
     public const string BuffGuid = "c6af42a8c37040a49f86559e80959c5f";
 
@@ -32,8 +34,10 @@ internal sealed class Suppression : IUnitCommandStartHandler, IEntityPositionCha
 
     public static readonly Suppression Instance = new Suppression();
 
-    // Targets that started a move command and haven't drawn this move's shot yet.
-    private readonly HashSet<BaseUnitEntity> m_PendingMoves = new HashSet<BaseUnitEntity>();
+    // The square each suppressed target holds, and the command that already drew its shot for leaving it.
+    private readonly Dictionary<BaseUnitEntity, CustomGridNodeBase> m_Anchors = new Dictionary<BaseUnitEntity, CustomGridNodeBase>();
+    private readonly Dictionary<BaseUnitEntity, AbstractUnitCommand> m_ShotForCommand = new Dictionary<BaseUnitEntity, AbstractUnitCommand>();
+    private bool m_NeedsScan = true;
     private readonly List<(BaseUnitEntity Caster, BaseUnitEntity Target)> m_ShotsToFire = new List<(BaseUnitEntity, BaseUnitEntity)>();
     private readonly Dictionary<BaseUnitEntity, float> m_NextCosmeticShot = new Dictionary<BaseUnitEntity, float>();
     private MechanicEntity m_CosmeticTurnUnit;
@@ -47,31 +51,72 @@ internal sealed class Suppression : IUnitCommandStartHandler, IEntityPositionCha
             .Where(c => c != null && !c.IsDeadOrUnconscious)
             .Distinct();
 
-    private static bool IsMove(AbstractUnitCommand command) =>
-        command is UnitMoveTo || command is UnitMoveToProper || command is UnitMoveAlongPath || command is UnitMoveContinuously;
+    private static CustomGridNodeBase Square(BaseUnitEntity unit) => unit.CurrentUnwalkableNode as CustomGridNodeBase;
 
     private static AbilityData FirstWeaponAbility(BaseUnitEntity unit) => Abilities.RangedAttack(unit);
 
-    public void HandleUnitCommandDidStart(AbstractUnitCommand command)
+    public void HandleBuffDidAdded(Buff buff)
     {
         try
         {
-            if (TurnController.IsInTurnBasedCombat() && IsMove(command) && command.Executor is BaseUnitEntity target && Suppressors(target).Any())
-                m_PendingMoves.Add(target);
+            if (buff?.Blueprint?.AssetGuid == BuffGuid && buff.Owner is BaseUnitEntity target)
+                m_Anchors[target] = Square(target);
         }
         catch (Exception ex)
         {
-            PFLog.Mods.Exception(ex, "Suppression: move start");
+            PFLog.Mods.Exception(ex, "Suppression: buff added");
         }
+    }
+
+    public void HandleBuffDidRemoved(Buff buff)
+    {
+        try
+        {
+            if (buff?.Blueprint?.AssetGuid == BuffGuid && buff.Owner is BaseUnitEntity target && !SuppressedBuffs(target).Any(b => b != buff))
+            {
+                m_Anchors.Remove(target);
+                m_ShotForCommand.Remove(target);
+            }
+        }
+        catch (Exception ex)
+        {
+            PFLog.Mods.Exception(ex, "Suppression: buff removed");
+        }
+    }
+
+    public void HandleBuffRankIncreased(Buff buff) { }
+
+    public void HandleBuffRankDecreased(Buff buff) { }
+
+    public void HandleBuffIsSuppressedChanged(Buff buff) { }
+
+    // After a load the anchors are rebuilt from the saved buffs (see Tick).
+    public void OnAreaDidLoad() => m_NeedsScan = true;
+
+    public void OnAreaBeginUnloading()
+    {
+        m_Anchors.Clear();
+        m_ShotForCommand.Clear();
     }
 
     public void HandleEntityPositionChanged()
     {
         try
         {
-            if (EventInvokerExtensions.Entity is BaseUnitEntity target && m_PendingMoves.Remove(target))
-                foreach (var caster in Suppressors(target))
-                    m_ShotsToFire.Add((caster, target));
+            if (!(EventInvokerExtensions.Entity is BaseUnitEntity target) || !m_Anchors.TryGetValue(target, out var anchor))
+                return;
+            var square = Square(target);
+            if (square == null || square == anchor)
+                return;
+            m_Anchors[target] = square;
+            if (anchor == null || !TurnController.IsInTurnBasedCombat())
+                return;
+            var command = target.Commands.Current;
+            if (command != null && m_ShotForCommand.TryGetValue(target, out var shotFor) && shotFor == command)
+                return;
+            m_ShotForCommand[target] = command;
+            foreach (var caster in Suppressors(target))
+                m_ShotsToFire.Add((caster, target));
         }
         catch (Exception ex)
         {
@@ -79,16 +124,26 @@ internal sealed class Suppression : IUnitCommandStartHandler, IEntityPositionCha
         }
     }
 
+    private void ScanIfNeeded()
+    {
+        if (!m_NeedsScan)
+            return;
+        m_NeedsScan = false;
+        foreach (var unit in Game.Instance.State.AllBaseAwakeUnits)
+            if (!m_Anchors.ContainsKey(unit) && SuppressedBuffs(unit).Any())
+                m_Anchors[unit] = Square(unit);
+    }
+
     // Runs in the same simulation tick as the engine's own overwatch shots.
     public void Tick()
     {
         if (!TurnController.IsInTurnBasedCombat())
         {
-            m_PendingMoves.Clear();
             m_ShotsToFire.Clear();
             m_NextCosmeticShot.Clear();
             return;
         }
+        ScanIfNeeded();
         FireQueuedShots();
         CosmeticFire();
     }
