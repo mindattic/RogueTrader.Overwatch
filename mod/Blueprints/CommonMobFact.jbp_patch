@@ -1,0 +1,12 @@
+{
+  "TargetGuid": "ec16ff5722314efd887fa64f6f6e2558",
+  "FieldOverrides": [],
+  "ArrayPatches": [],
+  "ComponentsPatches": [
+    {
+      "FieldName": "Components",
+      "OperationType": "InsertLast",
+      "FieldValue": "{\n  \"ComponentValue\": {\n    \"$type\": \"d79ad4ed064aa4f43ace0e9c238fb9b9, AddFacts\",\n    \"name\": \"$AddFacts$5d28022e9f1a442e98c9e2a6efa22dd1\",\n    \"m_Flags\": 0,\n    \"PrototypeLink\": {\n      \"guid\": \"\",\n      \"name\": \"\"\n    },\n    \"m_Overrides\": [],\n    \"m_Facts\": [\n      \"!bp_4fdd0480cc514cd1bac75e806175fbb3\"\n    ],\n    \"Dummy\": null,\n    \"DoNotRestoreMissingFacts\": false,\n    \"HasDifficultyRequirements\": false,\n    \"InvertDifficultyRequirements\": false,\n    \"MinDifficulty\": \"Story\"\n  }\n}"
+    }
+  ]
+}

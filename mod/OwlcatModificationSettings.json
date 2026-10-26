@@ -1,0 +1,9 @@
+{
+  "BlueprintPatches": [
+    {
+      "Guid": "ec16ff5722314efd887fa64f6f6e2558",
+      "Filename": "CommonMobFact",
+      "PatchType": 1
+    }
+  ]
+}
