@@ -36,6 +36,15 @@
             "OnHitOverrideType": "None",
             "m_OnHitActions": null,
             "AP": 1
+          },
+          {
+            "Type": "Custom",
+            "Mode": "Default",
+            "m_Ability": "!bp_5db3949e7bf544bcb10cc3a2d51eb9ea",
+            "m_FXSettings": null,
+            "OnHitOverrideType": "None",
+            "m_OnHitActions": null,
+            "AP": 1
           }
         ]
       },
@@ -70,6 +79,15 @@
             "OnHitOverrideType": "None",
             "m_OnHitActions": null,
             "AP": 1
+          },
+          {
+            "Type": "Custom",
+            "Mode": "Default",
+            "m_Ability": "!bp_5db3949e7bf544bcb10cc3a2d51eb9ea",
+            "m_FXSettings": null,
+            "OnHitOverrideType": "None",
+            "m_OnHitActions": null,
+            "AP": 1
           }
         ]
       },
@@ -100,6 +118,15 @@
             "Type": "Custom",
             "Mode": "Default",
             "m_Ability": "!bp_b5855687981e4ba9a7dfc8c4af03229f",
+            "m_FXSettings": null,
+            "OnHitOverrideType": "None",
+            "m_OnHitActions": null,
+            "AP": 1
+          },
+          {
+            "Type": "Custom",
+            "Mode": "Default",
+            "m_Ability": "!bp_5db3949e7bf544bcb10cc3a2d51eb9ea",
             "m_FXSettings": null,
             "OnHitOverrideType": "None",
             "m_OnHitActions": null,

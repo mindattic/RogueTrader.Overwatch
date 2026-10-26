@@ -18,6 +18,7 @@ public static class Main
     {
         new Harmony("RogueTrader.Overwatch").PatchAll(typeof(Main).Assembly);
         EventBus.Subscribe(new PartyGrant());
+        EventBus.Subscribe(Suppression.Instance);
     }
 }
 

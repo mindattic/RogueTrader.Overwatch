@@ -36,6 +36,18 @@ first enemy that moves or acts inside, then ends. Ends the turn. Data only.
 - During that enemy's turn the hero keeps up cosmetic fire: shoot animation and the weapon's
   projectiles, always aimed to miss, with no damage, hit rolls, ammo or combat-log lines. It pauses
   while the real attack of opportunity plays.
+- How it's built (`Suppression.cs`): the ability applies a visible **Suppressed** buff to the
+  target (1 round, `BuffEndCondition.TurnStartOrCombatEnd`, which `BuffsController` removes when
+  the buff's *caster* starts its turn). It doesn't use `PartOverwatch`, so the target's actions
+  can't trigger it. When the target starts a move command (`UnitMoveTo`, `UnitMoveToProper`,
+  `UnitMoveAlongPath`, `UnitMoveContinuously`), its first position change queues one shot per
+  suppressor. A postfix on `OverwatchController.Tick` fires the queue as `UnitOverwatchAttackParams`,
+  the engine's own out-of-turn path, so hit chance and damage are normal. The same tick runs the
+  cosmetic fire: `UnitAnimationManager.CreateHandle(MainHandAttack)`, then a `ProjectileLauncher`
+  aimed 30 m out past a point 1.6–2.4 m beside the target, with `SetDoNotDeliverHit`, using Unity's
+  random so the game's seeded random and state hash are untouched.
+- Data alone was close but not enough: `MovedInCombatTrigger` fires only after a move ends, and
+  `ContextActionAttackWithFirstWeaponAbility` queues the attack instead of firing out of turn.
 
 Dropped: Lane Overwatch (RTO-T9). Kill Zone (RTO-T7) and the drag-to-size cone (RTO-T12) merged
 into Overwatch.
