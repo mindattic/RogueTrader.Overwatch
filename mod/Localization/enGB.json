@@ -1,0 +1,10 @@
+{
+  "strings": {
+    "d5d08e05-97c9-448b-a2c3-e20efd279883": {
+      "Text": "Reaction Shot"
+    },
+    "1cd2d368-2fc5-4115-882f-e30948a597e4": {
+      "Text": "Ends the turn. Until the start of your next turn, make one attack with your weapon against the first enemy that moves or acts within 10 cells. The attack uses your weapon's normal hit chance."
+    }
+  }
+}
