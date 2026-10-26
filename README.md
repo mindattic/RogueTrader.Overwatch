@@ -29,7 +29,8 @@ expected result for every rule and equip situation and where to look in the logs
 dotnet build src/RogueTrader.Overwatch
 ```
 
-Compiles the mod's assembly against the game's DLLs, then writes the Owlcat modification
+Needs [RogueTrader.Shared](https://github.com/mindattic/RogueTrader.Shared) checked out next to this repo
+(shared game paths, references, packaging and helpers). Compiles the mod's assembly against the game's DLLs, then writes the Owlcat modification
 (`mod/` plus `Assemblies/RogueTrader.Overwatch.dll`) to
 `%USERPROFILE%\AppData\LocalLow\Owlcat Games\Warhammer 40000 Rogue Trader\Modifications\RogueTrader.Overwatch`
 and enables it in `OwlcatModificationManagerSettings.json`. No Unity needed. Restart the game to

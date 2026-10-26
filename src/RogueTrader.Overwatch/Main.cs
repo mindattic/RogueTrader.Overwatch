@@ -19,6 +19,7 @@ public static class Main
     [OwlcatModificationEnterPoint]
     public static void Load(OwlcatModification modification)
     {
+        RogueTrader.Shared.ModLog.Name = "RogueTrader.Overwatch";
         new Harmony("RogueTrader.Overwatch").PatchAll(typeof(Main).Assembly);
         EventBus.Subscribe(new PartyGrant());
         EventBus.Subscribe(Suppression.Instance);
