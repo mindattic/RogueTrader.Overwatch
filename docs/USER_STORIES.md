@@ -33,3 +33,4 @@ _Nothing recorded yet._
 | RTO-T10 | 2026-10-26 | feature | open | Overwatch icons: placeholder game sprites per type now, native-looking final art later | — |
 | RTO-T11 | 2026-10-26 | feature | open | Enemy AI uses Overwatch via BlueprintBrain (when no target, spare AP, ranged role) | — |
 | RTO-T12 | 2026-10-26 | feature | wont-do | Drag-to-size Overwatch cone (Gears Tactics style) via C#, after the data-only types are tested | Merged into RTO-T6 Overwatch (draggable cone is part of it) per user 2026-10-26 |
+| RTO-T13 | 2026-10-26 | fix | closed | Overwatch shot count is lost on save/load: an active Overwatch reloads with 1 shot instead of the AP-based count | 542091f |
