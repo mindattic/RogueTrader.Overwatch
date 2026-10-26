@@ -25,7 +25,7 @@ _Nothing recorded yet._
 | RTO-T2 | 2026-10-26 | feature | closed | Create the RogueTrader.Overwatch repo: Overwatch abilities on every ranged weapon for heroes and enemies (Reaction Shot, Overwatch, Suppression) | 3d014c5 |
 | RTO-T3 | 2026-10-26 | chore | closed | Build the mod without Unity: script that assembles the Owlcat mod folder (manifest, settings, blueprints, patches, enGB) and installs/enables it | 5873bbc |
 | RTO-T4 | 2026-10-26 | feature | open | Give every unit holding a ranged weapon the Overwatch buttons (AddAbilitiesToCurrentWeapon on CommonMobFact for enemies, hero units for the party) | — |
-| RTO-T5 | 2026-10-26 | feature | open | Reaction Shot: XCOM 2 style, fire once at the first enemy that moves or acts within range, then end | — |
+| RTO-T5 | 2026-10-26 | feature | open | Reflex Shot: XCOM 2 style, fire once at the first enemy that moves or acts within range, then end | — |
 | RTO-T6 | 2026-10-26 | feature | open | Overwatch: draggable cone, one shot per AP left when cast; spreads fire across enemies, re-shoots one only after it moves 2+ tiles | — |
 | RTO-T7 | 2026-10-26 | feature | wont-do | Kill Zone Overwatch: aimed wide cone, shoot every enemy that moves in it once until your next turn | Merged into RTO-T6 Overwatch (draggable cone, shots = remaining AP) per user 2026-10-26 |
 | RTO-T8 | 2026-10-26 | feature | open | Suppression: pin one enemy; it takes a ranged attack of opportunity if it moves, with cosmetic always-miss fire during its turn | — |
@@ -34,3 +34,4 @@ _Nothing recorded yet._
 | RTO-T11 | 2026-10-26 | feature | open | Enemy AI uses Overwatch via BlueprintBrain (when no target, spare AP, ranged role) | — |
 | RTO-T12 | 2026-10-26 | feature | wont-do | Drag-to-size Overwatch cone (Gears Tactics style) via C#, after the data-only types are tested | Merged into RTO-T6 Overwatch (draggable cone is part of it) per user 2026-10-26 |
 | RTO-T13 | 2026-10-26 | fix | closed | Overwatch shot count is lost on save/load: an active Overwatch reloads with 1 shot instead of the AP-based count | 542091f |
+| RTO-T14 | 2026-10-26 | chore | closed | Rename Reaction Shot to Reflex Shot (in-game name, files, docs) | 7afa83f |
