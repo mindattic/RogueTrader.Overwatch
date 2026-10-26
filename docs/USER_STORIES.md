@@ -35,3 +35,6 @@ _Nothing recorded yet._
 | RTO-T12 | 2026-10-26 | feature | wont-do | Drag-to-size Overwatch cone (Gears Tactics style) via C#, after the data-only types are tested | Merged into RTO-T6 Overwatch (draggable cone is part of it) per user 2026-10-26 |
 | RTO-T13 | 2026-10-26 | fix | closed | Overwatch shot count is lost on save/load: an active Overwatch reloads with 1 shot instead of the AP-based count | 542091f |
 | RTO-T14 | 2026-10-26 | chore | closed | Rename Reaction Shot to Reflex Shot (in-game name, files, docs) | 7afa83f |
+| RTO-T15 | 2026-10-26 | feature | open | Release 1.0.0: dist zip of the Owlcat mod folder, built by dotnet build -c Release | — |
+| RTO-T16 | 2026-10-26 | docs | open | Nexus Mods page: header, logo, summary and BBCode description in docs/NEXUS_PAGE.md | — |
+| RTO-T17 | 2026-10-26 | fix | closed | Ship only the hotbar icons in the mod, not the Nexus header and logo | 0fe4406 |
