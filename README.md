@@ -6,7 +6,7 @@ game's own overwatch engine, which ships in the game unused.
 
 | Ability | What it does |
 |---|---|
-| **Reaction Shot** | XCOM 2 overwatch: fire once at the first enemy that moves or acts within range around you, then it ends. |
+| **Reflex Shot** | XCOM 2 overwatch: fire once at the first enemy that moves or acts within range around you, then it ends. |
 | **Overwatch** | Drag a cone: moving the cursor farther makes it longer and narrower, closer makes it shorter and wider. One shot per AP you had left, spread across the enemies that move or act in it. |
 | **Suppression** | Pin one enemy: it can stay put and fight, but every move draws a ranged attack of opportunity. Your hero keeps up visible fire that always misses to sell the threat. |
 

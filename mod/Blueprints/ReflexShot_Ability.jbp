@@ -85,7 +85,7 @@
         "m_IsLosDefinedByPattern": false
       }
     ],
-    "Comment": "Reaction Shot: XCOM 2 overwatch. Fires once at the first enemy that moves or acts within the circle, then ends.",
+    "Comment": "Reflex Shot: XCOM 2 overwatch. Fires once at the first enemy that moves or acts within the circle, then ends.",
     "m_DisplayName": {
       "m_Key": "d5d08e05-97c9-448b-a2c3-e20efd279883",
       "m_OwnerString": "27f7f769d0b94ab18fee0cde8a577a4d",

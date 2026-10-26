@@ -6,7 +6,7 @@ copy under a provider-specific command folder.
 
 ## Project context
 
-RogueTrader.Overwatch adds Overwatch abilities to Warhammer 40,000: Rogue Trader: Reaction Shot,
+RogueTrader.Overwatch adds Overwatch abilities to Warhammer 40,000: Rogue Trader: Reflex Shot,
 Overwatch (draggable cone) and Suppression, on every ranged weapon's action bar for heroes and
 enemies alike. It builds on the engine's own overwatch mechanic. `docs/DESIGN.md` holds the rules
 and the engine findings; each ability's ticket (`tickets ticket show RTO-T<n>`) holds the details.

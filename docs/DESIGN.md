@@ -13,7 +13,7 @@
 - The enemy AI already treats overwatch areas as threats when choosing paths (`AiBrainHelper`
   reads `PartOverwatch.OverwatchArea`). Teaching enemies to use overwatch is RTO-T11.
 
-### Reaction Shot (RTO-T5)
+### Reflex Shot (RTO-T5)
 XCOM 2 overwatch. No aiming: a circle around the unit (start at 10 cells). It fires once at the
 first enemy that moves or acts inside, then ends. Ends the turn. Data only.
 
