@@ -1,3 +1,4 @@
+using HarmonyLib;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
@@ -15,6 +16,7 @@ public static class Main
     [OwlcatModificationEnterPoint]
     public static void Load(OwlcatModification modification)
     {
+        new Harmony("RogueTrader.Overwatch").PatchAll(typeof(Main).Assembly);
         EventBus.Subscribe(new PartyGrant());
     }
 }
