@@ -110,5 +110,9 @@ An Owlcat modification folder, assembled by `dotnet` with no Unity:
 - Enable it by adding its UniqueName to `EnabledModifications` in
   `OwlcatModificationManagerSettings.json`.
 
-Icons (RTO-T10): test builds point `m_Icon {guid, fileid}` at existing game sprites; custom art
-needs an asset bundle from the Unity template.
+Icons (RTO-T10): `assets/<Name>.png` (square PNG; the current set is 64×64 with alpha) is copied to
+the mod's `Icons/` folder. After the game loads the mod's blueprints
+(`OwlcatModification.ApplyContent`), `Icons.cs` turns each into a `Sprite` and sets the blueprint's
+private `BlueprintMechanicEntityFact.m_Icon`, so no Unity asset bundle is needed. The `m_Icon`
+references in the `.jbp` files are game sprites that stay as fallbacks if a PNG is missing. Files:
+`ReflexShot`, `Overwatch`, `OverwatchShots` (shots-left buff), `Suppression`, `Suppressed` (debuff).

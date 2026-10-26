@@ -20,13 +20,15 @@
 
   <ItemGroup>
     <ModFile Include="$(ModSource)\**\*" />
+    <IconFile Include="$(MSBuildThisFileDirectory)..\..\assets\*.png" />
   </ItemGroup>
 
-  <!-- The mod folder the game loads: mod\ as-is, plus this assembly under Assemblies\. -->
+  <!-- The mod folder the game loads: mod\ as-is, this assembly under Assemblies\ and assets\*.png under Icons\. -->
   <Target Name="InstallMod" AfterTargets="Build">
     <RemoveDir Directories="$(ModDir)" />
     <Copy SourceFiles="@(ModFile)" DestinationFiles="@(ModFile->'$(ModDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModDir)\Assemblies" />
+    <Copy SourceFiles="@(IconFile)" DestinationFolder="$(ModDir)\Icons" />
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\..\tools\Enable-Mod.ps1&quot; -GameDataDir &quot;$(GameDataDir)&quot; -Name RogueTrader.Overwatch" />
     <Message Importance="high" Text="Installed to $(ModDir)" />
   </Target>

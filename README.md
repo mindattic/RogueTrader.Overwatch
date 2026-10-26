@@ -30,6 +30,8 @@ load it; Shift+F10 opens Owlcat's mod manager. Override `GameDir` or `GameDataDi
 - `mod/Blueprints/*.jbp`: the mod's own blueprints. `*.jbp_patch` edits a game blueprint, and
   each patch is listed in `mod/OwlcatModificationSettings.json`.
 - `mod/Localization/enGB.json`: strings, as `{"strings": {"<key>": {"Text": "..."}}}`.
+- `assets/*.png`: icons, square PNGs named after what they're for (`ReflexShot`, `Overwatch`,
+  `OverwatchShots`, `Suppression`, `Suppressed`). Replace a file and rebuild to change an icon.
 - `src/RogueTrader.Overwatch`: C# for what blueprints can't express. The game calls the method
   marked `[OwlcatModificationEnterPoint]`.
 
