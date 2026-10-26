@@ -43,7 +43,9 @@
         "HitsPerTarget": "HitManyTimes",
         "m_AbilityOnTrigger": null,
         "UseFirstWeaponAbility": true,
-        "ApplyingBuffs": [],
+        "ApplyingBuffs": [
+          "!bp_e5ce47452a6d47d78e88178f4ee7bba5"
+        ],
         "MultipleIfHasFact": false,
         "m_MultipleFact": null
       },

@@ -22,6 +22,10 @@ first enemy that moves or acts inside, then ends. Ends the turn. Data only.
   cone and closer a shorter, wider one, capped at weapon range. Click to lock it in.
 - Casting spends all remaining AP (at least 1) and ends the turn. **Shots = the AP left at cast.**
 - Enemies that move or act in the cone draw shots until the shots run out or the next turn starts.
+- The shots left are the rank of an "Overwatch" buff on the shooter (`OverwatchShots_Buff`), which
+  the engine adds and removes with the overwatch (`AbilityEffectOverwatch.ApplyingBuffs`). The
+  rank shows the player the count and is saved with the game. The re-shot positions aren't saved:
+  after a reload, every enemy in the cone counts as not yet shot.
 - **Spread fire first:** while any enemy in the cone hasn't been shot yet, an already-shot enemy
   draws no fire.
 - **Re-shots:** when there's no other choice, an already-shot enemy can be shot again, but only

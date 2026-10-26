@@ -1,0 +1,58 @@
+{
+  "AssetId": "e5ce47452a6d47d78e88178f4ee7bba5",
+  "Data": {
+    "$type": "618a7e0d54149064ab3ffa5d9057362c, BlueprintBuff",
+    "PrototypeLink": "",
+    "m_Overrides": [],
+    "Components": [],
+    "Comment": "Overwatch shots left: its rank is the shot count, so it survives save and load. Added and removed by the engine through AbilityEffectOverwatch.ApplyingBuffs.",
+    "m_DisplayName": {
+      "m_Key": "7562fc25-f9d9-4f88-86b0-7537272e7b86",
+      "m_OwnerString": "e5ce47452a6d47d78e88178f4ee7bba5",
+      "m_OwnerPropertyPath": "m_DisplayName",
+      "m_JsonPath": "",
+      "Shared": null
+    },
+    "m_Description": {
+      "m_Key": "8e4f3ee9-93af-4e5c-9262-9b76604ff0b2",
+      "m_OwnerString": "e5ce47452a6d47d78e88178f4ee7bba5",
+      "m_OwnerPropertyPath": "m_Description",
+      "m_JsonPath": "",
+      "Shared": null
+    },
+    "m_Icon": {
+      "guid": "5ba5e28fa18f4e447837a5060d9ff07d",
+      "fileid": 21300000
+    },
+    "m_AllowNonContextActions": false,
+    "IsClassFeature": false,
+    "m_Flags": 0,
+    "m_SoundTypeSwitch": {
+      "Value": "",
+      "Group": ""
+    },
+    "m_MuffledTypeSwitch": {
+      "Value": "",
+      "Group": ""
+    },
+    "Stacking": "Rank",
+    "PriorityProperty": "Value1",
+    "Initiative": "ByCaster",
+    "Ranks": 20,
+    "TickEachSecond": false,
+    "Frequency": "Rounds",
+    "FxOnStart": {
+      "AssetId": ""
+    },
+    "FxOnRemove": {
+      "AssetId": ""
+    },
+    "m_FXSettings": null,
+    "ResourceAssetIds": [],
+    "PlayOnlyFirstHitSound": false,
+    "m_AbilityGroups": []
+  },
+  "Meta": {
+    "ShadowDeleted": false
+  }
+}

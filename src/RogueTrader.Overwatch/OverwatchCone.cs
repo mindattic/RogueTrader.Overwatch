@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using Kingmaker;
+using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Pathfinding;
 using Kingmaker.UnitLogic.Abilities;
@@ -9,6 +10,8 @@ using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Abilities.Components.PatternAttack;
 using Kingmaker.UnitLogic.Abilities.Components.Patterns;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Parts;
 using UnityEngine;
@@ -36,13 +39,20 @@ internal static class OverwatchCone
         return AoEPattern.Cone(angle, radius);
     }
 
+    // Shots left are the rank of this buff, which the engine adds and removes with the overwatch
+    // (AbilityEffectOverwatch.ApplyingBuffs) and saves with the unit.
+    public const string ShotsBuffGuid = "e5ce47452a6d47d78e88178f4ee7bba5";
+
+    public static Buff ShotsBuff(BaseUnitEntity unit) =>
+        unit.Buffs.GetBuff(ResourcesLibrary.TryGetBlueprint<BlueprintBuff>(ShotsBuffGuid));
+
     internal sealed class Watch
     {
-        public int ShotsLeft;
         public readonly Dictionary<string, CustomGridNodeBase> LastShotAt = new();
     }
 
-    // Keyed by the overwatcher's UniqueId; not saved, so a reloaded overwatch falls back to one shot.
+    // Keyed by the overwatcher's UniqueId. Only the re-shot positions live here (not saved): after a
+    // reload each enemy in the cone counts as not yet shot.
     public static readonly Dictionary<string, Watch> Watches = new();
     public static readonly Dictionary<string, int> PendingShots = new();
 
@@ -101,7 +111,10 @@ internal static class OverwatchCone_StartBudget
             if (!OverwatchCone.PendingShots.TryGetValue(unit.UniqueId, out int shots))
                 shots = unit.CombatState.ActionPointsYellow;
             OverwatchCone.PendingShots.Remove(unit.UniqueId);
-            OverwatchCone.Watches[unit.UniqueId] = new OverwatchCone.Watch { ShotsLeft = Math.Max(1, shots) };
+            OverwatchCone.Watches[unit.UniqueId] = new OverwatchCone.Watch();
+            var buff = OverwatchCone.ShotsBuff(unit);
+            if (buff != null)
+                buff.AddRank(Math.Max(1, shots) - buff.Rank);
         }
         catch (Exception ex)
         {
@@ -122,8 +135,8 @@ internal static class OverwatchCone_ChooseShots
                 return true;
             var owner = (BaseUnitEntity)__instance.Owner;
             if (!OverwatchCone.Watches.TryGetValue(owner.UniqueId, out var watch))
-                OverwatchCone.Watches[owner.UniqueId] = watch = new OverwatchCone.Watch { ShotsLeft = 1 };
-            if (watch.ShotsLeft <= 0)
+                OverwatchCone.Watches[owner.UniqueId] = watch = new OverwatchCone.Watch();
+            if (OverwatchCone.ShotsBuff(owner) is not { Rank: > 0 })
             {
                 __instance.Stop();
                 return false;
@@ -140,7 +153,6 @@ internal static class OverwatchCone_ChooseShots
             }
 
             watch.LastShotAt[target.UniqueId] = here;
-            watch.ShotsLeft--;
             __state = true;
             return true;
         }
@@ -155,8 +167,14 @@ internal static class OverwatchCone_ChooseShots
     {
         try
         {
-            if (__state && OverwatchCone.Watches.TryGetValue(__instance.Owner.UniqueId, out var watch) && watch.ShotsLeft <= 0)
+            if (!__state)
+                return;
+            // The last shot stops the overwatch, which also removes the buff; otherwise spend one rank.
+            var buff = OverwatchCone.ShotsBuff((BaseUnitEntity)__instance.Owner);
+            if (buff == null || buff.Rank <= 1)
                 __instance.Stop();
+            else
+                buff.RemoveRank(1);
         }
         catch (Exception ex)
         {
