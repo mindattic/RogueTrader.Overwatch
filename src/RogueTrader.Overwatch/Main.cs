@@ -28,7 +28,7 @@ public static class Main
 
 // The party has no shared fact like CommonMobFact, so its feature is added here. Owning the abilities (instead of
 // borrowing them from the weapon) puts them on the ability bar, greyed out without a ranged weapon.
-internal sealed class PartyGrant : IAreaHandler, ICompanionChangeHandler
+internal sealed class PartyGrant : IAreaHandler, ICompanionChangeHandler, IPartyHandler
 {
     public void OnAreaDidLoad()
     {
@@ -41,6 +41,15 @@ internal sealed class PartyGrant : IAreaHandler, ICompanionChangeHandler
     public void HandleRecruit() => Grant(EventInvokerExtensions.BaseUnitEntity);
 
     public void HandleUnrecruit() { }
+
+    // Recruiting a companion or hiring a mercenary goes through Player.AddCompanion, which raises these, not HandleRecruit.
+    public void HandleAddCompanion() => Grant(EventInvokerExtensions.BaseUnitEntity);
+
+    public void HandleCompanionActivated() => Grant(EventInvokerExtensions.BaseUnitEntity);
+
+    public void HandleCompanionRemoved(bool stayInGame) { }
+
+    public void HandleCapitalModeChanged() { }
 
     private static void Grant(BaseUnitEntity unit)
     {
