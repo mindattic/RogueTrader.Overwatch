@@ -77,7 +77,7 @@
           "m_IgnoreLos": false,
           "m_UseMeleeLos": false,
           "m_IgnoreLevelDifference": false,
-          "m_Directional": false,
+          "m_Directional": true,
           "CalculateAttackFromPatternCentre": false
         },
         "m_DisableWeaponAttackDamage": false,

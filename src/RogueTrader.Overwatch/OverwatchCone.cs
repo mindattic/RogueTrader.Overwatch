@@ -70,7 +70,7 @@ internal static class OverwatchCone_ResizeByCursor
             if (!OverwatchCone.IsOurs(ability?.Data) || casterNode == null || targetNode == null)
                 return true;
             var pattern = OverwatchCone.ConeFor(casterNode.CellDistanceTo(targetNode), ability.RangeCells);
-            __result = AoEPatternHelper.GetOrientedPattern(ability, ability.Caster, pattern, __instance, casterNode, targetNode, __instance.CastOnSameLevel, false, coveredTargetsOnly, out _);
+            __result = AoEPatternHelper.GetOrientedPattern(ability, ability.Caster, pattern, __instance, casterNode, targetNode, __instance.CastOnSameLevel, true, coveredTargetsOnly, out _);
             return false;
         }
         catch (Exception ex)
