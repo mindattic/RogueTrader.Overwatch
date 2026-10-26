@@ -14,6 +14,25 @@ All three end your turn. Shots use your weapon's normal attack and hit chance, w
 distance. The full rules and how each one maps onto the engine are in
 [docs/DESIGN.md](docs/DESIGN.md).
 
+## Build and install
+
+```
+dotnet build src/RogueTrader.Overwatch
+```
+
+Compiles the mod's assembly against the game's DLLs, then writes the Owlcat modification
+(`mod/` plus `Assemblies/RogueTrader.Overwatch.dll`) to
+`%USERPROFILE%\AppData\LocalLow\Owlcat Games\Warhammer 40000 Rogue Trader\Modifications\RogueTrader.Overwatch`
+and enables it in `OwlcatModificationManagerSettings.json`. No Unity needed. Restart the game to
+load it; Shift+F10 opens Owlcat's mod manager. Override `GameDir` or `GameDataDir` with
+`-p:Name=value`.
+
+- `mod/Blueprints/*.jbp`: the mod's own blueprints. `*.jbp_patch` edits a game blueprint, and
+  each patch is listed in `mod/OwlcatModificationSettings.json`.
+- `mod/Localization/enGB.json`: strings, as `{"strings": {"<key>": {"Text": "..."}}}`.
+- `src/RogueTrader.Overwatch`: C# for what blueprints can't express. The game calls the method
+  marked `[OwlcatModificationEnterPoint]`.
+
 ## Status
 
 In development; nothing is released yet. Work is tracked as RTO tickets

@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>RogueTrader.Overwatch</AssemblyName>
+    <RootNamespace>RogueTraderOverwatch</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <GameDir Condition="'$(GameDir)' == ''">D:\Games\Steam\steamapps\common\Warhammer 40,000 Rogue Trader</GameDir>
+    <Managed>$(GameDir)\WH40KRT_Data\Managed</Managed>
+    <GameDataDir Condition="'$(GameDataDir)' == ''">$(USERPROFILE)\AppData\LocalLow\Owlcat Games\Warhammer 40000 Rogue Trader</GameDataDir>
+    <ModDir>$(GameDataDir)\Modifications\RogueTrader.Overwatch</ModDir>
+    <ModSource>$(MSBuildThisFileDirectory)..\..\mod</ModSource>
+  </PropertyGroup>
+
+  <!-- Every game assembly except the framework ones, which net48 already provides. -->
+  <ItemGroup>
+    <GameAssembly Include="$(Managed)\*.dll" Exclude="$(Managed)\mscorlib.dll;$(Managed)\netstandard.dll;$(Managed)\System*.dll;$(Managed)\Mono.*.dll;$(Managed)\Microsoft.*.dll" />
+    <Reference Include="@(GameAssembly)" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ModFile Include="$(ModSource)\**\*" />
+  </ItemGroup>
+
+  <!-- The mod folder the game loads: mod\ as-is, plus this assembly under Assemblies\. -->
+  <Target Name="InstallMod" AfterTargets="Build">
+    <RemoveDir Directories="$(ModDir)" />
+    <Copy SourceFiles="@(ModFile)" DestinationFiles="@(ModFile->'$(ModDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModDir)\Assemblies" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\..\tools\Enable-Mod.ps1&quot; -GameDataDir &quot;$(GameDataDir)&quot; -Name RogueTrader.Overwatch" />
+    <Message Importance="high" Text="Installed to $(ModDir)" />
+  </Target>
+
+</Project>

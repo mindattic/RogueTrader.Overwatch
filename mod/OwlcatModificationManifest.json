@@ -1,0 +1,10 @@
+{
+  "UniqueName": "RogueTrader.Overwatch",
+  "Version": "1.0.0",
+  "DisplayName": "Overwatch",
+  "Description": "Overwatch abilities on every ranged weapon, for heroes and enemies: Reaction Shot, Overwatch and Suppression.",
+  "Author": "MindAttic",
+  "Repository": "https://github.com/mindattic/RogueTrader.Overwatch",
+  "HomePage": "",
+  "Dependencies": []
+}
