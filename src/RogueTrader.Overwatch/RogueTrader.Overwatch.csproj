@@ -35,5 +35,22 @@
     <Message Importance="high" Text="Installed to $(ModDir)" />
   </Target>
 
+  <!-- dotnet build -c Release also writes the Nexus upload: dist\RogueTrader.Overwatch-<version>.zip holding the
+       RogueTrader.Overwatch folder that goes into the game's Modifications folder. -->
+  <Target Name="PackageMod" AfterTargets="InstallMod" Condition="'$(Configuration)' == 'Release'">
+    <PropertyGroup>
+      <ModVersion>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(ModSource)\OwlcatModificationManifest.json')), '"Version":\s*"([^"]+)"').Groups[1].Value)</ModVersion>
+      <DistDir>$(MSBuildThisFileDirectory)..\..\dist</DistDir>
+      <StageDir>$(IntermediateOutputPath)package</StageDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <InstalledFile Include="$(ModDir)\**\*" />
+    </ItemGroup>
+    <RemoveDir Directories="$(StageDir)" />
+    <Copy SourceFiles="@(InstalledFile)" DestinationFiles="@(InstalledFile->'$(StageDir)\RogueTrader.Overwatch\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <MakeDir Directories="$(DistDir)" />
+    <ZipDirectory SourceDirectory="$(StageDir)" DestinationFile="$(DistDir)\RogueTrader.Overwatch-$(ModVersion).zip" Overwrite="true" />
+    <Message Importance="high" Text="Packaged $(DistDir)\RogueTrader.Overwatch-$(ModVersion).zip" />
+  </Target>
 
 </Project>
