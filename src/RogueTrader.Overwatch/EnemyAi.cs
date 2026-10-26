@@ -111,9 +111,14 @@ internal static class EnemyAi
         var reflex = Usable(unit, "27f7f769d0b94ab18fee0cde8a577a4d");
         if (reflex != null)
         {
-            var self = new TargetWrapper(unit);
-            if (reflex.CanTarget(self))
-                return (reflex, self);
+            // Face the nearest enemy, the direction it's expected from (the facing sets Reflex Shot's aim modifier).
+            var toward = nearest.Unit.Position - unit.Position;
+            toward.y = 0;
+            var facing = toward.sqrMagnitude > 0.01f
+                ? new TargetWrapper(unit.Position + toward.normalized * GraphParamsMechanicsCache.GridCellSize)
+                : new TargetWrapper(unit);
+            if (reflex.CanTarget(facing))
+                return (reflex, facing);
         }
         return default;
     }

@@ -96,15 +96,27 @@ Expected: the buttons are on the bar but can't be used.
 
 ## D. Reflex Shot
 
-Ends your turn. Costs 1 AP. Until your next turn, fires once at the first enemy that moves or acts
-within 10 cells of you, then it ends.
+Ends your turn. Costs 1 AP. You pick the direction you expect enemies from; until your next turn it
+fires once at the first enemy that moves or acts within 10 cells of you, in any direction, then it ends.
+The shot's hit chance gets a "Reflex Shot" modifier for how far you have to turn: +10 straight ahead,
+0 at 45°, -10 at 90°, -20 at 135°, -30 directly behind.
 
-**D1. Cast.** In combat, with a gun, press Reflex Shot.
-Expected: no target to pick (it's centred on you), no shot on cast, your turn ends.
+**D1. Cast.** In combat, with a gun, press Reflex Shot and click a point (within 10 cells) to face.
+Expected: your character turns to face it; the highlighted area is a 10-cell circle centred on you, not on
+the clicked point; no shot on cast; your turn ends.
 
 **D2. Enemy moves in range.** Let an enemy move within 10 cells.
 Expected: one shot at it, with the weapon's normal hit chance and damage (shown in the combat log like a
-normal attack). No further shots this round, even if other enemies move.
+normal attack) plus the Reflex Shot modifier. No further shots this round, even if other enemies move.
+
+**D2a. Turn modifier.** Repeat D2 with the enemy coming from straight ahead, from the side (90°) and from
+behind (180°) relative to the facing you picked.
+Expected: the hit-chance breakdown in the combat log shows "Reflex Shot" +10 ahead, -10 from the side
+and -30 from behind (between those, it scales evenly: 0 at 45°, -20 at 135°).
+
+**D2b. Facing survives a reload.** Cast Reflex Shot facing one way, save, load, then let an enemy come
+from behind.
+Expected: still -30.
 
 **D3. Enemy acts in range without moving.** Let an enemy within 10 cells shoot or use an ability in place.
 Expected: one shot at it (acting also triggers Reflex Shot), then it ends.
@@ -249,6 +261,8 @@ Expected: the save loads. The buttons are gone. Note any errors in the log.
 | C12 |  |  |
 | D1 |  |  |
 | D2 |  |  |
+| D2a |  |  |
+| D2b |  |  |
 | D3 |  |  |
 | D4 |  |  |
 | D5 |  |  |

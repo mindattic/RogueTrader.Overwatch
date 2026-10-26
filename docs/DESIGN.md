@@ -17,10 +17,23 @@
 - The enemy AI already treats overwatch areas as threats when choosing paths (`AiBrainHelper`
   reads `PartOverwatch.OverwatchArea`). How enemies use the abilities is under "Enemy AI" below.
 
-### Reflex Shot (RTO-T5)
-XCOM 2 overwatch. No aiming (`Range: Personal`, targets self): a 10-cell circle around the unit.
-It fires once at the first enemy that moves or acts inside (`Mode: Overwatch`, `HitOnce`), then
-ends. Ends the turn. Data only, apart from the shared delivery and weapon-choice patches below.
+### Reflex Shot (RTO-T5, RTO-T21)
+XCOM 2 overwatch: a 10-cell circle around the unit, every direction. It fires once at the first enemy
+that moves or acts inside (`Mode: Overwatch`, `HitOnce`), then ends. Ends the turn.
+- **Facing:** casting asks for a point within 10 cells (`Range: Custom`, `CustomRange: 10`,
+  `CanTargetPoint`, `ShouldTurnToTarget`); the unit turns to face it, the direction it expects
+  enemies from, lateral or diagonal. The circle stays centred on the unit whatever is clicked: a
+  prefix on `AbilityAoEPatternSettings.GetOrientedPattern` passes the caster's node as the target node
+  (`ReflexShot_CentreOnShooter`), the same seam the preview and `GetOverwatchArea` use.
+- **Aim modifier:** the shot's hit chance gets `+10` dead ahead, falling linearly to `-30` for a full
+  180-degree spin (0 at 45, -10 at 90, -20 at 135; `ReflexShot.AimBonusAhead`/`AimPenaltyBehind`).
+  The angle is between the facing (unit toward `PartOverwatch`'s saved target point, `m_Target`) and
+  the unit-to-target direction on the ground. `Overwatch` mode stops the part as soon as the shot is
+  queued, so a prefix on `PartOverwatch.TryTriggerAttack` works the modifier out and keeps it per
+  shooter; a prefix on `RuleCalculateHitChances.OnTrigger` adds it to `HitChanceValueModifiers` with
+  the Reflex Shot ability fact as its source (so the breakdown and log show "Reflex Shot") when the
+  shooter's current command is that `UnitOverwatchAttack` at that target. The facing comes from saved
+  state, so it survives save and load.
 
 ### Overwatch (RTO-T6)
 - After pressing the button the cone resizes live with the cursor: farther gives a longer, narrower
@@ -86,7 +99,7 @@ points left, or the after-move pick.
 - No enemy can be shot, but one is within weapon range + 8 cells (`ApproachMargin`): **Overwatch**
   aimed at the nearest one (the target point sits at its distance, capped at weapon range, so the
   resize patch sizes the cone to reach it) with 2+ AP, or **Reflex Shot** with 1 AP (or when the
-  cone can't be aimed), where one shot in a full circle beats one shot in a cone.
+  cone can't be aimed), facing the nearest enemy, where one shot in a full circle beats one shot in a cone.
 - The ranged-weapon check uses the main hand (`GetFirstWeapon`), so an enemy with a sword in the
   main hand and a pistol in the off hand doesn't overwatch. The rule covers every non-player unit,
   allied NPCs included.
