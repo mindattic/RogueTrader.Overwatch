@@ -50,8 +50,7 @@ internal sealed class Suppression : IUnitCommandStartHandler, IEntityPositionCha
     private static bool IsMove(AbstractUnitCommand command) =>
         command is UnitMoveTo || command is UnitMoveToProper || command is UnitMoveAlongPath || command is UnitMoveContinuously;
 
-    private static AbilityData FirstWeaponAbility(BaseUnitEntity unit) =>
-        unit.GetFirstWeapon()?.Abilities.FirstOrDefault()?.Data;
+    private static AbilityData FirstWeaponAbility(BaseUnitEntity unit) => Abilities.RangedAttack(unit);
 
     public void HandleUnitCommandDidStart(AbstractUnitCommand command)
     {
@@ -156,7 +155,7 @@ internal sealed class Suppression : IUnitCommandStartHandler, IEntityPositionCha
     private static void ShootToMiss(BaseUnitEntity caster, BaseUnitEntity target)
     {
         var ability = FirstWeaponAbility(caster);
-        var weapon = caster.GetFirstWeapon();
+        var weapon = ability?.Weapon;
         if (ability == null || weapon == null)
             return;
 

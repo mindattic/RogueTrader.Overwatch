@@ -3,8 +3,9 @@
 ## Abilities
 
 ### Shared rules
-- Every unit (hero or enemy) holding a ranged weapon, meaning Category Pistol, Basic or Heavy (not
-  Thrown), gets the buttons on that weapon's action bar. A melee weapon hides them.
+- Party members always have the three buttons on their ability bar (slots 8–10 by default), greyed
+  out unless the active weapon set holds a ranged weapon. Enemies get them on any ranged weapon
+  (Category Pistol, Basic or Heavy, not Thrown) through its weapon slots. See "Who gets the buttons".
 - Each shot is the weapon's normal single shot, with normal hit chance: ranged hit chance already
   scales with distance (`RuleCalculateHitChances.OnTriggerRanged` multiplies by
   `RuleCalculateAbilityDistanceFactor`).
@@ -98,19 +99,42 @@ points left, or the after-move pick.
   `m_Radius` and `m_Angle`. At runtime `AoEPattern.Cone(angle, radius)`, `AoEPattern.Circle(radius)`
   and `AoEPattern.CopyAndOverrideRadius` build any size.
 
-## Putting the buttons on ranged weapons (RTO-T4)
+## Who gets the buttons, and where (RTO-T4, RTO-T18)
 
-- `AddAbilitiesToCurrentWeapon` (TypeId `b787865cc7284095914908b39df0a903`, allowed on
-  `BlueprintUnitFact` and `BlueprintUnit`) adds `WeaponAbility` slots to the wielder's active
-  weapon when its Category, Family, Classification and HoldingType match. Use one component per
-  ranged category.
-- Enemies: every non-player unit gets `BlueprintWarhammerRoot.CommonMobFact`
-  (`BaseUnitEntity.OnInitialize`). Patching components onto that fact reaches every enemy,
-  including ones in existing saves.
-- Heroes: there's no shared player fact; RTO-T4 picks a route (the C# assembly adding a fact to
-  party members, or patching hero unit blueprints).
-- Fallback: weapon slot 5 (`WeaponAbilities.Ability5`) is free on all but 4 ranged weapons, and
-  they inherit it from 38 prototypes.
+**Enemies: on the weapon (RTO-T4).** Every non-player unit gets `BlueprintWarhammerRoot.CommonMobFact`
+(`BaseUnitEntity.OnInitialize`). An `AddFacts` patched onto it gives them `Overwatch_Feature`, whose
+`AddAbilitiesToCurrentWeapon` components (TypeId `b787865cc7284095914908b39df0a903`, one per ranged
+category: Pistol, Basic, Heavy) add the three abilities as weapon slots on the active weapon. The
+enemy AI (RTO-T11) works from those. `AddFacts` restores missing facts on load, so units in existing
+saves get it too.
+
+**Party: their own abilities, on the ability bar (RTO-T18).** Weapon-slot abilities only show in the
+weapon's section and vanish with the weapon, and the bar's auto-fill (`PartUnitUISettings.TryToInitialize`)
+skips them. So `PartyGrant` (Main.cs) gives every character in `Player.AllCharacters` (on area load and on
+recruit) `Overwatch_PartyFeature`, an `AddFacts` of the three abilities, and removes `Overwatch_Feature`
+from anyone an earlier build gave it to.
+- **Greyed out without a gun:** every ability has `AbilityCasterHasWeaponWithRangeType: Ranged`, which
+  checks the active set's main hand, off hand and extra limbs. The bar re-reads availability on weapon-set
+  swaps (`IUnitActiveEquipmentSetHandler`) and when the inventory and other full-screen windows close.
+  Melee only, two melee weapons or nothing in the hands greys all three out; a gun in either hand lights them.
+- **Placement** (`ActionBar.cs`): slots 8–10 of the first 10-slot row (the bar is
+  `PartUnitUISettings.Slots`), else the free slots among the last three of row 2, then row 3, else the
+  first free slot. Runs on grant and as a prefix on `PartUnitUISettings.TryToInitialize`, which the bar
+  calls just before reading its slots, whether or not the game's auto-fill setting is on. An ability the
+  player removed from the bar (`m_RemovedFromActionBar`) stays off.
+- **Range:** a character-owned ability has `AbilityData.Weapon == null`, so `Range: Weapon` resolved to
+  nothing. A postfix on `RuleCalculateAbilityRange.OnTrigger` uses the active ranged weapon's attack range
+  instead; Overwatch's cone cap and Suppression's target range follow it.
+- **Which gun fires:** `Abilities.RangedWeapon` picks the first ranged weapon in the active set (main hand,
+  off hand, extra limbs). `UseFirstWeaponAbility` would take `GetFirstWeapon`, the melee main hand when a
+  sword and pistol are held, so a postfix on `AbilityEffectOverwatch.Apply` restarts the overwatch on the
+  ranged weapon's attack; Suppression's real and cosmetic shots use it too.
+
+**Cast delivery (both).** `WarhammerAbilityAttackDelivery`'s pattern delivery applies the ability's
+effects once per unit inside the area (`AbilityExecutionProcess.TickDeliveryProcess`): an empty zone never
+started overwatch, and several enemies restarted it once each. A prefix on its `Deliver` makes Reflex Shot
+and Overwatch deliver exactly once, to the clicked target. `WeaponAttack: None` already means no attack
+is made on cast.
 
 ## Mod packaging (RTO-T3)
 

@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -11,7 +12,9 @@ namespace RogueTraderOverwatch;
 
 public static class Main
 {
+    // Enemies: weapon-slot abilities (through CommonMobFact). Party: the abilities as their own facts.
     public const string FeatureGuid = "4fdd0480cc514cd1bac75e806175fbb3";
+    public const string PartyFeatureGuid = "f09f0c2891084ad2abc5bd8113a0eb80";
 
     [OwlcatModificationEnterPoint]
     public static void Load(OwlcatModification modification)
@@ -22,7 +25,8 @@ public static class Main
     }
 }
 
-// Enemies get the Overwatch feature through the CommonMobFact patch; the party has no shared fact, so it's added here.
+// The party has no shared fact like CommonMobFact, so its feature is added here. Owning the abilities (instead of
+// borrowing them from the weapon) puts them on the ability bar, greyed out without a ranged weapon.
 internal sealed class PartyGrant : IAreaHandler, ICompanionChangeHandler
 {
     public void OnAreaDidLoad()
@@ -39,9 +43,22 @@ internal sealed class PartyGrant : IAreaHandler, ICompanionChangeHandler
 
     private static void Grant(BaseUnitEntity unit)
     {
-        var feature = ResourcesLibrary.TryGetBlueprint<BlueprintFeature>(Main.FeatureGuid);
-        if (unit == null || feature == null || unit.Facts.Contains(feature))
-            return;
-        unit.AddFact(feature);
+        try
+        {
+            var feature = ResourcesLibrary.TryGetBlueprint<BlueprintFeature>(Main.PartyFeatureGuid);
+            if (unit == null || feature == null)
+                return;
+            // Earlier builds gave the party the weapon-slot feature; drop it so the buttons don't appear twice.
+            var weaponFeature = ResourcesLibrary.TryGetBlueprint<BlueprintFeature>(Main.FeatureGuid);
+            if (weaponFeature != null && unit.Facts.Contains(weaponFeature))
+                unit.Facts.Remove(weaponFeature);
+            if (!unit.Facts.Contains(feature))
+                unit.AddFact(feature);
+            ActionBar.Place(unit);
+        }
+        catch (Exception ex)
+        {
+            PFLog.Mods.Exception(ex, "RogueTrader.Overwatch: granting the party's abilities");
+        }
     }
 }
