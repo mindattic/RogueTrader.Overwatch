@@ -5,6 +5,12 @@
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
       "Text": "Ends the turn. Until the start of your next turn, make one attack with your weapon against the first enemy that moves or acts within 10 cells. The attack uses your weapon's normal hit chance."
+    },
+    "f19fd306-a89b-4cac-ac04-909140672dc9": {
+      "Text": "Overwatch"
+    },
+    "0b6da7d3-83c9-4576-8768-2708508ed113": {
+      "Text": "Ends the turn. Aim a cone: the farther you aim, the longer and narrower it gets, up to your weapon's range. Until the start of your next turn, attack enemies that move or act inside it, once for each Action Point you had left. Fire is spread across different enemies first; an enemy already hit is only attacked again after it moves at least 2 cells. Attacks use your weapon's normal hit chance."
     }
   }
 }

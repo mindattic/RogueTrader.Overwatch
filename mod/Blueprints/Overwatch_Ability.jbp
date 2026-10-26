@@ -1,0 +1,157 @@
+{
+  "AssetId": "b5855687981e4ba9a7dfc8c4af03229f",
+  "Data": {
+    "$type": "da11db195c86e0d4dae17a2c03a4ba9a, BlueprintAbility",
+    "PrototypeLink": "",
+    "m_Overrides": [],
+    "Components": [
+      {
+        "$type": "3ebaea478cd96e848ae4f464a37ee246, AbilityCasterHasWeaponWithRangeType",
+        "name": "$AbilityCasterHasWeaponWithRangeType$e3cf740c6be04a3b8a4568f8a1bf0102",
+        "m_Flags": 0,
+        "PrototypeLink": {
+          "guid": "",
+          "name": ""
+        },
+        "m_Overrides": [],
+        "RangeType": "Ranged",
+        "MustHaveBurst": false
+      },
+      {
+        "$type": "224c1eb24ed98e942ae15b9e10e62724, WarhammerEndTurn",
+        "name": "$WarhammerEndTurn$db0c65c34fab4fbfa72753a3c3a24abc",
+        "m_Flags": 0,
+        "PrototypeLink": {
+          "guid": "",
+          "name": ""
+        },
+        "m_Overrides": [],
+        "clearMPInsteadOfEndingTurn": false,
+        "Condition": null,
+        "m_BuffToCaster": null
+      },
+      {
+        "$type": "0966a95df3bfa574e855a652cc54afa2, AbilityEffectOverwatch",
+        "name": "$AbilityEffectOverwatch$292cd65cc4734e488a9015fed950dc24",
+        "m_Flags": 0,
+        "PrototypeLink": {
+          "guid": "",
+          "name": ""
+        },
+        "m_Overrides": [],
+        "Mode": "MultipleTargetOverwatch",
+        "HitsPerTarget": "HitManyTimes",
+        "m_AbilityOnTrigger": null,
+        "UseFirstWeaponAbility": true,
+        "ApplyingBuffs": [],
+        "MultipleIfHasFact": false,
+        "m_MultipleFact": null
+      },
+      {
+        "$type": "e6da52cf4bc945a1b3276a25991d7a68, WarhammerAbilityAttackDelivery",
+        "name": "$WarhammerAbilityAttackDelivery$da74001a764246c1979219a1576663be",
+        "m_Flags": 0,
+        "PrototypeLink": {
+          "guid": "",
+          "name": ""
+        },
+        "m_Overrides": [],
+        "WeaponAttack": "None",
+        "Special": "Pattern",
+        "m_IsProjectile": false,
+        "UseBestShootingPosition": false,
+        "ControlledScatter": false,
+        "m_PatternSpreadWithProjectile": false,
+        "AdditionalDamageInstancesCount": 0,
+        "m_PatternSettings": {
+          "Pattern": {
+            "m_Type": "Cone",
+            "m_Blueprint": null,
+            "m_Radius": 8,
+            "m_Angle": 30
+          },
+          "Targets": "Enemy",
+          "CastOnSameLevel": false,
+          "m_IgnoreLos": false,
+          "m_UseMeleeLos": false,
+          "m_IgnoreLevelDifference": false,
+          "m_Directional": false,
+          "CalculateAttackFromPatternCentre": false
+        },
+        "m_DisableWeaponAttackDamage": false,
+        "m_DisableDodgeForAlly": false,
+        "m_DisableOverpenetration": false,
+        "m_AutoHit": false,
+        "m_IsLosDefinedByPattern": false
+      }
+    ],
+    "Comment": "Overwatch: a cone sized by the cursor distance (C#: OverwatchCone). One shot per AP left at cast, spread across enemies; re-shoots one only after it moves 2+ cells.",
+    "m_DisplayName": {
+      "m_Key": "f19fd306-a89b-4cac-ac04-909140672dc9",
+      "m_OwnerString": "b5855687981e4ba9a7dfc8c4af03229f",
+      "m_OwnerPropertyPath": "m_DisplayName",
+      "m_JsonPath": "",
+      "Shared": null
+    },
+    "m_Description": {
+      "m_Key": "0b6da7d3-83c9-4576-8768-2708508ed113",
+      "m_OwnerString": "b5855687981e4ba9a7dfc8c4af03229f",
+      "m_OwnerPropertyPath": "m_Description",
+      "m_JsonPath": "",
+      "Shared": null
+    },
+    "m_Icon": {
+      "guid": "5ba5e28fa18f4e447837a5060d9ff07d",
+      "fileid": 21300000
+    },
+    "m_AllowNonContextActions": false,
+    "Type": "Weapon",
+    "Range": "Weapon",
+    "CustomRange": 0,
+    "MinRange": 1,
+    "ActionPointCost": 1,
+    "AbilityParamsSource": "None",
+    "PsychicPower": "Minor",
+    "VeilThicknessPointsToAdd": 1,
+    "ParamsSkill": "SkillAthletics",
+    "CooldownRounds": 0,
+    "CanTargetPoint": true,
+    "CanTargetEnemies": false,
+    "CanTargetFriends": false,
+    "CanTargetSelf": false,
+    "Hidden": false,
+    "DisableBestShootingPosition": false,
+    "NeedEquipWeapons": false,
+    "NotOffensive": false,
+    "ShowInDialogue": false,
+    "IsStarshipAbility": false,
+    "EffectOnAlly": "None",
+    "EffectOnEnemy": "Harmful",
+    "m_Parent": null,
+    "Animation": "Directional",
+    "CastInOffHand": false,
+    "UseOnMechadendrite": false,
+    "UsedMechadendrite": "Utility",
+    "m_TargetMapObjects": false,
+    "IsFreeAction": false,
+    "ShouldTurnToTarget": true,
+    "m_IsStratagem": false,
+    "UsingInThreateningArea": "CannotUse",
+    "UsingInOverwatchArea": "WillCauseAttack",
+    "CombatStateRestriction": "InCombatOnly",
+    "m_AbilityGroups": [],
+    "MaterialComponent": {
+      "m_Item": null,
+      "Count": 1
+    },
+    "DisableLog": false,
+    "ResourceAssetIds": [],
+    "m_FXSettings": null,
+    "m_AbilityTag": "None",
+    "m_CombatHudCommandsOverride": null,
+    "Author": "RogueTrader.Overwatch"
+  },
+  "Meta": {
+    "ShadowDeleted": false
+  }
+}
