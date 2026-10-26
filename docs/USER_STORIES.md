@@ -22,8 +22,8 @@ _Nothing recorded yet._
 | ID | Date | Type | Status | Summary | Ref |
 |---|---|---|---|---|---|
 | RTO-T1 | 2026-10-26 | docs | closed | Start the permanent ticket log in the ticket database | — |
-| RTO-T2 | 2026-10-26 | feature | open | Create the RogueTrader.Overwatch repo: Overwatch abilities on every ranged weapon for heroes and enemies (Reaction Shot, Overwatch, Suppression) | — |
-| RTO-T3 | 2026-10-26 | chore | open | Build the mod without Unity: script that assembles the Owlcat mod folder (manifest, settings, blueprints, patches, enGB) and installs/enables it | — |
+| RTO-T2 | 2026-10-26 | feature | closed | Create the RogueTrader.Overwatch repo: Overwatch abilities on every ranged weapon for heroes and enemies (Reaction Shot, Overwatch, Suppression) | 3d014c5 |
+| RTO-T3 | 2026-10-26 | chore | closed | Build the mod without Unity: script that assembles the Owlcat mod folder (manifest, settings, blueprints, patches, enGB) and installs/enables it | 5873bbc |
 | RTO-T4 | 2026-10-26 | feature | open | Give every unit holding a ranged weapon the Overwatch buttons (AddAbilitiesToCurrentWeapon on CommonMobFact for enemies, hero units for the party) | — |
 | RTO-T5 | 2026-10-26 | feature | open | Reaction Shot: XCOM 2 style, fire once at the first enemy that moves or acts within range, then end | — |
 | RTO-T6 | 2026-10-26 | feature | open | Overwatch: draggable cone, one shot per AP left when cast; spreads fire across enemies, re-shoots one only after it moves 2+ tiles | — |
