@@ -11,7 +11,7 @@
 - Overwatch ends when the overwatcher starts its next turn, acts, or combat ends
   (`OverwatchController`).
 - The enemy AI already treats overwatch areas as threats when choosing paths (`AiBrainHelper`
-  reads `PartOverwatch.OverwatchArea`). Teaching enemies to use overwatch is RTO-T11.
+  reads `PartOverwatch.OverwatchArea`). How enemies use the abilities is under "Enemy AI" below.
 
 ### Reflex Shot (RTO-T5)
 XCOM 2 overwatch. No aiming: a circle around the unit (start at 10 cells). It fires once at the
@@ -55,6 +55,25 @@ first enemy that moves or acts inside, then ends. Ends the turn. Data only.
 
 Dropped: Lane Overwatch (RTO-T9). Kill Zone (RTO-T7) and the drag-to-size cone (RTO-T12) merged
 into Overwatch.
+
+### Enemy AI (RTO-T11)
+Enemies get the buttons through `CommonMobFact`, and the AI considers every ability a unit has
+(`DecisionContext.GetSortedAbilityList`). Left alone it sorts end-turn abilities last
+(`IsFirstAbilityBetter`) but still casts them on leftover AP: Suppression goes through
+`SingleTargetSelector` at any shootable enemy, and Overwatch through `AOETargetSelector`, which
+only aims at enemies already inside the cone. So `EnemyAi.cs` hides the three from that search
+(postfix on `DecisionContext.IsUsableAbility`) and decides in one place (prefix on
+`TaskNodeSelectAbilityTarget.TickInternal`). That runs only for non-player units in turn-based
+combat that hold a ranged weapon, haven't spent any AP this turn, and are done moving: no movement
+points left, or the after-move pick.
+- Some enemy can be shot, but every one is in full cover: **Suppression** on the nearest one not
+  already suppressed ("can't get a good shot").
+- Some enemy can be shot in the open: nothing changes, the normal attack runs.
+- No enemy can be shot, but one is within weapon range + 8 cells: **Overwatch** aimed at the nearest
+  one (the target point sits at its distance, capped at weapon range, so the resize patch sizes
+  the cone to reach it) with 2+ AP, or **Reflex Shot** with 1 AP, where one shot in a full circle
+  beats one shot in a cone.
+- Otherwise nothing, and the turn ends as before.
 
 ## The engine's overwatch (Code.dll)
 
