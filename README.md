@@ -14,7 +14,7 @@ the game's own overwatch engine, which ships in the game unused.
 |---|---|
 | **Reflex Shot** | XCOM 2 overwatch: pick the direction you expect them from, then fire once at the first enemy that moves or acts within 10 cells of you, in any direction. Aim +10 straight ahead, down to -30 if you have to spin all the way around. |
 | **Overwatch** | Drag a cone: moving the cursor farther makes it longer and narrower (down to 20° at weapon range), closer makes it shorter and wider (90° at 3 cells). One shot per AP you had before casting, spread across the enemies that move or act in it; an enemy already shot is shot again only after moving 2+ cells. |
-| **Suppression** | Pin one enemy: it can stay put and fight, but every move draws a ranged attack of opportunity. Your hero keeps up visible fire that always misses to sell the threat. |
+| **Suppression** | Pin one enemy: it can stay put and fight, but leaving its square in any way (walking, charging, jumping, being pushed) draws a ranged attack of opportunity. Your hero keeps up visible fire that always misses to sell the threat. |
 
 All three cost 1 AP, end your turn and last until your next turn. Shots use your weapon's normal
 attack and hit chance, which drops with distance. The full rules and how each one maps onto the
@@ -48,7 +48,19 @@ also writes the upload, `dist/RogueTrader.Overwatch-<version>.zip`.
 
 ## Status
 
-In development; nothing is released yet, and nothing has been run in the game: the next step is
-[docs/TESTING.md](docs/TESTING.md). The Nexus Mods page is drafted in
+**1.0.0, ready for in-game testing; not released.** Nothing has been run in the game yet: work
+through [docs/TESTING.md](docs/TESTING.md) before uploading. The Nexus Mods page is drafted in
 [docs/NEXUS_PAGE.md](docs/NEXUS_PAGE.md). Work is tracked as RTO tickets
 (see [docs/USER_STORIES.md](docs/USER_STORIES.md)).
+
+- **Your own machine:** `dotnet build src/RogueTrader.Overwatch` installs and enables the mod; just
+  start the game.
+- **Any other machine:** `dist/RogueTrader.Overwatch-1.0.0.zip` (from
+  `dotnet build src/RogueTrader.Overwatch -c Release`). Extract its `RogueTrader.Overwatch` folder
+  into `%USERPROFILE%\AppData\LocalLow\Owlcat Games\Warhammer 40000 Rogue Trader\Modifications\`,
+  then enable **Overwatch** in Owlcat's mod window (its key is under Settings, Controls, General) and
+  restart the game. The folder must keep its empty `Bundles` subfolder: without it the game skips
+  every blueprint in the mod.
+
+Versions go up a whole number each release: 1.0.0, then 2.0.0, 3.0.0. Bump `Version` in
+`mod/OwlcatModificationManifest.json`; the zip takes its name from it.
