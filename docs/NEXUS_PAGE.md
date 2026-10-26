@@ -5,19 +5,21 @@ what Nexus's editor accepts in source mode.
 
 ## Before uploading
 
-Nothing in this mod has been run in the game yet. Play at least one fight with it and check:
+Nothing in this mod has been run in the game yet. Work through [TESTING.md](TESTING.md) (the full
+in-game checklist with expected results). At minimum these must pass before uploading:
 
-- [ ] Owlcat's mod window (key under Settings, Controls, General) lists "Overwatch" as active, and
-      `Player.log` shows no `RogueTrader.Overwatch` errors.
-- [ ] A companion holding a gun has Reflex Shot, Overwatch and Suppression buttons, with the custom
-      icons; switching to a melee weapon hides them.
-- [ ] Reflex Shot fires once at the first enemy that moves or acts within 10 cells, then ends.
-- [ ] Overwatch: the cone resizes with the cursor, casting doesn't fire by itself, one shot per AP left,
-      a second enemy is shot before the first is shot again, and the shots-left buff counts down and
-      survives a save and load.
-- [ ] Suppression: the target takes one shot per move, nothing when it attacks in place, the hero's
-      cosmetic misses play during its turn, and the debuff ends at your next turn.
-- [ ] Enemies with guns use the abilities sensibly (RTO-T11).
+- [ ] A1–A2: the mod window lists "Overwatch" as enabled, and the logs have no `RogueTrader.Overwatch`
+      errors after loading a save.
+- [ ] B1, B3: every party member, including a newly recruited companion, has the three buttons on the
+      ability bar (slots 8–10 of row 1) with the custom icons.
+- [ ] C1–C11: the buttons are lit with a gun in the active weapon set and greyed out with melee only,
+      two melee weapons or empty hands, updating on weapon-set swaps and after closing the inventory.
+- [ ] D2, E1, E4, E6: Reflex Shot fires once; the Overwatch cone resizes with the cursor, fires at most
+      one shot per AP and re-shoots an enemy only after it moves 2 cells.
+- [ ] F2–F5: Suppression draws one shot per move, none for acting in place, with cosmetic misses that
+      do nothing.
+- [ ] G1–G2, E9: enemies still fight normally and overwatch when they have nothing to shoot; a save made
+      mid-overwatch keeps its shots.
 
 ## Mod name
 
@@ -76,19 +78,19 @@ Rogue Trader's combat has no way to hold a position: anyone you don't shoot on y
 It doesn't invent a new system. Owlcat built a complete overwatch engine into Rogue Trader and never shipped a way to use it. This mod puts buttons on it, then adds the rules a cone needs to feel right.
 
 [size=5][b]Main features[/b][/size]
-[b]Three new abilities on every pistol, rifle and heavy weapon[/b]. They appear on that weapon's action bar while it's equipped, and disappear when you switch to a melee weapon.
+[b]Three new abilities for every character who carries a gun[/b]. Every party member gets them on the ability bar, in the last three slots of the first row (or the next free slots on rows 2 and 3), so you see them every turn. They're greyed out whenever your active weapon set has no ranged weapon (melee only, two melee weapons or empty hands) and light up the moment it does, including when you swap weapon sets. Take one off the bar and it stays off.
 
 [list]
 [*][b]Reflex Shot[/b]: overwatch the way XCOM does it. Until your next turn, take one shot at the first enemy that moves or acts within 10 cells of you. Ends your turn.
-[*][b]Overwatch[/b]: aim a cone and size it with the cursor. Aim close for a short, wide cone that covers a doorway; aim far for a long, narrow lane down to your weapon's range. You get one shot for each Action Point you had left, so holding fire pays. Fire is spread across different enemies first, and an enemy you've already shot is only shot again after it moves at least 2 cells, so nobody takes a full volley one step at a time. Ends your turn.
+[*][b]Overwatch[/b]: aim a cone and size it with the cursor. Aim close for a short, wide cone that covers a doorway (90° at 3 cells); aim far for a long, narrow lane down to your weapon's range (20°). You get one shot for each Action Point you had left, so holding fire pays. Fire is spread across different enemies first, and an enemy you've already shot is only shot again after it moves at least 2 cells, so nobody takes a full volley one step at a time. Ends your turn.
 [*][b]Suppression[/b]: pin one enemy down. It can stay put and fight, but every time it moves it takes a ranged attack of opportunity. During its turn your hero keeps up covering fire that always misses, to make the threat plain. Ends your turn.
 [/list]
 
 [b]Fits the rules:[/b]
 [list]
-[*]Every shot is your weapon's normal attack, with its normal hit chance, which already drops with distance.
+[*]Each ability costs 1 AP and ends your turn. Every shot is your weapon's normal attack, with its normal hit chance, which already drops with distance. With a sword and a pistol, the pistol fires.
 [*]Overwatch ends when your next turn starts, when you act or when combat ends.
-[*]Enemies avoid overwatched ground when they move, and enemies with guns have the same three abilities.
+[*]Enemies with guns have the same three abilities. They still fight normally, but when they finish moving with nothing to shoot they overwatch the way you'd expect, and they suppress targets hiding in full cover. They also avoid overwatched ground when they move.
 [*]An active Overwatch shows a buff with the shots you have left. It survives saving and loading.
 [/list]
 

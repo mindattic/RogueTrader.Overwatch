@@ -9,19 +9,27 @@
 - Each shot is the weapon's normal single shot, with normal hit chance: ranged hit chance already
   scales with distance (`RuleCalculateHitChances.OnTriggerRanged` multiplies by
   `RuleCalculateAbilityDistanceFactor`).
+- All three cost 1 AP (the blueprints' `ActionPointCost`, and the slot `AP` on enemy weapons), end
+  the turn (`WarhammerEndTurn`) and only work in combat (`CombatStateRestriction: InCombatOnly`).
 - Overwatch ends when the overwatcher starts its next turn, acts, or combat ends
   (`OverwatchController`).
+- In-game checks for every rule here are in [TESTING.md](TESTING.md).
 - The enemy AI already treats overwatch areas as threats when choosing paths (`AiBrainHelper`
   reads `PartOverwatch.OverwatchArea`). How enemies use the abilities is under "Enemy AI" below.
 
 ### Reflex Shot (RTO-T5)
-XCOM 2 overwatch. No aiming: a circle around the unit (start at 10 cells). It fires once at the
-first enemy that moves or acts inside, then ends. Ends the turn. Data only.
+XCOM 2 overwatch. No aiming (`Range: Personal`, targets self): a 10-cell circle around the unit.
+It fires once at the first enemy that moves or acts inside (`Mode: Overwatch`, `HitOnce`), then
+ends. Ends the turn. Data only, apart from the shared delivery and weapon-choice patches below.
 
 ### Overwatch (RTO-T6)
 - After pressing the button the cone resizes live with the cursor: farther gives a longer, narrower
-  cone and closer a shorter, wider one, capped at weapon range. Click to lock it in.
-- Casting spends all remaining AP (at least 1) and ends the turn. **Shots = the AP left at cast.**
+  cone and closer a shorter, wider one. `OverwatchCone.ConeFor`: radius = the caster→cursor
+  distance clamped to 3 cells … weapon range; angle runs linearly from 90° at 3 cells to 20° at
+  weapon range. A prefix on `AbilityAoEPatternSettings.GetOrientedPattern` serves both the
+  targeting preview and `GetOverwatchArea`, so the locked zone matches the preview. Click to lock it in.
+- Casting costs 1 AP and ends the turn. **Shots = the AP the unit had before casting** (read in a
+  prefix on `UnitUseAbility.OnStart`, before the cost is paid; at least 1).
 - Enemies that move or act in the cone draw shots until the shots run out or the next turn starts.
 - The shots left are the rank of an "Overwatch" buff on the shooter (`OverwatchShots_Buff`), which
   the engine adds and removes with the overwatch (`AbilityEffectOverwatch.ApplyingBuffs`). The
@@ -30,17 +38,22 @@ first enemy that moves or acts inside, then ends. Ends the turn. Data only.
 - **Spread fire first:** while any enemy in the cone hasn't been shot yet, an already-shot enemy
   draws no fire.
 - **Re-shots:** when there's no other choice, an already-shot enemy can be shot again, but only
-  after it has moved at least 2 tiles since its last shot (tunable).
-- Open: can an already-shot enemy that acts without moving draw a second shot? Proposed: no, only
-  movement re-triggers.
+  after it has moved at least 2 cells since its last shot (`MinReshotDistance`, grid distance).
+- **Acting in place:** an enemy not yet shot that acts in the cone draws a shot (the engine's own
+  trigger); an already-shot enemy acting without moving never draws another one.
+- The rules live in a prefix and postfix on `PartOverwatch.TryTriggerAttack` (the cast uses
+  `MultipleTargetOverwatch` + `HitManyTimes` so the engine never stops or skips on its own).
 
 ### Suppression (RTO-T8)
 - Target one enemy. Until your next turn, it takes a ranged attack of opportunity (normal hit and
   damage) each time it moves. Shooting or using abilities in place draws nothing, and other
   enemies are ignored. Ends the turn.
 - During that enemy's turn the hero keeps up cosmetic fire: shoot animation and the weapon's
-  projectiles, always aimed to miss, with no damage, hit rolls, ammo or combat-log lines. It pauses
-  while the real attack of opportunity plays.
+  projectiles, always aimed to miss, with no damage, hit rolls, ammo or combat-log lines. The first
+  burst comes 0.6–1.2 s into the turn, then every 1.5–2.5 s while the hero is idle and has line of
+  sight. It pauses while the real attack of opportunity plays.
+- The real attack only fires if the target can still be targeted (`CanTarget`: range and line of
+  sight). Several suppressors each fire once per move.
 - How it's built (`Suppression.cs`): the ability applies a visible **Suppressed** buff to the
   target (1 round, `BuffEndCondition.TurnStartOrCombatEnd`, which `BuffsController` removes when
   the buff's *caster* starts its turn). It doesn't use `PartOverwatch`, so the target's actions
@@ -70,10 +83,13 @@ points left, or the after-move pick.
 - Some enemy can be shot, but every one is in full cover: **Suppression** on the nearest one not
   already suppressed ("can't get a good shot").
 - Some enemy can be shot in the open: nothing changes, the normal attack runs.
-- No enemy can be shot, but one is within weapon range + 8 cells: **Overwatch** aimed at the nearest
-  one (the target point sits at its distance, capped at weapon range, so the resize patch sizes
-  the cone to reach it) with 2+ AP, or **Reflex Shot** with 1 AP, where one shot in a full circle
-  beats one shot in a cone.
+- No enemy can be shot, but one is within weapon range + 8 cells (`ApproachMargin`): **Overwatch**
+  aimed at the nearest one (the target point sits at its distance, capped at weapon range, so the
+  resize patch sizes the cone to reach it) with 2+ AP, or **Reflex Shot** with 1 AP (or when the
+  cone can't be aimed), where one shot in a full circle beats one shot in a cone.
+- The ranged-weapon check uses the main hand (`GetFirstWeapon`), so an enemy with a sword in the
+  main hand and a pistol in the off hand doesn't overwatch. The rule covers every non-player unit,
+  allied NPCs included.
 - Otherwise nothing, and the turn ends as before.
 
 ## The engine's overwatch (Code.dll)
@@ -117,6 +133,10 @@ from anyone an earlier build gave it to.
   checks the active set's main hand, off hand and extra limbs. The bar re-reads availability on weapon-set
   swaps (`IUnitActiveEquipmentSetHandler`) and when the inventory and other full-screen windows close.
   Melee only, two melee weapons or nothing in the hands greys all three out; a gun in either hand lights them.
+  Two quirks of that game component, untested: a hand weapon with any burst-delivery ability also passes
+  it, and its extra-limb loop reads `additionalLimb.Weapon` even when the limb is empty (a possible
+  error for characters with mechadendrites; see TESTING.md C9). Out of combat they're unusable
+  (`InCombatOnly`).
 - **Placement** (`ActionBar.cs`): slots 8–10 of the first 10-slot row (the bar is
   `PartUnitUISettings.Slots`), else the free slots among the last three of row 2, then row 3, else the
   first free slot. Runs on grant and as a prefix on `PartUnitUISettings.TryToInitialize`, which the bar
@@ -145,7 +165,8 @@ An Owlcat modification folder, assembled by `dotnet` with no Unity:
 - `Blueprints/**/*.jbp` (new blueprints) and `*.jbp_patch`. Patch fields: `FieldOverrides` take
   dotted paths, `ComponentsPatches` add components, `ArrayPatches` edit reference arrays
   (`Code.GameCore.Blueprints.BlueprintPatcher`).
-- `Localization/enGB.json` as `{"strings": [{"Key", "Value"}]}`.
+- `Localization/enGB.json` as `{"strings": {"<key>": {"Text": "..."}}}`, the game's own pack format
+  (`LocalizationPack`). The array format in Owlcat's template example doesn't load.
 - `Assemblies/RogueTrader.Overwatch.dll`: loaded by the game, which calls the one static method
   marked `[OwlcatModificationEnterPoint]`. It applies Harmony patches with the game's own
   `0Harmony.dll` for the parts data can't express: the drag cone, the shot budget and re-shot
