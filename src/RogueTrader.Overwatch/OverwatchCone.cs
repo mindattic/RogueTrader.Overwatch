@@ -186,7 +186,7 @@ internal static class OverwatchCone_ChooseShots
     {
         foreach (var unit in Game.Instance.State.AllBaseAwakeUnits)
         {
-            if (unit.LifeState.IsDead || !owner.IsEnemy(unit) || watch.LastShotAt.ContainsKey(unit.UniqueId))
+            if (unit.LifeState.IsDeadOrUnconscious || !owner.IsEnemy(unit) || watch.LastShotAt.ContainsKey(unit.UniqueId))
                 continue;
             if (part.Contains(unit))
                 return true;
