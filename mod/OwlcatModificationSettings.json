@@ -1,4 +1,11 @@
 {
+  "BundlesLayout": {
+    "m_Guids": [],
+    "m_Bundles": []
+  },
+  "BundleDependencies": {
+    "m_List": []
+  },
   "BlueprintPatches": [
     {
       "Guid": "ec16ff5722314efd887fa64f6f6e2558",
