@@ -56,7 +56,8 @@ internal sealed class PartyGrant : IAreaHandler, ICompanionChangeHandler, IParty
         try
         {
             var feature = ResourcesLibrary.TryGetBlueprint<BlueprintFeature>(Main.PartyFeatureGuid);
-            if (unit == null || feature == null)
+            // Pets are in AllCharacters too, but never hold a gun.
+            if (unit == null || unit.IsPet || feature == null)
                 return;
             // Earlier builds gave the party the weapon-slot feature; drop it so the buttons don't appear twice.
             var weaponFeature = ResourcesLibrary.TryGetBlueprint<BlueprintFeature>(Main.FeatureGuid);

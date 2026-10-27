@@ -44,7 +44,8 @@ internal static class EnemyAi
 
     public static (AbilityData Ability, TargetWrapper Target) Decide(BaseUnitEntity unit, CastTimepointType timepoint)
     {
-        if (!IsAiUnit(unit) || !TurnController.IsInTurnBasedCombat() || unit.LifeState.IsDead)
+        // Pets don't plan ahead: they never overwatch, even with a ranged weapon.
+        if (!IsAiUnit(unit) || unit.IsPet || !TurnController.IsInTurnBasedCombat() || unit.LifeState.IsDead)
             return default;
         var combat = unit.CombatState;
         if (combat.ActionPointsYellow < 1 || combat.ActionPointsYellow < combat.WarhammerInitialAPYellow.ModifiedValue)
