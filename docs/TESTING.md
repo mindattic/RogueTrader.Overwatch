@@ -53,6 +53,9 @@ Expected: the new companion has the three buttons straight away, placed as in B1
 **B4. Mercenary.** Hire a mercenary (custom companion) and add them to the party.
 Expected: they have the three buttons, placed as in B1, after the next area load at the latest.
 
+**B4a. Pets.** With a pet in the party (including one with a ranged weapon), select it.
+Expected: no Reflex Shot, Overwatch or Suppression buttons on its bar.
+
 **B5. Row 1 full.** Drag three other abilities onto slots 8–10, replacing the three buttons. Select
 another character and back (or change area).
 Expected: the three buttons reappear in the free slots among the last three of row 2 (slots 18–20); if
@@ -118,6 +121,9 @@ and -30 from behind (between those, it scales evenly: 0 at 45°, -20 at 135°).
 from behind.
 Expected: still -30.
 
+**D2c. Pushed into range.** Push an enemy (any push or knockback ability) from outside 10 cells to inside.
+Expected: the Reflex Shot fires at it, the same as if it had walked in.
+
 **D3. Enemy acts in range without moving.** Let an enemy within 10 cells shoot or use an ability in place.
 Expected: one shot at it (acting also triggers Reflex Shot), then it ends.
 
@@ -151,6 +157,9 @@ Expected: A's second move draws no fire. When B moves (or acts), B is shot.
 
 **E6. 2-cell re-shot.** One enemy alone in the cone, 2+ shots left. It walks 6 cells through the cone.
 Expected: shots at entry, after 2 cells and after 4 cells (until shots run out), not one per cell.
+
+**E6a. Pushed into the cone.** Push an enemy into the cone, or push one already shot 2+ cells within it.
+Expected: a shot, the same as walking in; a push of 2+ cells counts toward the re-shot distance.
 
 **E7. Acting in place.** An enemy already shot stays put and shoots or uses an ability.
 Expected: no second shot at it. (An enemy *not yet* shot that acts in the cone does draw a shot.)
@@ -231,6 +240,9 @@ Expected: no overwatch; the enemy's turn ends as before.
 Expected: enemies tend to path around the overwatched area (the game's own AI already treats it as a
 threat).
 
+**G6a. Enemy pets.** A fight with enemy animals or pets, ideally one with a ranged attack.
+Expected: they never use Reflex Shot, Overwatch or Suppression.
+
 **G7. Allied NPCs.** In a fight with allied non-party units holding guns.
 Expected: they follow the same rules as enemies (G1–G5), against their own enemies. Watch for anything odd.
 
@@ -256,6 +268,7 @@ Expected: the save loads. The buttons are gone. Note any errors in the log.
 | B2 |  |  |
 | B3 |  |  |
 | B4 |  |  |
+| B4a |  |  |
 | B5 |  |  |
 | B6 |  |  |
 | B7 |  |  |
@@ -267,6 +280,7 @@ Expected: the save loads. The buttons are gone. Note any errors in the log.
 | D2 |  |  |
 | D2a |  |  |
 | D2b |  |  |
+| D2c |  |  |
 | D3 |  |  |
 | D4 |  |  |
 | D5 |  |  |
@@ -276,12 +290,14 @@ Expected: the save loads. The buttons are gone. Note any errors in the log.
 | E4 |  |  |
 | E5 |  |  |
 | E6 |  |  |
+| E6a |  |  |
 | E7 |  |  |
 | E8 |  |  |
 | E9 |  |  |
 | E10 |  |  |
 | F1 |  |  |
 | F2 |  |  |
+| F2a |  |  |
 | F3 |  |  |
 | F4 |  |  |
 | F5 |  |  |
@@ -294,6 +310,7 @@ Expected: the save loads. The buttons are gone. Note any errors in the log.
 | G4 |  |  |
 | G5 |  |  |
 | G6 |  |  |
+| G6a |  |  |
 | G7 |  |  |
 | H1 |  |  |
 | I1 |  |  |

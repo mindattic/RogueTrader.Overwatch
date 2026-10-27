@@ -6,6 +6,11 @@
 - Party members always have the three buttons on their ability bar (slots 8–10 by default), greyed
   out unless the active weapon set holds a ranged weapon. Enemies get them on any ranged weapon
   (Category Pistol, Basic or Heavy, not Thrown) through its weapon slots. See "Who gets the buttons".
+- Being pushed counts as moving for all three: the engine's overwatch reacts to any position
+  change (`OverwatchController.HandleEntityPositionChanged`), so a push into Reflex Shot's circle or
+  Overwatch's cone draws fire, and Suppression fires when its target is pushed off its square.
+- Pets never overwatch, even with a ranged weapon: they don't plan ahead. Party pets get no buttons,
+  and the enemy AI never casts the abilities for a pet.
 - Each shot is the weapon's normal single shot, with normal hit chance: ranged hit chance already
   scales with distance (`RuleCalculateHitChances.OnTriggerRanged` multiplies by
   `RuleCalculateAbilityDistanceFactor`).
@@ -30,10 +35,12 @@ that moves or acts inside (`Mode: Overwatch`, `HitOnce`), then ends. Ends the tu
   The angle is between the facing (unit toward `PartOverwatch`'s saved target point, `m_Target`) and
   the unit-to-target direction on the ground. `Overwatch` mode stops the part as soon as the shot is
   queued, so a prefix on `PartOverwatch.TryTriggerAttack` works the modifier out and keeps it per
-  shooter; a prefix on `RuleCalculateHitChances.OnTrigger` adds it to `HitChanceValueModifiers` with
-  the Reflex Shot ability fact as its source (so the breakdown and log show "Reflex Shot") when the
-  shooter's current command is that `UnitOverwatchAttack` at that target. The facing comes from saved
-  state, so it survives save and load.
+  shooter; a prefix on `RulePerformAttackRoll.OnTrigger` (the real attack roll, which triggers its own
+  `HitChanceRule` first) adds it to that rule's `HitChanceValueModifiers` with the Reflex Shot ability
+  fact as its source (so the breakdown and log show "Reflex Shot") for that shooter and target. UI
+  hit-chance previews never see it; the first real roll uses it up, and it lapses after 5 s if the
+  attack never rolls, so no later attack (e.g. a Suppression shot) picks it up. The facing comes from
+  saved state, so it survives save and load.
 
 ### Overwatch (RTO-T6)
 - After pressing the button the cone resizes live with the cursor: farther gives a longer, narrower
@@ -141,7 +148,7 @@ saves get it too.
 
 **Party: their own abilities, on the ability bar (RTO-T18).** Weapon-slot abilities only show in the
 weapon's section and vanish with the weapon, and the bar's auto-fill (`PartUnitUISettings.TryToInitialize`)
-skips them. So `PartyGrant` (Main.cs) gives every character in `Player.AllCharacters` (on area load and on
+skips them. So `PartyGrant` (Main.cs) gives every non-pet character in `Player.AllCharacters` (on area load and on
 recruit) `Overwatch_PartyFeature`, an `AddFacts` of the three abilities, and removes `Overwatch_Feature`
 from anyone an earlier build gave it to.
 - **Greyed out without a gun:** every ability has `AbilityCasterHasWeaponWithRangeType: Ranged`, which
@@ -176,7 +183,11 @@ is made on cast.
 An Owlcat modification folder, assembled by `dotnet` with no Unity:
 - `OwlcatModificationManifest.json` (UniqueName, Version, DisplayName, Description, Author).
 - `OwlcatModificationSettings.json` holding `BlueprintPatches: [{Guid, Filename, PatchType}]`
-  (1 = Edit, which applies `<Filename>.jbp_patch`).
+  (1 = Edit, which applies `<Filename>.jbp_patch`). It must also carry empty
+  `BundlesLayout: {m_Guids: [], m_Bundles: []}` and `BundleDependencies: {m_List: []}`: the loader
+  reads it with Unity's `JsonUtility`, which leaves missing sections null, and every scene load asks
+  each mod for bundles through `Settings.BundlesLayout.BundleNames`, so without them the game hangs
+  on its first loading screen (NullReferenceException in `OwlcatModification.TryLoadBundleAsync`).
 - `Blueprints/**/*.jbp` (new blueprints) and `*.jbp_patch`. Patch fields: `FieldOverrides` take
   dotted paths, `ComponentsPatches` add components, `ArrayPatches` edit reference arrays
   (`Code.GameCore.Blueprints.BlueprintPatcher`).
