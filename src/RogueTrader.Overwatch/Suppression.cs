@@ -36,7 +36,8 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
 
     // The square each suppressed target holds, and the command that already drew its shot for leaving it.
     private readonly Dictionary<BaseUnitEntity, CustomGridNodeBase> m_Anchors = new Dictionary<BaseUnitEntity, CustomGridNodeBase>();
-    private readonly Dictionary<BaseUnitEntity, AbstractUnitCommand> m_ShotForCommand = new Dictionary<BaseUnitEntity, AbstractUnitCommand>();
+    private readonly Dictionary<BaseUnitEntity, object> m_ShotForCommand = new Dictionary<BaseUnitEntity, object>();
+    private readonly Dictionary<BaseUnitEntity, float> m_LastUnexplainedShot = new Dictionary<BaseUnitEntity, float>();
     private bool m_NeedsScan = true;
     private readonly List<(BaseUnitEntity Caster, BaseUnitEntity Target)> m_ShotsToFire = new List<(BaseUnitEntity, BaseUnitEntity)>();
     private readonly Dictionary<BaseUnitEntity, float> m_NextCosmeticShot = new Dictionary<BaseUnitEntity, float>();
@@ -76,6 +77,7 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
             {
                 m_Anchors.Remove(target);
                 m_ShotForCommand.Remove(target);
+                m_LastUnexplainedShot.Remove(target);
             }
         }
         catch (Exception ex)
@@ -97,6 +99,7 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
     {
         m_Anchors.Clear();
         m_ShotForCommand.Clear();
+        m_LastUnexplainedShot.Clear();
     }
 
     public void HandleEntityPositionChanged()
@@ -111,10 +114,21 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
             m_Anchors[target] = square;
             if (anchor == null || !TurnController.IsInTurnBasedCombat())
                 return;
-            var command = target.Commands.Current;
-            if (command != null && m_ShotForCommand.TryGetValue(target, out var shotFor) && shotFor == command)
-                return;
-            m_ShotForCommand[target] = command;
+            // Once per command that moves it: its own, or for a push (no command of its own) the command of whoever's
+            // turn it is. A displacement neither explains is limited to one shot a second.
+            object cause = target.Commands.Current ?? (Game.Instance.TurnController.CurrentUnit as BaseUnitEntity)?.Commands.Current;
+            if (cause != null)
+            {
+                if (m_ShotForCommand.TryGetValue(target, out var shotFor) && ReferenceEquals(shotFor, cause))
+                    return;
+                m_ShotForCommand[target] = cause;
+            }
+            else
+            {
+                if (m_LastUnexplainedShot.TryGetValue(target, out var last) && Time.time - last < 1f)
+                    return;
+                m_LastUnexplainedShot[target] = Time.time;
+            }
             foreach (var caster in Suppressors(target))
                 m_ShotsToFire.Add((caster, target));
         }
