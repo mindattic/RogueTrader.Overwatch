@@ -4,13 +4,13 @@
       "Text": "Reflex Shot"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Ends the turn. Pick the direction you expect the enemy from. Until the start of your next turn, make one attack with your weapon against the first enemy that moves or acts within 10 cells, in any direction. The attack gets +10 hit chance straight ahead, falling to -30 if you have to spin all the way around (0 at 45°, -10 at 90°, -20 at 135°), on top of your weapon's normal hit chance."
+      "Text": "Ends the turn. Pick the direction you expect the enemy from. Until the start of your next turn, make one attack with your weapon against the first enemy that moves (including being pushed) or acts within 10 cells, in any direction. The attack gets +10 hit chance straight ahead, falling to -30 if you have to spin all the way around (0 at 45°, -10 at 90°, -20 at 135°), on top of your weapon's normal hit chance."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Overwatch"
     },
     "0b6da7d3-83c9-4576-8768-2708508ed113": {
-      "Text": "Ends the turn. Aim a cone: the farther you aim, the longer and narrower it gets, up to your weapon's range. Until the start of your next turn, attack enemies that move or act inside it, once for each Action Point you had left. Fire is spread across different enemies first; an enemy already hit is only attacked again after it moves at least 2 cells. Attacks use your weapon's normal hit chance."
+      "Text": "Ends the turn. Aim a cone: the farther you aim, the longer and narrower it gets, up to your weapon's range. Until the start of your next turn, attack enemies that move, are pushed or act inside it, once for each Action Point you had left. Fire is spread across different enemies first; an enemy already hit is only attacked again after it moves at least 2 cells. Attacks use your weapon's normal hit chance."
     },
     "23c5cadb-1e9b-46f2-9780-597cb0ebbd2c": {
       "Text": "Suppression"
@@ -28,7 +28,7 @@
       "Text": "Overwatch"
     },
     "8e4f3ee9-93af-4e5c-9262-9b76604ff0b2": {
-      "Text": "Watching a cone. Each rank is one shot left at enemies that move or act inside it."
+      "Text": "Watching a cone. Each rank is one shot left at enemies that move, are pushed or act inside it."
     }
   }
 }
