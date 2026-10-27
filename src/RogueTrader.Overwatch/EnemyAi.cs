@@ -114,11 +114,18 @@ internal static class EnemyAi
             // Face the nearest enemy, the direction it's expected from (the facing sets Reflex Shot's aim modifier).
             var toward = nearest.Unit.Position - unit.Position;
             toward.y = 0;
-            var facing = toward.sqrMagnitude > 0.01f
-                ? new TargetWrapper(unit.Position + toward.normalized * GraphParamsMechanicsCache.GridCellSize)
-                : new TargetWrapper(unit);
-            if (reflex.CanTarget(facing))
-                return (reflex, facing);
+            // The nearest cell that way is often the cover the enemy hides behind, so walk out until a point is valid,
+            // then fall back to the unit itself (facing its current way).
+            if (toward.sqrMagnitude > 0.01f)
+                for (int cells = 1; cells <= 10; cells++)
+                {
+                    var facing = new TargetWrapper(unit.Position + toward.normalized * (cells * GraphParamsMechanicsCache.GridCellSize));
+                    if (reflex.CanTarget(facing))
+                        return (reflex, facing);
+                }
+            var self = new TargetWrapper(unit);
+            if (reflex.CanTarget(self))
+                return (reflex, self);
         }
         return default;
     }
