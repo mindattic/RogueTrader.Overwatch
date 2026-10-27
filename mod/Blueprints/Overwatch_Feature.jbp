@@ -135,7 +135,7 @@
         ]
       }
     ],
-    "Author": "RogueTrader.Overwatch",
+    "Author": "Unknown",
     "Comment": "Puts the Overwatch abilities on the wielder's ranged weapon (Pistol, Basic, Heavy). Enemies get it through CommonMobFact; heroes through the mod's assembly.",
     "m_DisplayName": {
       "m_Key": "",
