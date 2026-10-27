@@ -10,7 +10,10 @@ using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Abilities.Components.PatternAttack;
 using Kingmaker.UnitLogic.Abilities.Components.Patterns;
+using Kingmaker.PubSubSystem;
+using Kingmaker.PubSubSystem.Core;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using RogueTrader.Shared;
@@ -48,17 +51,21 @@ internal static class ReflexShot
         public readonly string TargetId;
         public readonly int Modifier;
         public readonly EntityFact Source;
+        public readonly float At;
 
-        public PendingShot(string targetId, int modifier, EntityFact source)
+        public PendingShot(string targetId, int modifier, EntityFact source, float at)
         {
             TargetId = targetId;
             Modifier = modifier;
             Source = source;
+            At = at;
         }
     }
 
     // Overwatch mode stops the part as soon as the shot is queued, before the attack rolls, so the modifier is worked out
-    // at the trigger and kept here (by shooter) until that attack's hit chance is calculated.
+    // at the trigger and kept here (by shooter) until that attack rolls. The first real roll uses it up; one that never
+    // comes within PendingSeconds (the attack was cancelled) lets it lapse, so no later attack picks it up.
+    public const float PendingSeconds = 5f;
     public static readonly Dictionary<string, PendingShot> Pending = new();
 
     public static readonly AccessTools.FieldRef<PartOverwatch, TargetWrapper> TargetField =
@@ -101,7 +108,7 @@ internal static class ReflexShot_RecordTurn
             if (facing == null)
                 return;
             int modifier = ReflexShot.AimModifier(ReflexShot.TurnAngle(shooter, facing.Point, target.Position));
-            ReflexShot.Pending[shooter.UniqueId] = new ReflexShot.PendingShot(target.UniqueId, modifier, __instance.Ability.Fact);
+            ReflexShot.Pending[shooter.UniqueId] = new ReflexShot.PendingShot(target.UniqueId, modifier, __instance.Ability.Fact, Time.time);
         }
         catch (Exception ex)
         {
@@ -110,11 +117,13 @@ internal static class ReflexShot_RecordTurn
     }
 }
 
-// Adds the modifier, under the Reflex Shot ability's name, to the hit chance of that one overwatch attack.
-[HarmonyPatch(typeof(RuleCalculateHitChances), nameof(RuleCalculateHitChances.OnTrigger))]
+// Adds the modifier, under the Reflex Shot ability's name, to the hit chance of that one attack roll. Hooked on the real
+// roll (RulePerformAttackRoll builds its own hit-chance rule and triggers it first thing), so UI hit-chance previews
+// never see or use it up, and it holds even when the attack command has already ended by the time the roll happens.
+[HarmonyPatch(typeof(RulePerformAttackRoll), nameof(RulePerformAttackRoll.OnTrigger))]
 internal static class ReflexShot_AimModifier
 {
-    private static void Prefix(RuleCalculateHitChances __instance)
+    private static void Prefix(RulePerformAttackRoll __instance)
     {
         try
         {
@@ -122,9 +131,10 @@ internal static class ReflexShot_AimModifier
                 return;
             if (!ReflexShot.Pending.TryGetValue(shooter.UniqueId, out var shot) || shot.TargetId != target.UniqueId)
                 return;
-            if (shooter.Commands.Current is not UnitOverwatchAttack || shot.Source == null || shot.Modifier == 0)
+            ReflexShot.Pending.Remove(shooter.UniqueId);
+            if (Time.time - shot.At > ReflexShot.PendingSeconds || shot.Source == null || shot.Modifier == 0)
                 return;
-            __instance.HitChanceValueModifiers.Add(shot.Modifier, shot.Source);
+            __instance.HitChanceRule.HitChanceValueModifiers.Add(shot.Modifier, shot.Source);
         }
         catch (Exception ex)
         {
