@@ -40,9 +40,7 @@ Gameplay (alternative: Combat)
 
 ## Summary (max 350 characters)
 
-XCOM-style overwatch for every gun, for your party and your enemies. Reflex Shot fires at the first enemy to
-move near you, Overwatch covers a cone you size with the cursor with one shot per AP you saved, and Suppression
-pins one enemy in place. Built on the game's own unused overwatch engine.
+Overwatch for every gun in Rogue Trader, for your party and enemies. Reflex Shot and Suppression play like XCOM: fire at the first enemy to move near you, or pin a foe so leaving its square gets it shot. Overwatch is a Gears Tactics / Star Wars Zero Company cone you size with the cursor, one shot per AP saved. Greys out without a gun.
 
 ## Tags
 
@@ -132,7 +130,7 @@ Keep everything inside it, including the empty [b]Bundles[/b] folder: the game w
 [size=5][b]Shout outs[/b][/size]
 [list]
 [*][b]Owlcat Games[/b] for Rogue Trader, for the overwatch engine hiding inside it, and for the modding template that made it possible to find.
-[*]The design borrows from [b]XCOM 2[/b]'s overwatch and Kill Zone, and from the aimed cones of [b]Gears Tactics[/b] and [b]Zero Company[/b].
+[*]The design borrows from [b]XCOM 2[/b]'s overwatch and suppression, and from the cursor-sized overwatch cones of [b]Gears Tactics[/b] and [b]Star Wars Zero Company[/b].
 [*]Code written with an AI model (Claude); art made with image-generation AI.
 [/list]
 
