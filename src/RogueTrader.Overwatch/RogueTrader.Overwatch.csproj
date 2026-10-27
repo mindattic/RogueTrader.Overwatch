@@ -14,6 +14,8 @@
     <RootNamespace>RogueTraderOverwatch</RootNamespace>
     <ModSource>$(MSBuildThisFileDirectory)..\..\mod</ModSource>
     <ModFolderName>RogueTrader.Overwatch</ModFolderName>
+    <!-- An Owlcat-format mod: RogueTrader.OwlcatMod.targets checks its Bundles folder and settings at build. -->
+    <OwlcatModification>true</OwlcatModification>
     <ModInstallDir>$(GameDataDir)\Modifications\$(ModFolderName)</ModInstallDir>
     <ModVersion>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(ModSource)\OwlcatModificationManifest.json')), '"Version":\s*"([^"]+)"').Groups[1].Value)</ModVersion>
   </PropertyGroup>
