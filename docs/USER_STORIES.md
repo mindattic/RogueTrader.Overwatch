@@ -65,3 +65,4 @@ _Nothing recorded yet._
 | RTO-T42 | 2026-10-27 | feature | closed | Simplified Chinese (zhCN) localization for Reflex Shot, Overwatch and Suppression | zhCN |
 | RTO-T43 | 2026-10-27 | feature | closed | Japanese (jaJP) localization for Reflex Shot, Overwatch and Suppression | jaJP |
 | RTO-T44 | 2026-10-27 | feature | closed | Turkish (trTR) localization for Reflex Shot, Overwatch and Suppression | trTR |
+| RTO-T45 | 2026-10-27 | feature | closed | Release 2.0.0: bump version for the full 8-language localization support | dist/RogueTrader.Overwatch-2.0.0.zip |

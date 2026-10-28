@@ -28,10 +28,12 @@ Rogue Trader Overwatch
 
 ## Version
 
-1.0.0 (upload `dist/RogueTrader.Overwatch-1.0.0.zip`, built by `dotnet build src/RogueTrader.Overwatch -c Release`)
+2.0.0 (upload `dist/RogueTrader.Overwatch-2.0.0.zip`, built by `dotnet build src/RogueTrader.Overwatch -c Release`)
 
 ## Changelog
 
+- **2.0.0:** Full localization for all 8 of the game's official UI languages: French, German, Spanish,
+  Russian, Simplified Chinese, Japanese and Turkish join the existing English text.
 - **1.0.0:** First release.
 
 ## Category
@@ -110,6 +112,8 @@ Keep everything inside it, including the empty [b]Bundles[/b] folder: the game w
 [*][b]Overwatch[/b]: aim a cone and size it with the cursor. Aim close for a short, wide cone that covers a doorway; aim far for a long, narrow lane out to your weapon's range. You get one shot for each Action Point you had left, so holding fire pays. Fire is spread across different enemies first, and an enemy you've already shot is only shot again after it moves at least 2 cells, so nobody takes a full volley one step at a time. A buff shows the shots you have left.
 [*][b]Suppression[/b]: pin one enemy down. It can stay put and fight, but every time it leaves its square, by walking, charging, jumping or being pushed, it takes a ranged attack of opportunity (one per move, not one per square). During its turn your hero keeps up covering fire that always misses, to make the threat plain.
 [/list]
+
+[b]Fully localized.[/b] Ability and buff text is translated into all 8 of the game's official UI languages: English, French, German, Spanish, Russian, Simplified Chinese, Japanese and Turkish.
 
 [b]Fits the rules:[/b]
 [list]

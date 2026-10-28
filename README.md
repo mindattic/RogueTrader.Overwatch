@@ -43,7 +43,7 @@ checking it exists, and without it no blueprint in the mod loads.
 | Path | Holds |
 |---|---|
 | `mod/Blueprints/` | The mod's blueprints (`*.jbp`) and patches to game blueprints (`*.jbp_patch`, listed in `mod/OwlcatModificationSettings.json`) |
-| `mod/Localization/enGB.json` | Strings, as `{"strings": {"<key>": {"Text": "..."}}}` |
+| `mod/Localization/*.json` | Strings per UI language, as `{"strings": {"<key>": {"Text": "..."}}}`; one file per locale (`enGB`, `frFR`, `deDE`, `esES`, `ruRU`, `zhCN`, `jaJP`, `trTR`) |
 | `assets/` | Hotbar icons (`ReflexShot`, `Overwatch`, `OverwatchShots`, `Suppression`, `Suppressed`; square PNGs, replace and rebuild) and the Nexus `Logo.png` and `Header.png` |
 | `src/RogueTrader.Overwatch/` | C# (Harmony patches) for what blueprints can't express |
 | `docs/` | [DESIGN.md](docs/DESIGN.md), [TESTING.md](docs/TESTING.md), [NEXUS_PAGE.md](docs/NEXUS_PAGE.md), the ticket log |
@@ -55,8 +55,9 @@ expected result, and what to look for in `Player.log`.
 
 ## Status
 
-**1.0.0: ready for in-game testing, not released.** Work through TESTING.md before uploading
-`dist/RogueTrader.Overwatch-1.0.0.zip` with [docs/NEXUS_PAGE.md](docs/NEXUS_PAGE.md).
+**2.0.0: ready for in-game testing, not released.** Adds Localization/{frFR,deDE,esES,ruRU,zhCN,jaJP,trTR}.json,
+covering all 8 of the game's official UI languages. Work through TESTING.md before uploading
+`dist/RogueTrader.Overwatch-2.0.0.zip` with [docs/NEXUS_PAGE.md](docs/NEXUS_PAGE.md).
 
 Versions go up a whole number each release (1.0.0, 2.0.0, 3.0.0): bump `Version` in
 `mod/OwlcatModificationManifest.json`, which names the zip.
