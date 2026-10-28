@@ -24,6 +24,22 @@ attack with its normal hit chance, which already drops with distance.
 
 The full rules and how each maps onto the engine: [docs/DESIGN.md](docs/DESIGN.md).
 
+## Languages
+
+Ability and buff names and descriptions are translated into all 8 of the game's official UI
+languages, matching whichever one the game itself is set to:
+
+- English (`enGB`)
+- French (`frFR`)
+- German (`deDE`)
+- Spanish - Spain (`esES`)
+- Russian (`ruRU`)
+- Simplified Chinese (`zhCN`)
+- Japanese (`jaJP`)
+- Turkish (`trTR`)
+
+Audio stays English-only, since that's all Rogue Trader itself ships.
+
 ## Build and install
 
 Needs [RogueTrader.Shared](https://github.com/mindattic/RogueTrader.Shared) checked out next to this repo.

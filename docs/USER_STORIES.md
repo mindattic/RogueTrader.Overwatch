@@ -67,3 +67,4 @@ _Nothing recorded yet._
 | RTO-T44 | 2026-10-27 | feature | closed | Turkish (trTR) localization for Reflex Shot, Overwatch and Suppression | trTR |
 | RTO-T45 | 2026-10-27 | feature | closed | Release 2.0.0: bump version for the full 8-language localization support | dist/RogueTrader.Overwatch-2.0.0.zip |
 | RTO-T46 | 2026-10-27 | chore | closed | Add in-game screenshots to assets/ for the Nexus page | — |
+| RTO-T47 | 2026-10-27 | docs | closed | README: add a dedicated Languages section listing all 8 supported UI languages | — |
