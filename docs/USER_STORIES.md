@@ -69,3 +69,4 @@ _Nothing recorded yet._
 | RTO-T46 | 2026-10-27 | chore | closed | Add in-game screenshots to assets/ for the Nexus page | — |
 | RTO-T47 | 2026-10-27 | docs | closed | README: add a dedicated Languages section listing all 8 supported UI languages | — |
 | RTO-T48 | 2026-10-27 | docs | closed | NEXUS_PAGE.md: drop the stray trailing comma after Simplified Chinese in the Localization list | — |
+| RTO-T49 | 2026-10-27 | docs | closed | Restore full NEXUS_PAGE.md structure, with a proper Localization section | — |
