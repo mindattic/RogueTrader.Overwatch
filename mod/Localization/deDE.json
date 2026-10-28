@@ -1,0 +1,34 @@
+{
+  "strings": {
+    "d5d08e05-97c9-448b-a2c3-e20efd279883": {
+      "Text": "Reflexschuss"
+    },
+    "1cd2d368-2fc5-4115-882f-e30948a597e4": {
+      "Text": "Beende den Zug. Wähle die Richtung, aus der du den Feind erwartest. Bis zum Beginn deines nächsten Zugs führst du einen Angriff mit deiner Waffe gegen den ersten Feind aus, der sich innerhalb von 10 Feldern in beliebiger Richtung bewegt, zurückgeworfen wird oder handelt. Der Angriff erhält +10 Trefferchance geradeaus, die auf -30 abfällt, wenn du dich komplett umdrehen musst (0 bei 45°, -10 bei 90°, -20 bei 135°), zusätzlich zur normalen Trefferchance deiner Waffe."
+    },
+    "f19fd306-a89b-4cac-ac04-909140672dc9": {
+      "Text": "Feuerbereitschaft"
+    },
+    "0b6da7d3-83c9-4576-8768-2708508ed113": {
+      "Text": "Beende den Zug. Ziele einen Kegel: Je weiter du zielst, desto länger und schmaler wird er, bis zur Reichweite deiner Waffe. Bis zum Beginn deines nächsten Zugs greifst du Feinde an, die sich darin bewegen, zurückgeworfen werden oder handeln – einmal für jeden Aktionspunkt, den du noch hattest. Der Beschuss verteilt sich zunächst auf unterschiedliche Feinde; ein bereits getroffener Feind wird erst erneut angegriffen, nachdem er sich mindestens 2 Felder bewegt hat. Angriffe nutzen die normale Trefferchance deiner Waffe."
+    },
+    "23c5cadb-1e9b-46f2-9780-597cb0ebbd2c": {
+      "Text": "Unterdrückung"
+    },
+    "4bd455eb-f1a0-4754-abb6-d18063a5d139": {
+      "Text": "Beende den Zug. Halte das Ziel bis zum Beginn deines nächsten Zugs in Schach: Jedes Mal, wenn es sein Feld verlässt, sei es durch Bewegen, Ansturm, Sprung oder weil es zurückgeworfen wird, greifst du es mit deiner Waffe an, mit der normalen Trefferchance deiner Waffe. Eine lange Bewegung löst einen einzigen Angriff aus, nicht einen pro Feld. Es kann auf der Stelle bleiben und handeln, ohne Beschuss auszulösen."
+    },
+    "630607d6-8257-4f38-95e2-740d582311c3": {
+      "Text": "Unterdrückt"
+    },
+    "bc63cd4b-4de3-49f9-bf67-09992c124939": {
+      "Text": "In Schach gehalten. Jedes Mal, wenn diese Einheit ihr Feld verlässt, sei es durch Bewegen, Ansturm, Sprung oder weil sie zurückgeworfen wird, eröffnet der unterdrückende Angreifer das Feuer auf sie."
+    },
+    "7562fc25-f9d9-4f88-86b0-7537272e7b86": {
+      "Text": "Feuerbereitschaft"
+    },
+    "8e4f3ee9-93af-4e5c-9262-9b76604ff0b2": {
+      "Text": "Beobachtet einen Kegel. Jeder Rang ist ein verbleibender Schuss auf Feinde, die sich darin bewegen, zurückgeworfen werden oder handeln."
+    }
+  }
+}

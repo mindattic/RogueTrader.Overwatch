@@ -59,7 +59,7 @@ _Nothing recorded yet._
 | RTO-T36 | 2026-10-26 | docs | closed | Say that pushes trigger all three abilities: in-game descriptions, DESIGN and TESTING cases D2c and E6a | eeae417 |
 | RTO-T37 | 2026-10-27 | chore | closed | Standardize phrasing across the English ability/buff descriptions as the stable source text for localization | b92b68a |
 | RTO-T38 | 2026-10-27 | feature | closed | French (frFR) localization for Reflex Shot, Overwatch and Suppression | frFR |
-| RTO-T39 | 2026-10-27 | feature | open | German (deDE) localization for Reflex Shot, Overwatch and Suppression | — |
+| RTO-T39 | 2026-10-27 | feature | closed | German (deDE) localization for Reflex Shot, Overwatch and Suppression | deDE |
 | RTO-T40 | 2026-10-27 | feature | open | Spanish - Spain (esES) localization for Reflex Shot, Overwatch and Suppression | — |
 | RTO-T41 | 2026-10-27 | feature | open | Russian (ruRU) localization for Reflex Shot, Overwatch and Suppression | — |
 | RTO-T42 | 2026-10-27 | feature | open | Simplified Chinese (zhCN) localization for Reflex Shot, Overwatch and Suppression | — |
