@@ -63,5 +63,5 @@ _Nothing recorded yet._
 | RTO-T40 | 2026-10-27 | feature | closed | Spanish - Spain (esES) localization for Reflex Shot, Overwatch and Suppression | esES |
 | RTO-T41 | 2026-10-27 | feature | closed | Russian (ruRU) localization for Reflex Shot, Overwatch and Suppression | ruRU |
 | RTO-T42 | 2026-10-27 | feature | closed | Simplified Chinese (zhCN) localization for Reflex Shot, Overwatch and Suppression | zhCN |
-| RTO-T43 | 2026-10-27 | feature | open | Japanese (jaJP) localization for Reflex Shot, Overwatch and Suppression | — |
+| RTO-T43 | 2026-10-27 | feature | closed | Japanese (jaJP) localization for Reflex Shot, Overwatch and Suppression | jaJP |
 | RTO-T44 | 2026-10-27 | feature | open | Turkish (trTR) localization for Reflex Shot, Overwatch and Suppression | — |
