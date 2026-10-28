@@ -4,7 +4,7 @@
       "Text": "Reflex Shot"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Ends the turn. Pick the direction you expect the enemy from. Until the start of your next turn, make one attack with your weapon against the first enemy that moves (including being pushed) or acts within 10 cells, in any direction. The attack gets +10 hit chance straight ahead, falling to -30 if you have to spin all the way around (0 at 45°, -10 at 90°, -20 at 135°), on top of your weapon's normal hit chance."
+      "Text": "Ends the turn. Pick the direction you expect the enemy from. Until the start of your next turn, make one attack with your weapon against the first enemy that moves, is pushed or acts within 10 cells, in any direction. The attack gets +10 hit chance straight ahead, falling to -30 if you have to spin all the way around (0 at 45°, -10 at 90°, -20 at 135°), on top of your weapon's normal hit chance."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Overwatch"
