@@ -1,0 +1,34 @@
+{
+  "strings": {
+    "d5d08e05-97c9-448b-a2c3-e20efd279883": {
+      "Text": "Disparo reflejo"
+    },
+    "1cd2d368-2fc5-4115-882f-e30948a597e4": {
+      "Text": "Termina el turno. Elige la dirección desde la que esperas al enemigo. Hasta el inicio de tu próximo turno, realiza un ataque con tu arma contra el primer enemigo que se mueva, sea empujado o actúe dentro de 10 casillas, en cualquier dirección. El ataque obtiene +10 de precisión justo al frente, que desciende hasta -30 si tienes que girar por completo (0 a 45°, -10 a 90°, -20 a 135°), sumado a la precisión normal de tu arma."
+    },
+    "f19fd306-a89b-4cac-ac04-909140672dc9": {
+      "Text": "Vigilancia"
+    },
+    "0b6da7d3-83c9-4576-8768-2708508ed113": {
+      "Text": "Termina el turno. Apunta un cono: cuanto más lejos apuntes, más largo y estrecho se vuelve, hasta el alcance de tu arma. Hasta el inicio de tu próximo turno, atacas a los enemigos que se muevan, sean empujados o actúen dentro de él, una vez por cada Punto de Acción que te quedara. El fuego se reparte primero entre distintos enemigos; a un enemigo ya alcanzado solo se le vuelve a atacar después de que se haya movido al menos 2 casillas. Los ataques usan la precisión normal de tu arma."
+    },
+    "23c5cadb-1e9b-46f2-9780-597cb0ebbd2c": {
+      "Text": "Supresión"
+    },
+    "4bd455eb-f1a0-4754-abb6-d18063a5d139": {
+      "Text": "Termina el turno. Inmoviliza al objetivo hasta el inicio de tu próximo turno: cada vez que abandone su casilla, ya sea moviéndose, cargando, saltando o siendo empujado, realizas un ataque contra él con tu arma, usando la precisión normal de tu arma. Un movimiento largo provoca un único ataque, no uno por casilla. Puede quedarse donde está y actuar sin recibir fuego."
+    },
+    "630607d6-8257-4f38-95e2-740d582311c3": {
+      "Text": "Suprimido"
+    },
+    "bc63cd4b-4de3-49f9-bf67-09992c124939": {
+      "Text": "Inmovilizado bajo fuego. Cada vez que esta unidad abandona su casilla, ya sea moviéndose, cargando, saltando o siendo empujada, el atacante que la suprime le dispara."
+    },
+    "7562fc25-f9d9-4f88-86b0-7537272e7b86": {
+      "Text": "Vigilancia"
+    },
+    "8e4f3ee9-93af-4e5c-9262-9b76604ff0b2": {
+      "Text": "Vigila un cono. Cada rango es un disparo restante contra los enemigos que se muevan, sean empujados o actúen dentro de él."
+    }
+  }
+}
