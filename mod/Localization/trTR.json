@@ -1,0 +1,34 @@
+{
+  "strings": {
+    "d5d08e05-97c9-448b-a2c3-e20efd279883": {
+      "Text": "Refleks Atışı"
+    },
+    "1cd2d368-2fc5-4115-882f-e30948a597e4": {
+      "Text": "Turu sonlandırır. Düşmanı beklediğin yönü seç. Bir sonraki turunun başlangıcına kadar, herhangi bir yönde 10 hücre içinde hareket eden, itilen veya bir eylem gerçekleştiren ilk düşmana silahınla bir saldırı yaparsın. Bu saldırı tam karşıdan isabet şansına +10 bonus alır; tamamen dönmen gerekiyorsa bu bonus -30'a kadar düşer (45°'de 0, 90°'de -10, 135°'de -20), bu değer silahının normal isabet şansına eklenir."
+    },
+    "f19fd306-a89b-4cac-ac04-909140672dc9": {
+      "Text": "Nöbet"
+    },
+    "0b6da7d3-83c9-4576-8768-2708508ed113": {
+      "Text": "Turu sonlandırır. Bir koni hedefle: Ne kadar uzağı hedeflersen, koni o kadar uzun ve dar olur, silahının menziline kadar. Bir sonraki turunun başlangıcına kadar, koninin içinde hareket eden, itilen veya bir eylem gerçekleştiren düşmanlara, kullanırken sana kalan her Eylem Puanı için bir kez saldırırsın. Ateş önce farklı düşmanlar arasında dağıtılır; daha önce vurulmuş bir düşman ancak en az 2 hücre hareket ettikten sonra tekrar vurulur. Saldırılar silahının normal isabet şansını kullanır."
+    },
+    "23c5cadb-1e9b-46f2-9780-597cb0ebbd2c": {
+      "Text": "Baskılama"
+    },
+    "4bd455eb-f1a0-4754-abb6-d18063a5d139": {
+      "Text": "Turu sonlandırır. Hedefi bir sonraki turunun başlangıcına kadar kıstırır: Hedef bulunduğu hücreyi her terk ettiğinde - hareket ederek, hücum ederek, zıplayarak veya itilerek - silahının normal isabet şansını kullanarak ona silahınla bir saldırı yaparsın. Uzun bir hareket tek bir saldırıya yol açar, hücre başına bir saldırıya değil. Hedef olduğu yerde kalıp ateş çekmeden eylem gerçekleştirebilir."
+    },
+    "630607d6-8257-4f38-95e2-740d582311c3": {
+      "Text": "Baskı Altında"
+    },
+    "bc63cd4b-4de3-49f9-bf67-09992c124939": {
+      "Text": "Kıstırılmış durumda. Bu birim bulunduğu hücreyi her terk ettiğinde - hareket ederek, hücum ederek, zıplayarak veya itilerek - onu baskılayan saldırgan ona ateş eder."
+    },
+    "7562fc25-f9d9-4f88-86b0-7537272e7b86": {
+      "Text": "Nöbet"
+    },
+    "8e4f3ee9-93af-4e5c-9262-9b76604ff0b2": {
+      "Text": "Bir koniyi gözetliyor. Her kademe, koninin içinde hareket eden, itilen veya bir eylem gerçekleştiren düşmanlara karşı kalan bir atışı temsil eder."
+    }
+  }
+}
