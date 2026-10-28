@@ -1,0 +1,34 @@
+{
+  "strings": {
+    "d5d08e05-97c9-448b-a2c3-e20efd279883": {
+      "Text": "Tir réflexe"
+    },
+    "1cd2d368-2fc5-4115-882f-e30948a597e4": {
+      "Text": "Termine le tour. Choisissez la direction d'où vous attendez l'ennemi. Jusqu'au début de votre prochain tour, effectuez une attaque avec votre arme contre le premier ennemi qui se déplace, est repoussé ou agit dans un rayon de 10 cases, dans n'importe quelle direction. L'attaque bénéficie de +10 en précision droit devant, cette valeur chutant jusqu'à -30 si vous devez pivoter complètement (0 à 45°, -10 à 90°, -20 à 135°), en plus de la précision normale de votre arme."
+    },
+    "f19fd306-a89b-4cac-ac04-909140672dc9": {
+      "Text": "Tir de couverture"
+    },
+    "0b6da7d3-83c9-4576-8768-2708508ed113": {
+      "Text": "Termine le tour. Visez un cône : plus vous visez loin, plus il devient long et étroit, jusqu'à la portée de votre arme. Jusqu'au début de votre prochain tour, attaquez les ennemis qui se déplacent, sont repoussés ou agissent à l'intérieur de ce cône, une fois pour chaque Point d'action qu'il vous restait. Les tirs se répartissent d'abord entre les différents ennemis ; un ennemi déjà touché n'est attaqué de nouveau qu'après s'être déplacé d'au moins 2 cases. Les attaques utilisent la précision normale de votre arme."
+    },
+    "23c5cadb-1e9b-46f2-9780-597cb0ebbd2c": {
+      "Text": "Suppression"
+    },
+    "4bd455eb-f1a0-4754-abb6-d18063a5d139": {
+      "Text": "Termine le tour. Clouez la cible sur place jusqu'au début de votre prochain tour : chaque fois qu'elle quitte sa case, en se déplaçant, en chargeant, en bondissant ou en étant repoussée, vous l'attaquez avec votre arme, avec la précision normale de votre arme. Un déplacement long ne déclenche qu'une seule attaque, pas une par case. Elle peut rester sur place et agir sans déclencher de tir."
+    },
+    "630607d6-8257-4f38-95e2-740d582311c3": {
+      "Text": "Sous suppression"
+    },
+    "bc63cd4b-4de3-49f9-bf67-09992c124939": {
+      "Text": "Clouée sur place. Chaque fois que cette unité quitte sa case, en se déplaçant, en chargeant, en bondissant ou en étant repoussée, l'attaquant qui la maintient sous suppression fait feu sur elle."
+    },
+    "7562fc25-f9d9-4f88-86b0-7537272e7b86": {
+      "Text": "Tir de couverture"
+    },
+    "8e4f3ee9-93af-4e5c-9262-9b76604ff0b2": {
+      "Text": "Surveille un cône. Chaque rang représente un tir restant contre les ennemis qui se déplacent, sont repoussés ou agissent à l'intérieur de celui-ci."
+    }
+  }
+}

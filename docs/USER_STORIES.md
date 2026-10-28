@@ -58,7 +58,7 @@ _Nothing recorded yet._
 | RTO-T35 | 2026-10-26 | fix | closed | Loading a save stops the game: the CommonMobFact component patch writes m_Flags as a number, which the patcher's strict enum reader rejects; blueprints also use an invalid Author | 138a2e9 |
 | RTO-T36 | 2026-10-26 | docs | closed | Say that pushes trigger all three abilities: in-game descriptions, DESIGN and TESTING cases D2c and E6a | eeae417 |
 | RTO-T37 | 2026-10-27 | chore | closed | Standardize phrasing across the English ability/buff descriptions as the stable source text for localization | b92b68a |
-| RTO-T38 | 2026-10-27 | feature | open | French (frFR) localization for Reflex Shot, Overwatch and Suppression | — |
+| RTO-T38 | 2026-10-27 | feature | closed | French (frFR) localization for Reflex Shot, Overwatch and Suppression | frFR |
 | RTO-T39 | 2026-10-27 | feature | open | German (deDE) localization for Reflex Shot, Overwatch and Suppression | — |
 | RTO-T40 | 2026-10-27 | feature | open | Spanish - Spain (esES) localization for Reflex Shot, Overwatch and Suppression | — |
 | RTO-T41 | 2026-10-27 | feature | open | Russian (ruRU) localization for Reflex Shot, Overwatch and Suppression | — |
