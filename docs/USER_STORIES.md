@@ -112,3 +112,4 @@ _Nothing recorded yet._
 | RTO-T89 | 2026-10-29 | chore | open | 3.0.0 balance pass and fixes: commit RTO-T79..T88 together (changes interleave in the same files) | — |
 | RTO-T90 | 2026-10-29 | feature | open | Suppressed AI units know they are pinned: they avoid leaving their square and shoot back from where they stand | — |
 | RTO-T91 | 2026-10-29 | feature | open | Overwatch is the next best thing to a direct shot: shots = AP left after paying its own cost / attack cost (1 to 2), so it never matches shooting directly | — |
+| RTO-T92 | 2026-10-29 | fix | open | Spanish Overwatch description: use 'que te quedarían' for consistent tense | — |
