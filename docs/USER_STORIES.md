@@ -99,17 +99,17 @@ _Nothing recorded yet._
 | RTO-T76 | 2026-10-29 | feature | open | Overwatch shots = AP before casting / weapon attack cost, capped at 2; outlines 50% transparent, yellow for Reflex Shot, blue for Overwatch | — |
 | RTO-T77 | 2026-10-29 | fix | open | Hit-chance labels overlap the game's overhead unit icon: raise them above it and use a smaller font | — |
 | RTO-T78 | 2026-10-29 | fix | open | Hit-chance labels use the game's own hit-percentage text colour instead of a red-to-green gradient | — |
-| RTO-T79 | 2026-10-29 | fix | open | Bughunt: enemy AI ignores off-hand ranged weapons; drop temporary diag logging and unused LockedRadius | — |
-| RTO-T80 | 2026-10-29 | fix | open | Hit-chance preview: labels off-centre and unlike the game's hit-chance UI; show above the overwatch target icon in the game's own style | — |
-| RTO-T81 | 2026-10-29 | fix | open | Suppression's cosmetic shots fly into the target; aim them at points around it so they always visibly miss | — |
-| RTO-T82 | 2026-10-29 | feature | open | Reflex Shot: 33% base hit chance + modifiers, 33% damage + modifiers, 1 AP, ends turn | — |
-| RTO-T83 | 2026-10-29 | feature | open | Overwatch: on trigger, shoot the unit caught moving, then the next-closest enemy marked Overwatched, then end | — |
-| RTO-T84 | 2026-10-29 | fix | open | Suppression red line only for weapons with no projectile to fire (e.g. Pasqal's staff); projectile weapons rely on their missing cosmetic shots instead | — |
-| RTO-T85 | 2026-10-29 | feature | open | Overwatch shots are attacks of opportunity, so AoO talents and bonuses apply | — |
-| RTO-T86 | 2026-10-29 | feature | open | Suppressed units have their hit chance halved (after modifiers) while Suppressed | — |
-| RTO-T87 | 2026-10-29 | feature | open | Balance pass: Overwatch snap-shot max -15, AI ignores Reflex Shot areas, Suppressed hit chance x0.75 of the capped chance | — |
-| RTO-T88 | 2026-10-29 | feature | open | Enemy AI only routes around an Overwatch cone if it has line of sight to the overwatcher when planning its move | — |
-| RTO-T89 | 2026-10-29 | chore | open | 3.0.0 balance pass and fixes: commit RTO-T79..T88 together (changes interleave in the same files) | — |
-| RTO-T90 | 2026-10-29 | feature | open | Suppressed AI units know they are pinned: they avoid leaving their square and shoot back from where they stand | — |
-| RTO-T91 | 2026-10-29 | feature | open | Overwatch is the next best thing to a direct shot: shots = AP left after paying its own cost / attack cost (1 to 2), so it never matches shooting directly | — |
-| RTO-T92 | 2026-10-29 | fix | open | Spanish Overwatch description: use 'que te quedarían' for consistent tense | — |
+| RTO-T79 | 2026-10-29 | fix | closed | Bughunt: enemy AI ignores off-hand ranged weapons; drop temporary diag logging and unused LockedRadius | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T80 | 2026-10-29 | fix | closed | Hit-chance preview: labels off-centre and unlike the game's hit-chance UI; show above the overwatch target icon in the game's own style | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T81 | 2026-10-29 | fix | closed | Suppression's cosmetic shots fly into the target; aim them at points around it so they always visibly miss | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T82 | 2026-10-29 | feature | closed | Reflex Shot: 33% base hit chance + modifiers, 33% damage + modifiers, 1 AP, ends turn | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T83 | 2026-10-29 | feature | closed | Overwatch: on trigger, shoot the unit caught moving, then the next-closest enemy marked Overwatched, then end | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T84 | 2026-10-29 | fix | closed | Suppression red line only for weapons with no projectile to fire (e.g. Pasqal's staff); projectile weapons rely on their missing cosmetic shots instead | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T85 | 2026-10-29 | feature | closed | Overwatch shots are attacks of opportunity, so AoO talents and bonuses apply | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T86 | 2026-10-29 | feature | closed | Suppressed units have their hit chance halved (after modifiers) while Suppressed | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T87 | 2026-10-29 | feature | closed | Balance pass: Overwatch snap-shot max -15, AI ignores Reflex Shot areas, Suppressed hit chance x0.75 of the capped chance | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T88 | 2026-10-29 | feature | closed | Enemy AI only routes around an Overwatch cone if it has line of sight to the overwatcher when planning its move | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T89 | 2026-10-29 | chore | closed | 3.0.0 balance pass and fixes: commit RTO-T79..T88 together (changes interleave in the same files) | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T90 | 2026-10-29 | feature | closed | Suppressed AI units know they are pinned: they avoid leaving their square and shoot back from where they stand | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T91 | 2026-10-29 | feature | closed | Overwatch is the next best thing to a direct shot: shots = AP left after paying its own cost / attack cost (1 to 2), so it never matches shooting directly | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T92 | 2026-10-29 | fix | closed | Spanish Overwatch description: use 'que te quedarían' for consistent tense | commits 6869221 9ea8b85 1a3c33e 84b99df |
