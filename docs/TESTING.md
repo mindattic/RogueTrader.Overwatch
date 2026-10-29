@@ -159,7 +159,9 @@ Expected: it's gone when your turn starts.
 
 ## E. Overwatch
 
-Ends your turn. Costs 1 AP (2 with a Heavy weapon). **Shots = the AP you had before casting ÷ your weapon's attack cost, 1 to 2** (never more than 2). The cone is sized by
+Ends your turn. Costs 1 AP (2 with a Heavy weapon). **Shots = (the AP you had before casting − Overwatch's own cost) ÷ your weapon's attack cost, 1 to 2**: what the AP left after
+paying for it would have bought, never more than 2 (RTO-T91). With a 1-AP attack and a non-Heavy weapon: 1 or 2 AP → 1 shot,
+3 or more → 2; with a Heavy weapon (cost 2) and a 2-AP attack: 3 to 5 AP → 1, 6 or more → 2. The cone is sized by
 the cursor: from 3 cells up to your weapon's range, 90° wide when close down to 20° at full range.
 Every Overwatch shot counts as an attack of opportunity (RTO-T85, see K2).
 
@@ -173,20 +175,26 @@ Expected: no shot on cast, your turn ends, and the zone shown afterwards matches
 **E3. Empty cone.** Cast Overwatch where no enemy is inside the cone.
 Expected: it still starts (shots-left buff appears, see E8).
 
-**E4. Shot cap.** Cast with 3 AP left. Let three or more enemies walk through the cone.
-Expected: at most 2 shots in total, then it ends and the buff disappears.
+**E4. Shot cap.** Cast with 3 AP left (a non-Heavy weapon with a 1-AP attack). Let three or more enemies
+walk through the cone.
+Expected: the buff shows 2 (RTO-T91); at most 2 shots in total, then it ends and the buff disappears.
 
-**E4a. Cap holds with more AP (RTO-T76).** Cast with 4 AP left.
-Expected: the shots-left buff shows 2, not 4.
+**E4a. Cap holds with more AP (RTO-T76, T91).** Cast with 4 AP left (same weapon).
+Expected: the shots-left buff shows 2, not 3 or 4.
 
-**E4b. One AP (RTO-T76).** Cast with exactly 1 AP left (a non-Heavy weapon).
-Expected: the buff shows 1; one shot, then it ends.
+**E4b. One AP (RTO-T76, T91).** Cast with exactly 1 AP left (a non-Heavy weapon).
+Expected: the buff shows 1 (nothing is left after paying for it, but there's always at least 1 shot); one
+shot, then it ends.
 
-**E4c. Follow-up shot (RTO-T83).** Cast with 2+ AP. Two or more enemies in the cone (all marked
+**E4c. Follow-up shot (RTO-T83).** Cast with 3+ AP (2 shots, RTO-T91). Two or more enemies in the cone (all marked
 Overwatched); one of them moves.
 Expected: two shots back to back: the one that moved, then the next-closest Overwatched enemy to the
 shooter (which didn't move). Then the overwatch ends. With only one enemy in the cone, the second shot
 waits for its next move (see E6).
+
+**E4d. Two AP (RTO-T91).** Cast with exactly 2 AP left (a non-Heavy weapon with a 1-AP attack).
+Expected: the buff shows 1, not 2: the 1 AP left after paying for Overwatch buys one attack, so shooting
+directly (2 shots) stays the better choice.
 
 **E5. Spread fire.** Two enemies in the cone; enemy A moves first and is shot, then A moves again 2+
 cells while enemy B is still in the cone unshot.
@@ -201,11 +209,11 @@ Expected: a shot, the same as walking in; a push of 2+ cells counts toward the r
 **E7. Acting in place.** An enemy already shot stays put and shoots or uses an ability.
 Expected: no second shot at it. (An enemy *not yet* shot that acts in the cone does draw a shot.)
 
-**E8. Shots-left buff.** Cast with 3 AP.
+**E8. Shots-left buff.** Cast with 3 AP (a 1-AP attack).
 Expected: an "Overwatch" buff on the shooter with the Overwatch-shots icon, showing 2; it counts down
 with each shot and disappears with the last one or at your next turn.
 
-**E9. Save and load mid-overwatch.** Cast with 2+ AP, let one shot fire (buff shows 1), save, load.
+**E9. Save and load mid-overwatch.** Cast with 3+ AP (2 shots, RTO-T91), let one shot fire (buff shows 1), save, load.
 Expected: the buff still shows 1 and the overwatch still fires 1 more shot. (Known: which enemies were
 already shot isn't saved, so after loading every enemy in the cone counts as not yet shot.)
 
@@ -466,6 +474,8 @@ however far above the cap the uncapped value was.
 | E4 |  |  |
 | E4a |  |  |
 | E4b |  |  |
+| E4c |  |  |
+| E4d |  |  |
 | E5 |  |  |
 | E6 |  |  |
 | E6a |  |  |

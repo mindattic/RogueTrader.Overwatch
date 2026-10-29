@@ -31,15 +31,16 @@ internal static class OverwatchCone
 
     public static bool IsOurs(AbilityData ability) => ability?.Blueprint?.AssetGuid == AbilityGuid;
 
-    // Never more shots than the unit could have fired on its own turn with the AP it held (AP / its weapon's attack
-    // cost), and never more than MaxShots: late-game AP would otherwise turn one cone into a wave-clearer, on both
+    // A direct shot stays the better choice (RTO-T91): the shots are what the AP left after paying Overwatch's own
+    // cost would have bought (that AP / its weapon's attack cost): fewer than shooting directly with the AP it held
+    // (the same single shot at 1 AP, but conditional and with the snap-shot penalty), and never more than MaxShots: late-game AP would otherwise turn one cone into a wave-clearer, on both
     // sides. At least 1.
     public const int MaxShots = 2;
 
-    public static int ShotsFor(BaseUnitEntity unit, int actionPoints)
+    public static int ShotsFor(BaseUnitEntity unit, int actionPoints, int castCost)
     {
         int cost = Math.Max(1, Abilities.RangedAttack(unit)?.CalculateActionPointCost() ?? 1);
-        return Mathf.Clamp(actionPoints / cost, 1, MaxShots);
+        return Mathf.Clamp((actionPoints - Math.Max(0, castCost)) / cost, 1, MaxShots);
     }
 
     public static int RadiusFor(int distance, int range) => Mathf.Clamp(distance, MinRadius, Math.Max(MinRadius, range));
@@ -129,7 +130,7 @@ internal static class OverwatchCone_StartBudget
                 ap = unit.CombatState.ActionPointsYellow;
             OverwatchCone.PendingShots.Remove(unit.UniqueId);
             OverwatchCone.Watches[unit.UniqueId] = new OverwatchCone.Watch();
-            int shots = OverwatchCone.ShotsFor(unit, ap);
+            int shots = OverwatchCone.ShotsFor(unit, ap, context.Ability.CalculateActionPointCost());
             var buff = OverwatchCone.ShotsBuff(unit);
             if (buff == null)
                 return;

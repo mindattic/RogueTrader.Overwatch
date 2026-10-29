@@ -28,7 +28,7 @@ namespace RogueTraderOverwatch;
 //   - it can shoot someone but every such enemy is in full cover: Suppression on the nearest one not already suppressed;
 //   - it can shoot someone in the open: nothing here, the normal attack runs;
 //   - it can shoot nobody, but an enemy is within weapon range + ApproachMargin cells: Overwatch aimed at the nearest
-//     one with 2+ AP, Reflex Shot with 1 AP (one shot either way, and the circle covers every direction).
+//     one with 2+ AP (1 shot at 2 AP, 2 at 3+ with a 1-AP attack, RTO-T91), Reflex Shot with 1 AP (the circle covers every direction).
 internal static class EnemyAi
 {
     public const int ApproachMargin = 8;

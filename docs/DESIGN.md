@@ -117,15 +117,23 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
   distance clamped to 3 cells … weapon range; angle runs linearly from 90° at 3 cells to 20° at
   weapon range. A prefix on `AbilityAoEPatternSettings.GetOrientedPattern` serves both the
   targeting preview and `GetOverwatchArea`, so the locked zone matches the preview. Click to lock it in.
-- Casting costs 1 AP (2 with a Heavy weapon) and ends the turn. **Shots = the AP the unit had before casting
-  divided by its ranged weapon's attack AP cost, clamped to 1..2** (`OverwatchCone.ShotsFor`, `MaxShots`,
-  RTO-T76; the AP is read in a prefix on `UnitUseAbility.OnStart`, before the cost is paid).
+- Casting costs 1 AP (2 with a Heavy weapon) and ends the turn. **Shots = (the AP the unit had before
+  casting minus Overwatch's own AP cost) divided by its ranged weapon's attack AP cost, clamped to 1..2**:
+  what the AP left after paying for Overwatch would have bought (`OverwatchCone.ShotsFor`, `MaxShots`,
+  RTO-T76, T91; the AP and the cast cost, `Ability.CalculateActionPointCost()`, are read in a prefix on
+  `UnitUseAbility.OnStart`, before the cost is paid). With a 1-AP attack and a non-Heavy weapon: 1 or 2
+  AP → 1 shot, 3 or more → 2. With a Heavy weapon (cast cost 2) and a 2-AP attack: 3 to 5 AP → 1, 6 or
+  more → 2.
 - **Why at most 2:** XCOM's strongest overwatch upgrades top out near two shots per unit; late-game AP
   inflation (heroic acts, momentum) would turn an uncapped cone into a wave-clearer, and enemies use it
-  too. Dividing by the attack's cost keeps parity with the shots the unit could fire on its own turn,
-  closing the loophole where a weapon with a 2-AP attack got a shot per AP. The three keep distinct jobs:
-  Reflex Shot the single cheap reaction, Overwatch two-target area denial, Suppression the single-target
-  lock. Enemy AI still picks Overwatch at 2+ AP.
+  too. Dividing by the attack's cost, after taking off Overwatch's own cost, keeps a direct shot the
+  preferred choice and Overwatch the next best thing (RTO-T91): it never fires more shots than the unit
+  could fire on its own turn, and with 2+ AP it fires fewer (at 1 AP it's the same single shot, but
+  conditional and with the snap-shot penalty). It also closes the loophole where a weapon with a 2-AP
+  attack got a shot per AP. The three keep distinct jobs: Reflex Shot the single cheap reaction,
+  Overwatch two-target area denial, Suppression the single-target lock. Enemy AI still picks Overwatch
+  only when it can shoot nobody and has 2+ AP (so 1 shot at 2 AP, 2 at 3+ with a 1-AP attack), and
+  Reflex Shot with 1 AP.
 - Enemies that move or act in the cone draw shots until the shots run out or the next turn starts.
 - The shots left are the rank of an "Overwatch" buff on the shooter (`OverwatchShots_Buff`), which
   the engine adds and removes with the overwatch (`AbilityEffectOverwatch.ApplyingBuffs`). The
