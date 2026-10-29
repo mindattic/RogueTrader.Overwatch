@@ -30,6 +30,7 @@ checklist with expected results. At minimum these must pass:
 - [ ] N1–N4: a Suppressed unit's ranged hit chance, shown in the gauge and rolled, is 75% of its
       unsuppressed value; melee and scatter attacks are unchanged.
 - [ ] E4c: when Overwatch fires with 2 shots, the second goes at once to the next-closest enemy in the cone.
+- [ ] G9: a suppressed enemy mostly stays on its square and shoots back.
 - [ ] G6, G8: enemies walk into Reflex Shot circles and Overwatch cones instead of routing around them; an enemy with a sword and an off-hand pistol overwatches with the pistol.
 - [ ] C9a: a character with mechadendrites and a ranged weapon in a hand lights up with no log errors.
 - [ ] L1–L5: the Overwatch snap-shot penalty scales -1 to -15 with the cone's reach, shows in the
@@ -62,7 +63,7 @@ Rogue Trader Overwatch
     attacks of opportunity, so talents and traits that boost attacks of opportunity apply to them. When it
     fires, the second shot goes at once to the next-closest enemy in the cone.
   - Suppression: its shot is now a real ranged attack of opportunity, so talents and traits that boost
-    attacks of opportunity apply to it. A Suppressed unit's own ranged attacks keep 75% of their hit chance. With a weapon that has no projectile (e.g. Pasqal's staff), a glowing red line links the suppressor to the target (RTO-T84); either way the
+    attacks of opportunity apply to it. A Suppressed unit's own ranged attacks keep 75% of their hit chance, and a suppressed enemy mostly stays put and shoots back. With a weapon that has no projectile (e.g. Pasqal's staff), a glowing red line links the suppressor to the target (RTO-T84); either way the
     suppressor holds a firing pose and keeps firing past the target (no hits, no damage, no ammo) for as
     long as the suppression lasts.
   - Taking damage ends a unit's Suppression, Overwatch or Reflex Shot at once.
@@ -152,7 +153,7 @@ Keep everything inside it, including the empty [b]Bundles[/b] folder: the game w
 [list]
 [*][b]Reflex Shot[/b]: overwatch the way XCOM does it. Click the direction you expect trouble from. Until your next turn, take one shot at the first enemy that moves or acts within your weapon's range, in any direction. It's a reaction, not an aimed shot: it hits from a flat 33% base instead of your Ballistic Skill, plus +10 when the enemy comes from straight ahead, falling to -30 when you have to spin all the way around to fire (the modifier shows in the hit-chance breakdown as "Reflex Shot"), and deals 33% of your weapon's damage. Always just 1 AP, whatever the gun. Enemies don't give its circle a wide berth: they walk in and risk the shot.
 [*][b]Overwatch[/b]: aim a cone and size it with the cursor. Aim close for a short, wide cone that covers a doorway; aim far for a long, narrow lane out to your weapon's range. You get up to two shots: one for each attack the Action Points you had left would have paid for, never more than two, so it covers a lane without clearing a whole wave. When it fires, the first shot goes at the enemy caught moving and the second at once at the next-closest enemy in the cone; an enemy you've already shot is only shot again after it moves at least 2 cells, so nobody takes a full volley one step at a time. A buff shows the shots you have left. The farther the cone reaches, the harder the snap shot: an extra hit-chance penalty grows from -1 at close range up to -15 at full weapon range, and everyone currently standing in the cone shows it with an Overwatched debuff. It's a prepared ambush: every Overwatch shot counts as an attack of opportunity, so talents that boost attacks of opportunity apply.
-[*][b]Suppression[/b]: pin one enemy down. It can stay put and fight, but every time it leaves its square, by walking, charging, jumping or being pushed, it takes a ranged attack of opportunity (one per move, not one per square). While Suppressed, its own ranged attacks lose a quarter of their hit chance. For the whole suppression your hero holds a firing pose trained on it and keeps firing at it, a visual cue that never hits; a weapon with no projectile (like Pasqal's staff) shows a glowing red line between them instead.
+[*][b]Suppression[/b]: pin one enemy down. It can stay put and fight, but every time it leaves its square, by walking, charging, jumping or being pushed, it takes a ranged attack of opportunity (one per move, not one per square). While Suppressed, its own ranged attacks lose a quarter of their hit chance, and enemies know it: a suppressed enemy would rather stay put and shoot back than move. For the whole suppression your hero holds a firing pose trained on it and keeps firing at it, a visual cue that never hits; a weapon with no projectile (like Pasqal's staff) shows a glowing red line between them instead.
 [/list]
 
 [b]Localization:[/b]

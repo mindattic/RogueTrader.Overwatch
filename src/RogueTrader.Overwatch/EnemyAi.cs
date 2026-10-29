@@ -157,6 +157,7 @@ internal static class EnemyAi_OverwatchThreats
         {
             if (unit == null || __result == null)
                 return;
+            MarkPinned(unit, __result);
             var ignored = new HashSet<BaseUnitEntity>();
             foreach (var info in __result.Values)
                 foreach (var overwatcher in info.overwatchUnits)
@@ -170,6 +171,24 @@ internal static class EnemyAi_OverwatchThreats
         catch (Exception ex)
         {
             EnemyAi.Log(ex, "filtering overwatch areas from the AI's threat map");
+        }
+    }
+
+    // A Suppressed unit knows it's pinned (RTO-T90): leaving its square draws a shot from each suppressor, the same as
+    // walking out of a melee enemy's reach. The path cost already charges for that (a unit in a node's aooUnits that
+    // isn't in the next node's), so its own squares list its suppressors there: it weighs moving like provoking an
+    // attack of opportunity, and mostly stays put and shoots back from where it stands.
+    private static void MarkPinned(BaseUnitEntity unit, Dictionary<GraphNode, AiBrainHelper.ThreatsInfo> threats)
+    {
+        var suppressors = Suppression.Suppressors(unit).ToList();
+        if (suppressors.Count == 0)
+            return;
+        foreach (var node in unit.GetOccupiedNodes())
+        {
+            if (!threats.TryGetValue(node, out var info))
+                threats[node] = info = new AiBrainHelper.ThreatsInfo();
+            foreach (var suppressor in suppressors)
+                info.aooUnits.Add(suppressor);
         }
     }
 

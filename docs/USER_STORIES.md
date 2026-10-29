@@ -110,3 +110,5 @@ _Nothing recorded yet._
 | RTO-T87 | 2026-10-29 | feature | open | Balance pass: Overwatch snap-shot max -15, AI ignores Reflex Shot areas, Suppressed hit chance x0.75 of the capped chance | — |
 | RTO-T88 | 2026-10-29 | feature | open | Enemy AI only routes around an Overwatch cone if it has line of sight to the overwatcher when planning its move | — |
 | RTO-T89 | 2026-10-29 | chore | open | 3.0.0 balance pass and fixes: commit RTO-T79..T88 together (changes interleave in the same files) | — |
+| RTO-T90 | 2026-10-29 | feature | open | Suppressed AI units know they are pinned: they avoid leaving their square and shoot back from where they stand | — |
+| RTO-T91 | 2026-10-29 | feature | open | Overwatch is the next best thing to a direct shot: shots = AP left after paying its own cost / attack cost (1 to 2), so it never matches shooting directly | — |

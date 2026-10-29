@@ -45,7 +45,7 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
 
     public static bool IsSuppressed(MechanicEntity unit) => SuppressedBuffs(unit).Any();
 
-    private static IEnumerable<BaseUnitEntity> Suppressors(BaseUnitEntity target) =>
+    public static IEnumerable<BaseUnitEntity> Suppressors(BaseUnitEntity target) =>
         SuppressedBuffs(target)
             .Select(b => b.Context?.MaybeCaster as BaseUnitEntity)
             .Where(c => c != null && !c.IsDeadOrUnconscious)

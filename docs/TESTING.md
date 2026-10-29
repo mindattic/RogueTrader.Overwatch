@@ -299,6 +299,10 @@ end your turn.
 Expected: an enemy whose shortest path crosses the Reflex Shot circle or the Overwatch cone walks straight
 through it rather than around it, and draws the shot.
 
+**G9. Pinned enemy (RTO-T90).** Suppress a ranged enemy that has a hero in line of sight, then end your turn.
+Expected: on its turn it mostly stays on its square and shoots back from there (its hit chance reduced,
+N1–N5) rather than moving to a better spot; if it does move, it draws the suppressor's attack (F2).
+
 ## H. Icons
 
 **H1.** Check every icon: the three buttons (Reflex Shot, Overwatch, Suppression), the shots-left buff
@@ -488,6 +492,7 @@ however far above the cap the uncapped value was.
 | G6a |  |  |
 | G7 |  |  |
 | G8 |  |  |
+| G9 |  |  |
 | H1 |  |  |
 | I1 |  |  |
 | J1 |  |  |

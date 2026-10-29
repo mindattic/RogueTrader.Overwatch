@@ -7,7 +7,7 @@ the game's own overwatch engine (Owlcat shipped it in the game but never gave pl
 |---|---|
 | **Reflex Shot** | XCOM-style overwatch. Pick the direction you expect them from; until your next turn, take one shot at the first enemy that moves (including being pushed) or acts within your weapon's range, in any direction. A reaction, not an aimed shot: it hits from a flat 33% base instead of your Ballistic Skill, adjusted by +10 straight ahead falling to −30 when you have to spin all the way around (plus cover, range and talents as usual), and deals 33% of the weapon's damage. Always 1 AP. |
 | **Overwatch** | Aim a cone sized by the cursor: close gives a short, wide cone (3 cells, 90°), far a long, narrow one (up to weapon range, 20°). Up to 2 shots (one per attack your AP before casting would have paid for, at most 2), at enemies that move, are pushed or act inside it: the first shot at the enemy caught moving, the second at once at the next-closest enemy in the cone. One already shot is shot again only after it moves 2+ cells. A buff shows the shots left and survives save and load. Shots carry a snap-shot penalty that grows with how far the cone reaches, from -1 at the shortest reach to -15 at full weapon range; everyone currently standing in the cone shows it with an Overwatched debuff. Each shot counts as an attack of opportunity, so talents and traits that boost attacks of opportunity apply. |
-| **Suppression** | Pin one enemy. It can stay put and fight, but every time it leaves its square, by walking, charging, jumping or being pushed, it takes a ranged attack of opportunity (one per move or ability, not per square). While Suppressed, its own ranged attacks lose a quarter of their hit chance. For the whole suppression your hero holds a firing pose and keeps firing at it, a visual cue only that never hits; a weapon with no projectile (like Pasqal's staff) shows a glowing red line joining them instead. |
+| **Suppression** | Pin one enemy. It can stay put and fight, but every time it leaves its square, by walking, charging, jumping or being pushed, it takes a ranged attack of opportunity (one per move or ability, not per square). While Suppressed, its own ranged attacks lose a quarter of their hit chance, and enemies know it: they'd rather stay put and shoot back than move. For the whole suppression your hero holds a firing pose and keeps firing at it, a visual cue only that never hits; a weapon with no projectile (like Pasqal's staff) shows a glowing red line joining them instead. |
 
 Enemies don't route around your Reflex Shot circles or Overwatch cones: they move as they would anyway and get caught by the shots (RTO-T87, T88).
 
@@ -96,7 +96,8 @@ expected result, and what to look for in `Player.log`.
 - Suppression: a real ranged attack of opportunity (RTO-T50); a held firing pose and cosmetic fire that
   always flies past the target for the whole suppression (RTO-T66, T67, T69, T81), with a glowing red line
   to the target only for weapons with no projectile, like Pasqal's staff (RTO-T65, T84); a Suppressed
-  unit's own ranged attacks keep 75% of their hit chance (RTO-T86, T87).
+  unit's own ranged attacks keep 75% of their hit chance (RTO-T86, T87), and a Suppressed enemy knows moving
+  draws fire, so it mostly stays put and shoots back (RTO-T90).
 - Taking damage ends the unit's Suppression, Overwatch or Reflex Shot (RTO-T67).
 - Enemy AI: moves through Reflex Shot circles and Overwatch cones as if they weren't there, so it walks
   into the shots instead of routing around them (RTO-T87, T88), and uses an off-hand

@@ -206,6 +206,12 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
   Unity's random so the game's seeded random and state hash are untouched. The held pose's freeze check
   runs every frame (`Suppression.FreezePoses`, from `VisualsDriver`), since the tick is too sparse to
   catch the hold frame.
+- **Suppressed AI units know they're pinned (RTO-T90):** in the same `GatherThreatsData` postfix
+  (`EnemyAi_OverwatchThreats.MarkPinned`), a Suppressed unit's own squares list its suppressors in
+  `aooUnits`. `WarhammerPathAiMetricCostProvider` charges a step that leaves a node whose `aooUnits` aren't
+  in the next node's as a provoked attack (1000 path cost, `ProvokedAttacks`), the same as walking out of a
+  melee enemy's reach, so the AI weighs moving like provoking an attack of opportunity and mostly stays put
+  and shoots back from where it stands, at its reduced hit chance and from a worse range or angle.
 - **Suppressed units lose a quarter of their hit chance (RTO-T86, RTO-T87):** on top of the attack of
   opportunity, a unit carrying the Suppressed buff keeps 75% of its final ranged hit chance (RTO-T86
   halved it; RTO-T87 eased it to 75%: Suppression is a pin, not a disable, and can be a turn's last spare
