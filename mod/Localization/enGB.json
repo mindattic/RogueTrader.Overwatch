@@ -4,25 +4,25 @@
       "Text": "Reflex Shot"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Ends the turn. Pick the direction you expect the enemy from. Until the start of your next turn, make one attack with your weapon against the first enemy that moves, is pushed or acts within your weapon's range, in any direction. The attack gets +10 hit chance straight ahead, falling to -30 if you have to spin all the way around (0 at 45°, -10 at 90°, -20 at 135°), and a further penalty that grows with distance, up to -33 at your weapon's full range, on top of your weapon's normal hit chance."
+      "Text": "Ends the turn. Costs 1 AP. Pick the direction you expect the enemy from. Until the start of your next turn, make one quick reaction attack with your weapon against the first enemy that moves, is pushed or acts within your weapon's range, in any direction. Its hit chance starts at 33% instead of your Ballistic Skill (distance, cover and talents still apply), with +10 straight ahead, falling to -30 if you have to spin all the way around (0 at 45°, -10 at 90°, -20 at 135°). It deals 33% of your weapon's damage. Taking damage before it fires cancels it."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Overwatch"
     },
     "0b6da7d3-83c9-4576-8768-2708508ed113": {
-      "Text": "Ends the turn. Aim a cone: the farther you aim, the longer and narrower it gets, up to your weapon's range. Until the start of your next turn, attack enemies that move, are pushed or act inside it, once for each Action Point you had left. Fire is spread across different enemies first; an enemy already hit is only attacked again after it moves at least 2 cells. Attacks use your weapon's normal hit chance, with a snap-shot penalty that grows the farther the cone reaches, up to -30 at your weapon's range, on top of the normal range penalty."
+      "Text": "Ends the turn. Costs 1 AP, 2 with a Heavy weapon. Aim a cone: the farther you aim, the longer and narrower it gets, up to your weapon's range. Until the start of your next turn, attack enemies that move, are pushed or act inside it: one shot for each attack your weapon could have made with the Action Points you had before casting, at most 2. When it fires, it shoots the enemy that set it off, then at once the next-closest enemy marked Overwatched; an enemy already shot at is only attacked again after it moves at least 2 cells. Attacks use your weapon's normal hit chance, with a snap-shot penalty from -1 at the shortest reach to -15 at your weapon's range, on top of the normal range penalty. Its shots count as attacks of opportunity, so attack-of-opportunity talents apply. Taking damage ends it."
     },
     "23c5cadb-1e9b-46f2-9780-597cb0ebbd2c": {
       "Text": "Suppression"
     },
     "4bd455eb-f1a0-4754-abb6-d18063a5d139": {
-      "Text": "Ends the turn. Pin down the target until the start of your next turn: each time it leaves its square, by moving, charging, jumping or being pushed, you make an attack against it with your weapon, using your weapon's normal hit chance. A long move draws one attack, not one per square. It can stay where it is and act without drawing fire."
+      "Text": "Ends the turn. Costs 1 AP, 2 with a Heavy weapon. Pin down the target until the start of your next turn: each time it leaves its square, by moving, charging, jumping or being pushed, you make a ranged attack of opportunity against it, using your weapon's normal hit chance. A long move draws one attack, not one per square. It can stay where it is and act without drawing fire. While Suppressed, the target's own ranged attacks have their hit chance reduced by a quarter. Taking damage ends the suppression."
     },
     "630607d6-8257-4f38-95e2-740d582311c3": {
       "Text": "Suppressed"
     },
     "bc63cd4b-4de3-49f9-bf67-09992c124939": {
-      "Text": "Pinned down. Each time this unit leaves its square, by moving, charging, jumping or being pushed, the suppressing attacker fires at it."
+      "Text": "Pinned down. Each time this unit leaves its square, by moving, charging, jumping or being pushed, the suppressing attacker makes a ranged attack of opportunity against it. Its own ranged attacks have their hit chance reduced by a quarter. Ends if the suppressor takes damage."
     },
     "7562fc25-f9d9-4f88-86b0-7537272e7b86": {
       "Text": "Overwatch"
@@ -34,7 +34,7 @@
       "Text": "Overwatched"
     },
     "640228ad-add2-44c5-a92a-9baaaceb3c43": {
-      "Text": "Standing in an Overwatch cone. Each rank is a percent penalty to the hit chance of a shot from that cone, on top of its normal range penalty."
+      "Text": "Standing in an Overwatch cone. Each rank is one point of penalty to the hit chance of a shot from that cone (1 to 15, growing with how far the cone reaches), on top of its normal range penalty."
     }
   }
 }

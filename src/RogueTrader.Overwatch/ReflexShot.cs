@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using Kingmaker.Enums;
+using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.RuleSystem.Rules.Modifiers;
 using HarmonyLib;
 using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
@@ -30,17 +34,39 @@ internal static class ReflexShot
     public const int AimBonusAhead = 10;
     public const int AimPenaltyBehind = 30;
 
+    // A reflex shot is a reaction, not an aimed shot: its hit chance starts from a flat BaseHitChance instead of the
+    // shooter's Ballistic Skill + 30 (range falloff, the turn modifier, cover, talents and the weapon's own bonus still
+    // apply on top), and it deals DamagePercent of the weapon's damage (damage modifiers still apply).
+    public const int BaseHitChance = 33;
+    public const int DamagePercent = 33;
+
     public static bool IsOurs(AbilityData ability) => ability?.Blueprint?.AssetGuid == Abilities.ReflexShot;
 
     public static int AimModifier(float degrees) =>
         Mathf.RoundToInt(AimBonusAhead - (AimBonusAhead + AimPenaltyBehind) * Mathf.Clamp(degrees, 0f, 180f) / 180f);
 
-    // The circle reaches the weapon's full range; a snap shot at the far edge is harder: 0 next to the shooter,
-    // falling linearly to -DistancePenaltyMax at the weapon's range. On top of the turn modifier above.
-    public const int DistancePenaltyMax = 33;
+    // The modifier a Reflex Shot from this shooter, facing facingPoint, would get against target.
+    public static int TotalModifier(BaseUnitEntity shooter, Vector3 facingPoint, Vector3 targetPosition) =>
+        AimModifier(TurnAngle(shooter, facingPoint, targetPosition));
 
-    public static int DistanceModifier(int cells, int range) =>
-        range <= 0 ? 0 : -Mathf.RoundToInt(DistancePenaltyMax * Mathf.Clamp01(cells / (float)range));
+    // The real attack rolls a Reflex Shot made, and their hit-chance rules, each mapped to the Reflex Shot fact: the
+    // base hit chance and damage patches below key off them. Weak, so finished rules are collected as usual.
+    public static readonly ConditionalWeakTable<object, EntityFact> Rolls = new();
+
+    public static void Mark(object rule, EntityFact source)
+    {
+        Rolls.Remove(rule);
+        Rolls.Add(rule, source);
+    }
+
+    // The Reflex Shot fact a hit-chance or damage rule belongs to, or null: a marked real roll, or the hit-chance
+    // preview working out a Reflex Shot for this shooter.
+    public static EntityFact SourceOf(object rule, MechanicEntity initiator)
+    {
+        if (rule != null && Rolls.TryGetValue(rule, out var source))
+            return source;
+        return HitChancePreview.Pending is { Reflex: true } pending && pending.Shooter == initiator ? pending.Source : null;
+    }
 
     // The angle between the facing (shooter toward the clicked point) and the shooter-to-target direction, on the ground.
     public static float TurnAngle(BaseUnitEntity shooter, Vector3 facingPoint, Vector3 targetPosition)
@@ -71,8 +97,8 @@ internal static class ReflexShot
     }
 
     // Overwatch mode stops the part as soon as the shot is queued, before the attack rolls, so the modifier is worked out
-    // at the trigger and kept here (by shooter) until that attack rolls. The first real roll uses it up; one that never
-    // comes within PendingSeconds (the attack was cancelled) lets it lapse, so no later attack picks it up.
+    // at the trigger and kept here (by shooter) until that attack rolls. Every roll at that target within PendingSeconds
+    // uses it (a burst weapon rolls once per round); after that it lapses, so no later attack picks it up.
     public const float PendingSeconds = 5f;
     public static readonly Dictionary<string, PendingShot> Pending = new();
 
@@ -85,7 +111,7 @@ internal static class ReflexShot
 [HarmonyPatch(typeof(AbilityAoEPatternSettings), nameof(AbilityAoEPatternSettings.GetOrientedPattern))]
 internal static class ReflexShot_CentreOnShooter
 {
-    private static bool Prefix(AbilityAoEPatternSettings __instance, IAbilityDataProviderForPattern ability, CustomGridNodeBase casterNode, bool coveredTargetsOnly, ref OrientedPatternData __result)
+    private static bool Prefix(AbilityAoEPatternSettings __instance, IAbilityDataProviderForPattern ability, CustomGridNodeBase casterNode, CustomGridNodeBase targetNode, bool coveredTargetsOnly, ref OrientedPatternData __result)
     {
         try
         {
@@ -98,7 +124,7 @@ internal static class ReflexShot_CentreOnShooter
                 pattern = AoEPattern.CopyAndOverrideRadius(pattern, attack.RangeCells);
             __result = AoEPatternHelper.GetOrientedPattern(ability, ability.Caster, pattern, __instance, casterNode, casterNode, __instance.CastOnSameLevel, false, coveredTargetsOnly, out _);
             if (ability.Caster is BaseUnitEntity caster)
-                AbilityOutline.ShowPreview(caster, __result);
+                AbilityOutline.ShowPreview(caster, __result, AbilityOutline.ReflexColor);
             return false;
         }
         catch (Exception ex)
@@ -121,10 +147,7 @@ internal static class ReflexShot_RecordTurn
             var facing = ReflexShot.TargetField(__instance);
             if (facing == null)
                 return;
-            int modifier = ReflexShot.AimModifier(ReflexShot.TurnAngle(shooter, facing.Point, target.Position));
-            var attack = Abilities.RangedAttack(shooter);
-            if (attack != null && shooter.CurrentUnwalkableNode is CustomGridNodeBase from && target.CurrentUnwalkableNode is CustomGridNodeBase to)
-                modifier += ReflexShot.DistanceModifier(from.CellDistanceTo(to), attack.RangeCells);
+            int modifier = ReflexShot.TotalModifier(shooter, facing.Point, target.Position);
             ReflexShot.Pending[shooter.UniqueId] = new ReflexShot.PendingShot(target.UniqueId, modifier, __instance.Ability.Fact, Time.time);
         }
         catch (Exception ex)
@@ -148,14 +171,84 @@ internal static class ReflexShot_AimModifier
                 return;
             if (!ReflexShot.Pending.TryGetValue(shooter.UniqueId, out var shot) || shot.TargetId != target.UniqueId)
                 return;
-            ReflexShot.Pending.Remove(shooter.UniqueId);
-            if (Time.time - shot.At > ReflexShot.PendingSeconds || shot.Source == null || shot.Modifier == 0)
+            if (Time.time - shot.At > ReflexShot.PendingSeconds || shot.Source == null)
+            {
+                ReflexShot.Pending.Remove(shooter.UniqueId);
                 return;
-            __instance.HitChanceRule.HitChanceValueModifiers.Add(shot.Modifier, shot.Source);
+            }
+            ReflexShot.Mark(__instance, shot.Source);
+            ReflexShot.Mark(__instance.HitChanceRule, shot.Source);
+            if (shot.Modifier != 0)
+                __instance.HitChanceRule.HitChanceValueModifiers.Add(shot.Modifier, shot.Source);
         }
         catch (Exception ex)
         {
             ModLog.Exception(ex, "adding the Reflex Shot aim modifier");
+        }
+    }
+}
+
+// A Reflex Shot's base hit chance is BaseHitChance instead of Ballistic Skill + 30: the end of the game's own ranged
+// calculation (OnTriggerRanged) redone with that base, the same range falloff, modifiers and caps. Its overkill crit
+// bonus is redone too, since the old base decided it.
+[HarmonyPatch(typeof(RuleCalculateHitChances), "OnTriggerRanged")]
+internal static class ReflexShot_BaseHitChance
+{
+    private static readonly MethodInfo SetBase = AccessTools.PropertySetter(typeof(RuleCalculateHitChances), nameof(RuleCalculateHitChances.ResultBaseChancesBeforeRecoil));
+    private static readonly MethodInfo SetRaw = AccessTools.PropertySetter(typeof(RuleCalculateHitChances), nameof(RuleCalculateHitChances.RawResult));
+    private static readonly MethodInfo SetNoLimit = AccessTools.PropertySetter(typeof(RuleCalculateHitChances), nameof(RuleCalculateHitChances.ResultHitChanceNoUpperLimit));
+    private static readonly MethodInfo SetResult = AccessTools.PropertySetter(typeof(RuleCalculateHitChances), nameof(RuleCalculateHitChances.ResultHitChance));
+
+    private static void Postfix(RuleCalculateHitChances __instance)
+    {
+        try
+        {
+            if (ReflexShot.SourceOf(__instance, (MechanicEntity)__instance.Initiator) == null || __instance.IsScatter)
+                return;
+            // Destructibles get the border chance from the game; leave that as it is.
+            if (!__instance.Ability.IsBurstAttack && __instance.Target is DestructibleEntity)
+                return;
+            int baseChance = __instance.DistanceFactor > 0f ? Mathf.FloorToInt(ReflexShot.BaseHitChance * __instance.DistanceFactor) : 0;
+            SetBase.Invoke(__instance, new object[] { baseChance });
+            SetRawResult(__instance, Mathf.RoundToInt((baseChance + __instance.HitChanceValueModifiers.Value) * __instance.OverpenetrationModifier));
+        }
+        catch (Exception ex)
+        {
+            ModLog.Exception(ex, "setting Reflex Shot's base hit chance");
+        }
+    }
+
+    // Replaces a ranged hit-chance rule's raw result the way OnTriggerRanged sets it: the capped chance, and the
+    // overkill crit bonus (the part over the cap), which the old raw value decided.
+    public static void SetRawResult(RuleCalculateHitChances rule, int raw)
+    {
+        int border = rule.HitChanceBorderRule.ResultOverkillBorder;
+        SetRaw.Invoke(rule, new object[] { raw });
+        SetNoLimit.Invoke(rule, new object[] { Math.Max(0, raw) });
+        SetResult.Invoke(rule, new object[] { Mathf.Clamp(raw, 0, border) });
+        var fury = rule.RighteousFuryChanceRule.ChanceModifiers;
+        fury.RemoveAll(m => m.Descriptor == ModifierDescriptor.HitChanceOverkill);
+        int overkill = Mathf.RoundToInt(Mathf.Max(0, raw - border) * rule.CritChanceOverkillPercentMultipliers.Value);
+        fury.Add(overkill, rule, ModifierDescriptor.HitChanceOverkill);
+    }
+}
+
+// A Reflex Shot deals DamagePercent of the weapon's damage, under the Reflex Shot ability's name, alongside the game's
+// own damage multipliers. Added to the rule's modifier holder before it runs, which the result copies.
+[HarmonyPatch(typeof(RuleCalculateDamage), nameof(RuleCalculateDamage.OnTrigger))]
+internal static class ReflexShot_Damage
+{
+    private static void Prefix(RuleCalculateDamage __instance)
+    {
+        try
+        {
+            var source = ReflexShot.SourceOf(__instance.RollPerformAttackRule, __instance.ConcreteInitiator);
+            if (source != null)
+                __instance.ValueModifiers.Add(ModifierType.PctMul_Extra, ReflexShot.DamagePercent, source);
+        }
+        catch (Exception ex)
+        {
+            ModLog.Exception(ex, "reducing Reflex Shot's damage");
         }
     }
 }

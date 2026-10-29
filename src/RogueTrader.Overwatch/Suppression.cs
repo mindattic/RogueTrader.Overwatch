@@ -10,6 +10,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Pathfinding;
 using Kingmaker.PubSubSystem;
 using Kingmaker.PubSubSystem.Core;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
@@ -42,6 +43,8 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
     private static IEnumerable<Buff> SuppressedBuffs(MechanicEntity unit) =>
         unit?.Buffs?.Enumerable.Where(b => b.Blueprint?.AssetGuid == BuffGuid) ?? Enumerable.Empty<Buff>();
 
+    public static bool IsSuppressed(MechanicEntity unit) => SuppressedBuffs(unit).Any();
+
     private static IEnumerable<BaseUnitEntity> Suppressors(BaseUnitEntity target) =>
         SuppressedBuffs(target)
             .Select(b => b.Context?.MaybeCaster as BaseUnitEntity)
@@ -51,6 +54,9 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
     private static CustomGridNodeBase Square(BaseUnitEntity unit) => unit.CurrentUnwalkableNode as CustomGridNodeBase;
 
     private static AbilityData FirstWeaponAbility(BaseUnitEntity unit) => Abilities.RangedAttack(unit);
+
+    // Whether the suppressor's ranged attack has a projectile for the cosmetic fire (AimAndFire) to launch.
+    public static bool FiresProjectiles(BaseUnitEntity unit) => FirstWeaponAbility(unit)?.ProjectileVariants?.Any() == true;
 
     public void HandleBuffDidAdded(Buff buff)
     {
@@ -94,11 +100,20 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
     // After a load the anchors are rebuilt from the saved buffs (see Tick).
     public void OnAreaDidLoad() => m_NeedsScan = true;
 
+    // Everything keyed by the old area's units goes with it. Held poses are dropped, not released: their unit views
+    // are being destroyed. The mod's other per-unit state is cleared here too, as this is its one area handler.
     public void OnAreaBeginUnloading()
     {
         m_Anchors.Clear();
         m_ShotForCommand.Clear();
         m_LastUnexplainedShot.Clear();
+        m_ShotsToFire.Clear();
+        m_NextCosmeticShot.Clear();
+        m_Pose.Clear();
+        OverwatchCone.Watches.Clear();
+        OverwatchCone.PendingShots.Clear();
+        ReflexShot.Pending.Clear();
+        OverwatchDebuff.Pending.Clear();
     }
 
     public void HandleEntityPositionChanged()
@@ -247,10 +262,24 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
                 ReleasePose(caster);
                 continue;
             }
-            var animation = handle.ActiveAnimation;
-            if (animation != null && animation.GetSpeed() > 0f && animation.GetTime() >= animation.GetDuration() * HoldAt)
-                animation.SetSpeed(0f);
+            Freeze(handle);
         }
+    }
+
+    // Every frame (VisualsDriver): the simulation tick is too sparse to catch the hold frame before the animation
+    // runs past it or finishes.
+    public void FreezePoses()
+    {
+        foreach (var handle in m_Pose.Values)
+            if (handle != null && !handle.IsReleased && !handle.IsFinished)
+                Freeze(handle);
+    }
+
+    private static void Freeze(UnitAnimationActionHandle handle)
+    {
+        var animation = handle.ActiveAnimation;
+        if (animation != null && animation.GetSpeed() > 0f && animation.GetTime() >= animation.GetDuration() * HoldAt)
+            animation.SetSpeed(0f);
     }
 
     private void ReleasePose(BaseUnitEntity caster)
@@ -290,12 +319,54 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
         var projectiles = ability.ProjectileVariants?.ToList();
         if (projectiles == null || projectiles.Count == 0)
             return handle;
-        new ProjectileLauncher(projectiles[UnityEngine.Random.Range(0, projectiles.Count)], caster, new TargetWrapper(target))
+        new ProjectileLauncher(projectiles[UnityEngine.Random.Range(0, projectiles.Count)], caster, new TargetWrapper(NearMiss(flat, target)))
             .Ability(ability)
             .SetDoNotDeliverHit(true)
             .SetDoNotPlayHitEffect(true)
             .Launch();
         return handle;
+    }
+
+    // Where a cosmetic round ends: past the target and off to its left or right across the line of fire, low enough
+    // to strike the ground behind it, so its path always streaks by the target (about a metre clear) and never
+    // through it.
+    private static Vector3 NearMiss(Vector3 lineOfFire, BaseUnitEntity target)
+    {
+        var along = lineOfFire.normalized;
+        var across = Vector3.Cross(Vector3.up, along) * (UnityEngine.Random.value < 0.5f ? -1f : 1f);
+        return target.Position
+               + across * UnityEngine.Random.Range(1.2f, 2f)
+               + along * UnityEngine.Random.Range(2f, 5f)
+               + Vector3.up * UnityEngine.Random.Range(0f, 0.8f);
+    }
+}
+
+// Pinned down: a Suppressed unit's own ranged attacks keep HitChancePercent of their chance (RTO-T86, eased to 75% in
+// RTO-T87: a pin, not a disable, for an ability that can be a turn's last spare AP). The final, capped chance after
+// every modifier is scaled at the end of the game's ranged calculation, after Reflex Shot's own base override if both
+// apply, so a very accurate shooter loses the same share as anyone. Melee and scatter attacks use the game's border
+// chance and are left alone.
+[HarmonyPatch(typeof(RuleCalculateHitChances), "OnTriggerRanged")]
+internal static class Suppression_ReduceHitChance
+{
+    public const int HitChancePercent = 75;
+
+    [HarmonyPriority(Priority.Low)]
+    private static void Postfix(RuleCalculateHitChances __instance)
+    {
+        try
+        {
+            if (__instance.IsScatter || __instance.Initiator is not BaseUnitEntity shooter || !Suppression.IsSuppressed(shooter))
+                return;
+            // Destructibles get the border chance from the game; leave that as it is.
+            if (!__instance.Ability.IsBurstAttack && __instance.Target is DestructibleEntity)
+                return;
+            ReflexShot_BaseHitChance.SetRawResult(__instance, Mathf.RoundToInt(__instance.ResultHitChance * HitChancePercent / 100f));
+        }
+        catch (Exception ex)
+        {
+            PFLog.Mods.Exception(ex, "Suppression: reducing a suppressed unit's hit chance");
+        }
     }
 }
 

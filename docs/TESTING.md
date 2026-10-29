@@ -100,35 +100,47 @@ Expected: the buttons are on the bar but can't be used.
 
 ## D. Reflex Shot
 
-Ends your turn. Costs 1 AP. You pick the direction you expect enemies from; until your next turn it
-fires once at the first enemy that moves or acts within 10 cells of you, in any direction, then it ends.
-The shot's hit chance gets a "Reflex Shot" modifier for how far you have to turn: +10 straight ahead,
-0 at 45°, -10 at 90°, -20 at 135°, -30 directly behind.
+Ends your turn. Costs 1 AP, even with a Heavy weapon (RTO-T82). You pick the direction you expect enemies
+from; until your next turn it fires once at the first enemy that moves or acts within your weapon's range
+of you, in any direction, then it ends. The shot is a reaction, not an aimed shot (RTO-T82): its hit chance
+starts from a flat 33 instead of your Ballistic Skill + 30 (still scaled by the game's range falloff), then
+gets a "Reflex Shot" turn modifier for how far you have to turn: +10 straight ahead, 0 at 45°, -10 at 90°,
+-20 at 135°, -30 directly behind; cover, talents and the weapon's own bonus apply as usual. It deals 33% of
+the weapon's damage. Every round of a burst counts as a Reflex Shot.
 
-**D1. Cast.** In combat, with a gun, press Reflex Shot and click a point (within 10 cells) to face.
-Expected: your character turns to face it; the highlighted area is a 10-cell circle centred on you, not on
-the clicked point; no shot on cast; your turn ends.
+**D1. Cast.** In combat, with a gun, press Reflex Shot and click a point (within the weapon's range) to face.
+Expected: your character turns to face it; the highlighted area is a circle of the weapon's range centred
+on you, not on the clicked point; no shot on cast; your turn ends.
 
-**D2. Enemy moves in range.** Let an enemy move within 10 cells.
-Expected: one shot at it, with the weapon's normal hit chance and damage (shown in the combat log like a
-normal attack) plus the Reflex Shot modifier. No further shots this round, even if other enemies move.
+**D2. Enemy moves in range.** Let an enemy move within the weapon's range.
+Expected: one shot at it, shown in the combat log like a normal attack, with the Reflex Shot base and turn
+modifier and reduced damage (see D2d, D4b). No further shots this round, even if other enemies move.
 
 **D2a. Turn modifier.** Repeat D2 with the enemy coming from straight ahead, from the side (90°) and from
 behind (180°) relative to the facing you picked.
-Expected: the hit-chance breakdown in the combat log shows "Reflex Shot" +10 ahead, -10 from the side
-and -30 from behind (between those, it scales evenly: 0 at 45°, -20 at 135°).
+Expected: the "Reflex Shot" line in the hit-chance breakdown is +10 ahead, -10 from the side and -30 from
+behind (between those it scales evenly: 0 at 45°, -20 at 135°). There's no separate -33 line (RTO-T82).
 
 **D2b. Facing survives a reload.** Cast Reflex Shot facing one way, save, load, then let an enemy come
 from behind.
 Expected: still -30.
 
-**D2c. Pushed into range.** Push an enemy (any push or knockback ability) from outside 10 cells to inside.
+**D2d. Damage (RTO-T82).** Note a character's damage range against an enemy for a normal shot, then let a
+Reflex Shot from them fire at that enemy.
+Expected: the damage is about 33% of a normal shot's (other damage modifiers still apply), and the
+damage breakdown names Reflex Shot as the reduction.
+
+**D2e. Burst weapon (RTO-T82).** Reflex Shot with a burst-fire weapon (e.g. an autogun or heavy stubber).
+Expected: every round of the burst rolls with the 33 base, the "Reflex Shot" turn modifier and 33% damage,
+not just the first. A later attack by the same shooter (e.g. its own next turn) has none of it.
+
+**D2c. Pushed into range.** Push an enemy (any push or knockback ability) from outside the circle to inside.
 Expected: the Reflex Shot fires at it, the same as if it had walked in.
 
-**D3. Enemy acts in range without moving.** Let an enemy within 10 cells shoot or use an ability in place.
+**D3. Enemy acts in range without moving.** Let an enemy inside the circle shoot or use an ability in place.
 Expected: one shot at it (acting also triggers Reflex Shot), then it ends.
 
-**D4. Enemy outside 10 cells.** Only enemies more than 10 cells away move.
+**D4. Enemy outside the circle.** Only enemies beyond the weapon's range move.
 Expected: no shot.
 
 **D4a. Radius follows the weapon (RTO-T62).** Cast Reflex Shot with a pistol, then with a long rifle.
@@ -136,18 +148,20 @@ Expected: the circle (and the yellow outline) reaches exactly the weapon's own r
 for the pistol and longer than 10 cells for a long-range rifle; an enemy beyond it draws no shot. (The
 tooltip's "10-cell radius" line is static and won't change.)
 
-**D4b. Distance penalty (RTO-T62).** Let a Reflex Shot fire at an enemy right next to you, and another
-at one near the edge of the circle.
-Expected: the "Reflex Shot" line in the hit-chance breakdown is about 0 from distance close up and about
--33 from distance at the edge, on top of the facing modifier.
+**D4b. Flat base (RTO-T72, RTO-T82).** Let a Reflex Shot fire at an enemy right next to you, and another
+at one near the edge of the circle, both straight ahead, with a character whose Ballistic Skill is high.
+Expected: the base hit chance in the breakdown is 33 (not Ballistic Skill + 30), scaled down only by the
+game's normal range falloff at the edge; the "Reflex Shot" line is +10 for both, it doesn't scale with
+distance. A character with low Ballistic Skill gets the same base.
 
 **D5. Ends at your turn.** Nobody triggers it before your next turn.
 Expected: it's gone when your turn starts.
 
 ## E. Overwatch
 
-Ends your turn. Costs 1 AP. **Shots = the AP you had before casting** (at least 1). The cone is sized by
+Ends your turn. Costs 1 AP (2 with a Heavy weapon). **Shots = the AP you had before casting ÷ your weapon's attack cost, 1 to 2** (never more than 2). The cone is sized by
 the cursor: from 3 cells up to your weapon's range, 90° wide when close down to 20° at full range.
+Every Overwatch shot counts as an attack of opportunity (RTO-T85, see K2).
 
 **E1. Drag the cone.** Press Overwatch, move the cursor close to the character, then far away.
 Expected: the highlighted cone grows longer and narrower as the cursor moves away, shorter and wider as
@@ -159,8 +173,20 @@ Expected: no shot on cast, your turn ends, and the zone shown afterwards matches
 **E3. Empty cone.** Cast Overwatch where no enemy is inside the cone.
 Expected: it still starts (shots-left buff appears, see E8).
 
-**E4. Shots = AP.** Cast with 3 AP left. Let three or more enemies walk through the cone.
-Expected: at most 3 shots in total, then it ends and the buff disappears.
+**E4. Shot cap.** Cast with 3 AP left. Let three or more enemies walk through the cone.
+Expected: at most 2 shots in total, then it ends and the buff disappears.
+
+**E4a. Cap holds with more AP (RTO-T76).** Cast with 4 AP left.
+Expected: the shots-left buff shows 2, not 4.
+
+**E4b. One AP (RTO-T76).** Cast with exactly 1 AP left (a non-Heavy weapon).
+Expected: the buff shows 1; one shot, then it ends.
+
+**E4c. Follow-up shot (RTO-T83).** Cast with 2+ AP. Two or more enemies in the cone (all marked
+Overwatched); one of them moves.
+Expected: two shots back to back: the one that moved, then the next-closest Overwatched enemy to the
+shooter (which didn't move). Then the overwatch ends. With only one enemy in the cone, the second shot
+waits for its next move (see E6).
 
 **E5. Spread fire.** Two enemies in the cone; enemy A moves first and is shot, then A moves again 2+
 cells while enemy B is still in the cone unshot.
@@ -176,11 +202,11 @@ Expected: a shot, the same as walking in; a push of 2+ cells counts toward the r
 Expected: no second shot at it. (An enemy *not yet* shot that acts in the cone does draw a shot.)
 
 **E8. Shots-left buff.** Cast with 3 AP.
-Expected: an "Overwatch" buff on the shooter with the Overwatch-shots icon, showing 3; it counts down
+Expected: an "Overwatch" buff on the shooter with the Overwatch-shots icon, showing 2; it counts down
 with each shot and disappears with the last one or at your next turn.
 
-**E9. Save and load mid-overwatch.** Cast with 3 AP, let one shot fire (buff shows 2), save, load.
-Expected: the buff still shows 2 and the overwatch still fires 2 more shots. (Known: which enemies were
+**E9. Save and load mid-overwatch.** Cast with 2+ AP, let one shot fire (buff shows 1), save, load.
+Expected: the buff still shows 1 and the overwatch still fires 1 more shot. (Known: which enemies were
 already shot isn't saved, so after loading every enemy in the cone counts as not yet shot.)
 
 **E10. Ends at your turn.** Shots left when your next turn starts.
@@ -188,9 +214,10 @@ Expected: the overwatch and the buff end.
 
 ## F. Suppression
 
-Ends your turn. Costs 1 AP. Target one enemy within weapon range. Until your next turn, leaving the
+Ends your turn. Costs 1 AP (2 with a Heavy weapon). Target one enemy within weapon range. Until your next turn, leaving the
 square it stands on, by any means, draws one real attack from you (once per move or ability, not per
-square); acting in place draws nothing.
+square); acting in place draws nothing. While it's Suppressed, the target's own ranged attacks lose a
+quarter of their hit chance (RTO-T86, eased from half in RTO-T87, see N).
 
 **F1. Cast.** Press Suppression, pick an enemy in range.
 Expected: no shot on cast, your turn ends, the enemy gets the "Suppressed" debuff with its icon.
@@ -208,10 +235,17 @@ Expected: no attack.
 **F4. Other enemies.** A different enemy moves near you.
 Expected: no attack from Suppression.
 
-**F5. Cosmetic fire.** During the suppressed enemy's turn, watch the hero.
-Expected: about a second after its turn starts, then every 1.5–2.5 s while the hero is idle and can see
-it, the hero plays an attack animation and the weapon's projectiles fly past the target, wide and high.
-No hit effects, no damage, no ammo used, no combat-log lines. Pauses while a real attack (F2) plays.
+**F5. Cosmetic fire (RTO-T66, T67, T69).** For the whole suppression, on every turn, watch the hero.
+Expected: under a second after Suppressed lands, then every 0.9–1.5 s while the hero is idle and can see
+the target, the hero fires at it: the attack animation and the weapon's projectile streaking past the
+target on its left or right (RTO-T81), never into it, and ending on the ground behind it.
+No hit, no impact effect, no damage, no ammo used, no combat-log lines. Between shots the hero holds the
+firing pose, weapon trained on the target. Pauses while a real attack (F2) plays; with a weapon that has no projectile (e.g. Pasqal's staff; RTO-T84) a glowing red line
+(RTO-T65) joins the hero and the target the whole time.
+
+**F5a. Damage interrupts (RTO-T67).** Suppress an enemy, then let anything damage the suppressor.
+Expected: the Suppressed debuff, the red line and the cosmetic fire end at once. The same damage ends an
+active Overwatch or Reflex Shot on the unit that took it.
 
 **F6. Out of range or sight.** The target moves out of the hero's weapon range or line of sight.
 Expected: no attack while it can't be targeted, and no cosmetic fire without line of sight.
@@ -226,7 +260,7 @@ Expected: one attack from each.
 
 Enemies get the three abilities on their ranged weapons (in the weapon section, not an ability bar), and
 the AI uses them only once it has finished moving and hasn't spent any AP this turn, with a ranged
-weapon in its main hand:
+weapon in its active set (main hand, off hand or extra limb; RTO-T79):
 
 **G1. Normal turns unchanged.** Enemies that can shoot someone in the open.
 Expected: they shoot normally. No overwatch.
@@ -237,7 +271,8 @@ Expected: it casts Overwatch, a cone aimed at the nearest party member and reach
 at its weapon range), and its turn ends. Walking into the cone draws its shots.
 
 **G3. Reflex Shot with 1 AP.** Same, but the enemy has only 1 AP (or Overwatch can't be aimed).
-Expected: Reflex Shot instead.
+Expected: Reflex Shot instead. A Heavy-armed enemy with 1 AP casts Reflex Shot too: it costs 1 AP
+whatever the weapon (RTO-T82).
 
 **G4. Suppression when everyone is in full cover.** An enemy can target party members, but every one of
 them is in full cover.
@@ -247,15 +282,22 @@ time they move.
 **G5. Nobody near.** No party member within weapon range + 8 cells.
 Expected: no overwatch; the enemy's turn ends as before.
 
-**G6. Avoiding overwatch.** Put Overwatch or Reflex Shot down, then end your turn.
-Expected: enemies tend to path around the overwatched area (the game's own AI already treats it as a
-threat).
+**G6. Not avoiding overwatch (RTO-T87, T88).** Put Overwatch down over the enemies' approach, then end
+your turn.
+Expected: enemies take the path they'd take anyway, walking into the cone and drawing its shots, instead
+of routing around it. Same for Reflex Shot circles (G8).
 
 **G6a. Enemy pets.** A fight with enemy animals or pets, ideally one with a ranged attack.
 Expected: they never use Reflex Shot, Overwatch or Suppression.
 
 **G7. Allied NPCs.** In a fight with allied non-party units holding guns.
 Expected: they follow the same rules as enemies (G1–G5), against their own enemies. Watch for anything odd.
+
+**G8. Walking through Reflex Shot (RTO-T87, T88).** One hero casts Reflex Shot and another casts
+Overwatch with its cone over a different approach, both where enemies need to cross to reach the party;
+end your turn.
+Expected: an enemy whose shortest path crosses the Reflex Shot circle or the Overwatch cone walks straight
+through it rather than around it, and draws the shot.
 
 ## H. Icons
 
@@ -271,31 +313,43 @@ Expected: the save loads. The buttons are gone. Note any errors in the log.
 
 ## J. Heavy weapon AP cost (RTO-T51)
 
-Reflex Shot, Overwatch and Suppression cost 1 extra AP (2 total) when the active ranged weapon is
-Heavy, on top of the normal 1 AP for a Pistol or Basic weapon.
+Overwatch and Suppression cost 1 extra AP (2 total) when the active ranged weapon is Heavy, on top of
+the normal 1 AP for a Pistol or Basic weapon. Reflex Shot always costs 1 AP (RTO-T82).
 
 **J1. Heavy weapon, 1 AP left.** Equip a Heavy weapon (e.g. a heavy bolter) with only 1 AP available.
-Expected: Reflex Shot, Overwatch and Suppression are all unusable (not enough AP for the 2 AP cost).
+Expected: Overwatch and Suppression are unusable (not enough AP for the 2 AP cost); Reflex Shot is
+usable and costs 1 AP.
 
 **J2. Heavy weapon, 2+ AP.** Same, with 2 or more AP available.
-Expected: casting any of the three costs 2 AP, not 1. Repeat with a Pistol or Basic weapon active: each
-still costs 1 AP.
+Expected: casting Overwatch or Suppression costs 2 AP, not 1; Reflex Shot costs 1. Repeat with a Pistol
+or Basic weapon active: each of the three costs 1 AP.
 
-## K. Suppression as a real attack of opportunity (RTO-T50)
+## K. Suppression and Overwatch shots as real attacks of opportunity (RTO-T50, T85)
 
 **K1. Talent/trait bonus.** With a character who has a talent, feat or weapon trait that specifically
 boosts attacks of opportunity (bonus to-hit or damage), cast Suppression and let the target move.
 Expected: the triggered shot's hit-chance or damage breakdown shows that bonus, the same as it would on
 a real melee attack of opportunity.
 
-## L. Overwatch snap-shot penalty and the Overwatched debuff (RTO-T54)
+**K2. Overwatch shot (RTO-T85).** With the same character, cast Overwatch and let an enemy walk into the
+cone.
+Expected: the overwatch shot's hit-chance or damage breakdown shows the attack-of-opportunity bonus, next
+to the "Overwatch" reach penalty (which is unchanged, see L1–L2). With 2 shots, the second (including a
+follow-up shot, E4c) shows it too. A normal shot from the same character on its own turn doesn't.
+
+**K3. Reflex Shot isn't one.** With the same character, let a Reflex Shot fire.
+Expected: no attack-of-opportunity bonus in its breakdown; only the 33 base and the "Reflex Shot" turn
+modifier (D2a, D4b).
+
+## L. Overwatch snap-shot penalty and the Overwatched debuff (RTO-T54, T87)
 
 **L1. Close, wide cone.** Cast Overwatch at the minimum reach (3 cells, 90°).
-Expected: enemies inside get the Overwatched debuff at rank 0 (or none at all), and a shot at one shows
-no extra "Overwatch" penalty in the hit-chance breakdown beyond the weapon's normal range falloff.
+Expected: enemies inside get the Overwatched debuff at rank 1, and a shot at one shows a -1 "Overwatch"
+line in the hit-chance breakdown, on top of the weapon's normal range falloff (the penalty runs 1 to 15,
+30 before RTO-T87, and the rank always equals it).
 
 **L2. Far, narrow cone.** Cast Overwatch aimed at the weapon's full range (narrowest cone).
-Expected: enemies inside get the Overwatched debuff at rank 30, and a shot at one shows an extra -30
+Expected: enemies inside get the Overwatched debuff at rank 15, and a shot at one shows an extra -15
 "Overwatch" line in the hit-chance breakdown, on top of the normal range penalty.
 
 **L3. Live tracking.** With an active Overwatch cone, walk an enemy into it, then out of it, without
@@ -312,31 +366,65 @@ Expected: the enemy's Overwatched rank shows the higher of the two penalties.
 get cancelled.
 Expected: the Overwatched debuff is removed from everyone it covered within the next tick.
 
-## M. Yellow outline on an active overwatch (RTO-T56)
+## M. Tile-edge outline (RTO-T56, T63, T64, T68, T70, T76)
 
 **M1. Reflex Shot.** Cast Reflex Shot.
-Expected: a bright yellow line traces the circle's actual boundary (out to the weapon-range cap from
-RTO-T55), on top of the game's own red highlight. It disappears when Reflex Shot fires or your next
-turn starts.
+Expected: thin yellow, 50%-transparent lines run along the tile edges of the circle (the weapon's range), on top of the
+game's own red highlight, with vertical connectors where the edge crosses a height change. They
+disappear when Reflex Shot fires, is interrupted, or your next turn starts.
 
 **M2. Overwatch.** Cast Overwatch at various reaches.
-Expected: a yellow line traces the cone's actual boundary, matching its current size exactly (a short
-wide cone or a long narrow one). It disappears when the overwatch runs out of shots, is cancelled, or
-your next turn starts.
+Expected: a thin blue, 50%-transparent tile-edge outline matches the cone exactly (a short wide cone or a long narrow one). It
+disappears when the overwatch runs out of shots, is cancelled or interrupted, or your next turn starts.
 
 **M3. Live preview.** Press Reflex Shot or Overwatch and move the cursor before clicking.
-Expected: the yellow outline already tracks the live preview as it resizes, not just after you click to
-cast it.
+Expected: the outline already tracks the live preview as it resizes, not just after you click to cast it.
 
-**M3a. Pausing while aiming.** While aiming (before clicking), hold the cursor still for a couple of
+**M3a. Pausing while aiming.** While aiming (before clicking), hold the cursor still for several
 seconds, then move it again.
-Expected: the outline stays visible the whole time, not just while the cursor is actively moving. If it
-disappears during the pause, `PreviewTimeout` in `AbilityOutline.cs` needs widening — note it rather
-than treating a brief flicker as a one-off.
+Expected: the outline stays the whole time the ability is selected, however long the cursor sits still.
 
 **M3b. Cancelling.** Press Reflex Shot or Overwatch, move the cursor to preview it, then cancel
 (right-click, Escape, or select a different ability) without casting.
-Expected: the outline disappears within about a second of cancelling.
+Expected: the outline and the hit-chance overtips disappear on the next frame.
+
+**M4. Hit-chance overtips (RTO-T71, RTO-T80).** Aim Overwatch or Reflex Shot with enemies inside the area.
+Expected: each enemy inside shows the game's own hit-chance gauge and damage range above its health
+bar (the same overtip a normal attack shows, centred on the unit), updated as the cursor moves: the
+game's hit chance for the weapon plus our modifier (Overwatch's reach penalty; Reflex Shot's turn
+modifier). For Reflex Shot the gauge starts from the flat 33 base and the damage range is 33% of a normal
+shot's (RTO-T82), matching what the shot then rolls. Enemies outside the area show nothing.
+
+## N. Suppressed units lose a quarter of their hit chance (RTO-T86, T87)
+
+A Suppressed unit's final ranged hit chance, after every modifier (and after Reflex Shot's own 33 base)
+and after the game's hit-chance cap, is reduced to 75%, rounded to the nearest whole number (.5 rounds to
+even). RTO-T86 halved it, on the uncapped value; RTO-T87 eased it to 75% of the capped chance, so every
+shooter loses the same quarter. It isn't a line of its own in the breakdown: only the final chance
+changes. Melee and scatter attacks, and single shots at destructibles, are unchanged.
+
+**N1. Gauge (party member Suppressed).** Note a party member's hit chance at an enemy (e.g. 60%). Let an
+enemy suppress them (G4), then on their turn aim the same attack at the same enemy from the same square.
+Expected: the hit-chance gauge shows three quarters of the earlier value (60% → 45%). Once Suppressed
+ends (F5a, F7), it's back to 60%.
+
+**N2. Rolled chance (enemy Suppressed).** Note the hit chance an enemy's shot at a party member shows in
+the combat log (e.g. 70%). Suppress that enemy, then let it shoot the same character from where it stands.
+Expected: the combat log shows the shot rolled at three quarters of the earlier value (70% → 52; 52.5
+rounds to the even 52). A burst rolls every round at the reduced chance.
+
+**N3. Reflex Shot from a Suppressed unit.** A Suppressed unit with an active Reflex Shot fires it.
+Expected: the 33-base Reflex Shot chance (with its turn modifier) is reduced too, e.g. 43 straight ahead
+at close range → 32 (32.25).
+
+**N4. Melee and scatter unchanged.** A Suppressed unit makes a melee attack, then a scatter (cone or
+area) ranged attack.
+Expected: neither hit chance is reduced; both match an unsuppressed attack.
+
+**N5. Capped shooter (RTO-T87).** Note a very accurate character's hit chance at the game's cap (e.g.
+95%), then let an enemy suppress them and aim the same attack.
+Expected: the gauge shows 71% (95 × 0.75 = 71.25), not the cap: the quarter comes off the capped chance,
+however far above the cap the uncapped value was.
 
 ## Results
 
@@ -361,6 +449,8 @@ Expected: the outline disappears within about a second of cancelling.
 | D2a |  |  |
 | D2b |  |  |
 | D2c |  |  |
+| D2d |  |  |
+| D2e |  |  |
 | D3 |  |  |
 | D4 |  |  |
 | D4a |  |  |
@@ -370,6 +460,8 @@ Expected: the outline disappears within about a second of cancelling.
 | E2 |  |  |
 | E3 |  |  |
 | E4 |  |  |
+| E4a |  |  |
+| E4b |  |  |
 | E5 |  |  |
 | E6 |  |  |
 | E6a |  |  |
@@ -383,6 +475,7 @@ Expected: the outline disappears within about a second of cancelling.
 | F3 |  |  |
 | F4 |  |  |
 | F5 |  |  |
+| F5a |  |  |
 | F6 |  |  |
 | F7 |  |  |
 | F8 |  |  |
@@ -394,11 +487,14 @@ Expected: the outline disappears within about a second of cancelling.
 | G6 |  |  |
 | G6a |  |  |
 | G7 |  |  |
+| G8 |  |  |
 | H1 |  |  |
 | I1 |  |  |
 | J1 |  |  |
 | J2 |  |  |
 | K1 |  |  |
+| K2 |  |  |
+| K3 |  |  |
 | L1 |  |  |
 | L2 |  |  |
 | L3 |  |  |
@@ -409,3 +505,9 @@ Expected: the outline disappears within about a second of cancelling.
 | M3 |  |  |
 | M3a |  |  |
 | M3b |  |  |
+| M4 |  |  |
+| N1 |  |  |
+| N2 |  |  |
+| N3 |  |  |
+| N4 |  |  |
+| N5 |  |  |

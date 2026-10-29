@@ -8,7 +8,8 @@ using UnityEngine;
 namespace RogueTraderOverwatch;
 
 // A glowing red line from each suppressor to the unit it has Suppressed, for as long as the debuff lasts: the
-// suppressor's weapon is trained on the target. No asset: two LineRenderers per pair on Unity's built-in
+// suppressor's weapon is trained on the target. Only for a weapon whose attack has no projectile (e.g. Pasqal's
+// staff); one that fires projectiles shows the suppression through its cosmetic near-miss fire instead. No asset: two LineRenderers per pair on Unity's built-in
 // Hidden/Internal-Colored shader, a wide translucent red halo under a thin bright core, pulsing slowly. Kept in sync
 // every tick from the Suppressed buffs themselves (caster = suppressor), so it appears and disappears with them.
 internal static class SuppressionLine
@@ -40,7 +41,9 @@ internal static class SuppressionLine
                 {
                     if (buff.Blueprint?.AssetGuid != Suppression.BuffGuid || buff.Context?.MaybeCaster is not BaseUnitEntity caster)
                         continue;
-                    if (caster.LifeState.IsDeadOrUnconscious)
+                    // A weapon with a projectile shows its suppression through the cosmetic near-miss fire; the line
+                    // is for weapons with nothing to fly (RTO-T84).
+                    if (caster.LifeState.IsDeadOrUnconscious || Suppression.FiresProjectiles(caster))
                         continue;
                     var key = (caster.UniqueId, target.UniqueId);
                     live.Add(key);
@@ -95,13 +98,25 @@ internal static class SuppressionLine
         line.useWorldSpace = true;
         line.widthMultiplier = width;
         line.numCapVertices = 4;
-        var shader = Shader.Find("Hidden/Internal-Colored") ?? Shader.Find("Sprites/Default") ?? Shader.Find("Unlit/Color");
-        line.material = new Material(shader);
-        line.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        line.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One); // additive: reads as a glow
-        line.material.SetInt("_ZWrite", 0);
-        line.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-        line.material.renderQueue = queue;
+        line.sharedMaterial = SharedMaterial(queue);
         return line;
+    }
+
+    // One additive material per render queue, shared by every tether (a material per line would never be freed).
+    private static readonly Dictionary<int, Material> Materials = new();
+
+    private static Material SharedMaterial(int queue)
+    {
+        if (Materials.TryGetValue(queue, out var material) && material != null)
+            return material;
+        var shader = Shader.Find("Hidden/Internal-Colored") ?? Shader.Find("Sprites/Default") ?? Shader.Find("Unlit/Color");
+        material = new Material(shader) { renderQueue = queue };
+        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One); // additive: reads as a glow
+        material.SetInt("_ZWrite", 0);
+        material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+        UnityEngine.Object.DontDestroyOnLoad(material);
+        Materials[queue] = material;
+        return material;
     }
 }

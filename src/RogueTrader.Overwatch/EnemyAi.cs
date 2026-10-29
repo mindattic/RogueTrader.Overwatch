@@ -13,8 +13,10 @@ using Kingmaker.Pathfinding;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using Kingmaker.View.Covers;
+using Pathfinding;
 using UnityEngine;
 
 namespace RogueTraderOverwatch;
@@ -52,8 +54,9 @@ internal static class EnemyAi
             return default;
         if (timepoint != CastTimepointType.AfterMove && combat.ActionPointsBlue >= 1)
             return default;
-        var shot = unit.GetFirstWeapon()?.Abilities.FirstOrDefault()?.Data;
-        if (shot == null || shot.Weapon == null || !shot.Weapon.Blueprint.IsRanged)
+        // The ranged weapon's attack, not GetFirstWeapon's: a melee main hand would hide an off-hand pistol.
+        var shot = Abilities.RangedAttack(unit);
+        if (shot == null || shot.Weapon == null)
             return default;
         var here = (CustomGridNodeBase)unit.CurrentUnwalkableNode;
         if (here == null)
@@ -138,6 +141,40 @@ internal static class EnemyAi
     }
 
     public static void Log(Exception ex, string where) => PFLog.Mods.Exception(ex, "RogueTrader.Overwatch: " + where);
+}
+
+// The AI's path planning treats every active overwatch area as threatened ground and routes around it, knowing about
+// it whether or not it can see the shooter: a Reflex Shot circle (the weapon's whole range, every direction) or an
+// Overwatch cone would just be a no-go zone that never fires. Take this mod's overwatchers out of the threat map, so
+// units move as they would anyway and get caught by the shots (RTO-T87, T88). The game's own overwatches are left as
+// they are.
+[HarmonyPatch(typeof(AiBrainHelper), nameof(AiBrainHelper.GatherThreatsData))]
+internal static class EnemyAi_OverwatchThreats
+{
+    private static void Postfix(BaseUnitEntity unit, Dictionary<GraphNode, AiBrainHelper.ThreatsInfo> __result)
+    {
+        try
+        {
+            if (unit == null || __result == null)
+                return;
+            var ignored = new HashSet<BaseUnitEntity>();
+            foreach (var info in __result.Values)
+                foreach (var overwatcher in info.overwatchUnits)
+                    if (!ignored.Contains(overwatcher) && IsOurs(overwatcher))
+                        ignored.Add(overwatcher);
+            if (ignored.Count == 0)
+                return;
+            foreach (var info in __result.Values)
+                info.overwatchUnits.RemoveWhere(ignored.Contains);
+        }
+        catch (Exception ex)
+        {
+            EnemyAi.Log(ex, "filtering overwatch areas from the AI's threat map");
+        }
+    }
+
+    private static bool IsOurs(BaseUnitEntity overwatcher) =>
+        overwatcher.GetOptional<PartOverwatch>() is { IsStopped: false } part && Abilities.IsOurs(part.Ability);
 }
 
 [HarmonyPatch(typeof(DecisionContext), nameof(DecisionContext.IsUsableAbility))]

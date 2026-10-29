@@ -5,7 +5,8 @@ The description is BBCode, which is what Nexus's editor accepts in source mode.
 
 ## Before uploading
 
-Nothing in this mod has been run in the game yet. Work through [TESTING.md](TESTING.md), the full in-game
+3.0.0 has been played in game during development (outlines, suppression line and Suppressed debuff seen
+working), but the full checklist hasn't been run. Work through [TESTING.md](TESTING.md), the full in-game
 checklist with expected results. At minimum these must pass:
 
 - [ ] A1–A2: the mod window lists "Overwatch" as enabled, and `Player.log` has no `RogueTrader.Overwatch`
@@ -14,19 +15,31 @@ checklist with expected results. At minimum these must pass:
       slots 8–10 with the custom icons; pets have none.
 - [ ] C1–C11: the buttons are lit with a gun in the active weapon set and greyed out with melee only,
       two melee weapons or empty hands, updating on weapon-set swaps and after closing the inventory.
-- [ ] D1–D2c: Reflex Shot faces where you click, fires once, shows the "Reflex Shot" aim modifier, and
-      fires at an enemy pushed into range.
-- [ ] E1, E4, E6, E6a, E9: the Overwatch cone resizes with the cursor, fires at most one shot per AP,
+- [ ] D1–D2e: Reflex Shot faces where you click, fires once, shows the "Reflex Shot" aim modifier, fires
+      at an enemy pushed into range, and deals about 33% damage on every round of a burst.
+- [ ] E1, E4–E4b, E6, E6a, E9: the Overwatch cone resizes with the cursor, fires at most 2 shots (1 with 1 AP),
       re-shoots only after 2 cells of movement (pushes count), and keeps its shots across a save and load.
-- [ ] F2–F5: Suppression fires once per move, charge, jump or push off its square, never for acting in
-      place, with cosmetic misses that change nothing.
+- [ ] F2–F5a: Suppression fires once per move, charge, jump or push off its square, never for acting in
+      place, with no-hit cosmetic fire and a held firing pose that change nothing, ending at once if the
+      suppressor takes damage.
 - [ ] G1–G2: enemies still fight normally and overwatch when they have nothing to shoot.
-- [ ] J1–J2: a Heavy weapon makes all three cost 2 AP instead of 1; a Pistol or Basic weapon still costs 1.
-- [ ] K1: Suppression's real shot picks up bonuses from a talent/trait that specifically boosts attacks
-      of opportunity.
+- [ ] J1–J2: a Heavy weapon makes Overwatch and Suppression cost 2 AP instead of 1; Reflex Shot stays 1 AP,
+      and a Pistol or Basic weapon still costs 1 for all three.
+- [ ] K1–K3: Suppression's and Overwatch's shots pick up bonuses from a talent/trait that specifically
+      boosts attacks of opportunity; Reflex Shot's don't.
+- [ ] N1–N4: a Suppressed unit's ranged hit chance, shown in the gauge and rolled, is 75% of its
+      unsuppressed value; melee and scatter attacks are unchanged.
+- [ ] E4c: when Overwatch fires with 2 shots, the second goes at once to the next-closest enemy in the cone.
+- [ ] G6, G8: enemies walk into Reflex Shot circles and Overwatch cones instead of routing around them; an enemy with a sword and an off-hand pistol overwatches with the pistol.
 - [ ] C9a: a character with mechadendrites and a ranged weapon in a hand lights up with no log errors.
-- [ ] L1–L5: the Overwatch snap-shot penalty scales 0 to -30 with the cone's reach, shows in the
-      hit-chance breakdown, and the Overwatched debuff tracks the cone live and ends with the overwatch.
+- [ ] L1–L5: the Overwatch snap-shot penalty scales -1 to -15 with the cone's reach, shows in the
+      hit-chance breakdown, and the Overwatched debuff (rank = penalty) tracks the cone live and ends
+      with the overwatch.
+- [ ] D4a–D4b: Reflex Shot's circle reaches exactly the weapon's range, and its shot starts from a flat
+      33 base hit chance (not Ballistic Skill + 30) plus the facing modifier.
+- [ ] F5a: taking damage ends the unit's Suppression, Overwatch or Reflex Shot at once.
+- [ ] M1–M4: the tile-edge outline (yellow for Reflex Shot, blue for Overwatch, 50% transparent) shows while aiming and while active, joins across height
+      changes, clears on cancel, and every enemy inside the aimed area shows the game's own hit-chance gauge for that shot.
 
 ## Mod name
 
@@ -38,14 +51,29 @@ Rogue Trader Overwatch
 
 ## Changelog
 
-- **3.0.0:** Balance and fixes: Reflex Shot, Overwatch and Suppression cost 1 extra AP (2 total) when the
-  active ranged weapon is Heavy, so a heavy weapon's wielder can't set one up as cheaply as a pistol or
-  basic weapon can. Suppression's shot is now a real attack of opportunity, so talents and traits that
-  key off attacks of opportunity specifically now apply to it, matching its own description. The
-  weapon-check that greys the three buttons out no longer crashes for a caster with an empty additional
-  limb (confirmed on characters with mechadendrites). Overwatch shots now carry a snap-shot penalty that
-  grows with how far the cone reaches, up to -30 at full weapon range, shown by a new Overwatched debuff
-  on everyone currently standing in the cone.
+- **3.0.0:**
+  - Heavy weapons: Overwatch and Suppression cost 2 AP instead of 1. Reflex Shot always costs 1 AP.
+  - Reflex Shot: the circle now reaches your weapon's own range instead of a fixed 10 cells. It's a
+    reaction, not an aimed shot: every shot hits from a flat 33% base instead of your Ballistic Skill,
+    plus the facing modifier (+10 dead ahead down to -30 behind), and deals 33% of the weapon's damage.
+  - Overwatch: at most 2 shots, and never more than the attacks your AP could have paid for (one per AP
+    before, uncapped). Shots take a snap-shot penalty from -1 at the shortest reach to -15 at full weapon range.
+    Every enemy standing in the cone shows it with a new Overwatched debuff. Its shots now count as
+    attacks of opportunity, so talents and traits that boost attacks of opportunity apply to them. When it
+    fires, the second shot goes at once to the next-closest enemy in the cone.
+  - Suppression: its shot is now a real ranged attack of opportunity, so talents and traits that boost
+    attacks of opportunity apply to it. A Suppressed unit's own ranged attacks keep 75% of their hit chance. With a weapon that has no projectile (e.g. Pasqal's staff), a glowing red line links the suppressor to the target (RTO-T84); either way the
+    suppressor holds a firing pose and keeps firing past the target (no hits, no damage, no ammo) for as
+    long as the suppression lasts.
+  - Taking damage ends a unit's Suppression, Overwatch or Reflex Shot at once.
+  - Enemies walk into Reflex Shot circles and Overwatch cones as if they weren't there, so they get caught
+    by the shots, and use an off-hand ranged
+    weapon when the main hand holds a melee one.
+  - A thin, 50%-transparent outline (yellow for Reflex Shot, blue for Overwatch) traces the tile edges of the Reflex Shot circle and the Overwatch cone while
+    you aim and while they're active, and every enemy inside the area you're aiming shows the game's own
+    hit-chance gauge and damage range for that shot.
+  - Fixed: characters with mechadendrites (e.g. Pasqal) had all three buttons greyed out.
+  - All of the above in all 8 languages.
 - **2.0.0:** Full localization for all 8 of the game's official UI languages: French, German, Spanish,
   Russian, Simplified Chinese, Japanese and Turkish join the existing English text.
 - **1.0.0:** First release.
@@ -56,7 +84,7 @@ Gameplay (alternative: Combat)
 
 ## Summary (max 350 characters)
 
-Overwatch for every gun in Rogue Trader, for your party and enemies. Reflex Shot and Suppression play like XCOM: fire at the first enemy to move near you, or pin a foe so leaving its square gets it shot. Overwatch is a Gears Tactics / Star Wars Zero Company cone you size with the cursor, one shot per AP saved. Greys out without a gun.
+Overwatch for every gun in Rogue Trader, for your party and enemies. Reflex Shot and Suppression play like XCOM: fire at the first enemy to move near you, or pin a foe so leaving its square gets it shot. Overwatch is a Gears Tactics / Star Wars Zero Company cone you size with the cursor, up to two shots. Greys out without a gun.
 
 ## Tags
 
@@ -122,9 +150,9 @@ Keep everything inside it, including the empty [b]Bundles[/b] folder: the game w
 [b]Three new abilities on every gun.[/b] Every party member gets them on the ability bar, in the last three slots of the first row (or the next free slots on rows 2 and 3). They're greyed out whenever the active weapon set has no gun (melee only, two melee weapons or unarmed) and light up as soon as it has one. Remove one from the bar and it stays removed.
 
 [list]
-[*][b]Reflex Shot[/b]: overwatch the way XCOM does it. Click the direction you expect trouble from. Until your next turn, take one shot at the first enemy that moves or acts within 10 cells of you, in any direction. Aim gets +10 when the enemy comes from straight ahead, falling to -30 when you have to spin all the way around to fire; the modifier shows in the hit-chance breakdown as "Reflex Shot".
-[*][b]Overwatch[/b]: aim a cone and size it with the cursor. Aim close for a short, wide cone that covers a doorway; aim far for a long, narrow lane out to your weapon's range. You get one shot for each Action Point you had left, so holding fire pays. Fire is spread across different enemies first, and an enemy you've already shot is only shot again after it moves at least 2 cells, so nobody takes a full volley one step at a time. A buff shows the shots you have left. The farther the cone reaches, the harder the snap shot: an extra hit-chance penalty grows from 0 at close range up to -30 at full weapon range, and everyone currently standing in the cone shows it with an Overwatched debuff.
-[*][b]Suppression[/b]: pin one enemy down. It can stay put and fight, but every time it leaves its square, by walking, charging, jumping or being pushed, it takes a ranged attack of opportunity (one per move, not one per square). During its turn your hero keeps up covering fire that always misses, to make the threat plain.
+[*][b]Reflex Shot[/b]: overwatch the way XCOM does it. Click the direction you expect trouble from. Until your next turn, take one shot at the first enemy that moves or acts within your weapon's range, in any direction. It's a reaction, not an aimed shot: it hits from a flat 33% base instead of your Ballistic Skill, plus +10 when the enemy comes from straight ahead, falling to -30 when you have to spin all the way around to fire (the modifier shows in the hit-chance breakdown as "Reflex Shot"), and deals 33% of your weapon's damage. Always just 1 AP, whatever the gun. Enemies don't give its circle a wide berth: they walk in and risk the shot.
+[*][b]Overwatch[/b]: aim a cone and size it with the cursor. Aim close for a short, wide cone that covers a doorway; aim far for a long, narrow lane out to your weapon's range. You get up to two shots: one for each attack the Action Points you had left would have paid for, never more than two, so it covers a lane without clearing a whole wave. When it fires, the first shot goes at the enemy caught moving and the second at once at the next-closest enemy in the cone; an enemy you've already shot is only shot again after it moves at least 2 cells, so nobody takes a full volley one step at a time. A buff shows the shots you have left. The farther the cone reaches, the harder the snap shot: an extra hit-chance penalty grows from -1 at close range up to -15 at full weapon range, and everyone currently standing in the cone shows it with an Overwatched debuff. It's a prepared ambush: every Overwatch shot counts as an attack of opportunity, so talents that boost attacks of opportunity apply.
+[*][b]Suppression[/b]: pin one enemy down. It can stay put and fight, but every time it leaves its square, by walking, charging, jumping or being pushed, it takes a ranged attack of opportunity (one per move, not one per square). While Suppressed, its own ranged attacks lose a quarter of their hit chance. For the whole suppression your hero holds a firing pose trained on it and keeps firing at it, a visual cue that never hits; a weapon with no projectile (like Pasqal's staff) shows a glowing red line between them instead.
 [/list]
 
 [b]Localization:[/b]
@@ -142,13 +170,17 @@ Ability and buff text is translated into all 8 of the game's official UI languag
 
 [b]Fits the rules:[/b]
 [list]
-[*]Each ability costs 1 AP (2 with a Heavy weapon active), ends your turn and lasts until your next turn.
-[*]Every shot is your weapon's normal attack, with its normal hit chance, which already drops with distance.
-[*]Suppression's shot is a real attack of opportunity: talents and traits that specifically boost attacks of opportunity apply to it.
-[*]Overwatch shots carry an extra snap-shot penalty that grows with the cone's reach, 0 to -30, shown both in the hit-chance breakdown and by an Overwatched debuff on everyone the cone currently covers.
+[*]Each ability costs 1 AP (Overwatch and Suppression 2 with a Heavy weapon active), ends your turn and lasts until your next turn.
+[*]Every shot is your weapon's normal attack, with its normal hit chance (which already drops with distance) plus the ability's own modifier: Reflex Shot's facing, Overwatch's -1 to -15 reach penalty. Reflex Shot starts from a flat 33% base instead of Ballistic Skill and deals 33% damage.
+[*]Overwatch's and Suppression's shots are real attacks of opportunity: talents and traits that specifically boost attacks of opportunity apply to them. Reflex Shot's are not.
+[*]A Suppressed unit's ranged attacks keep 75% of their final hit chance, and the hit-chance gauge shows it.
+[*]Overwatch shots carry an extra snap-shot penalty that grows with the cone's reach, -1 to -15, shown both in the hit-chance breakdown and by an Overwatched debuff on everyone the cone currently covers.
+[*]Taking any damage breaks concentration: the unit's Overwatch, Reflex Shot or Suppression ends at once.
+[*]Overwatch fires at most two shots, and never more than the attacks your AP could have paid for on your own turn.
+[*]While you aim Overwatch or Reflex Shot, thin half-transparent lines (yellow for Reflex Shot, blue for Overwatch) trace the area's tile edges and every enemy inside shows the game's own hit-chance gauge for the shot it would take, before you commit.
 [*]Being pushed counts as moving: shove an enemy into a Reflex Shot circle or an Overwatch cone and it draws fire.
 [*]Overwatch ends when your next turn starts, when you act or when combat ends. An active Overwatch survives saving and loading.
-[*]Enemies with pistols, rifles and heavy weapons have the same three abilities. They still fight normally, but when they finish moving with nothing to shoot they overwatch you, and they suppress targets hiding in full cover. Enemies already steer around overwatched ground.
+[*]Enemies with pistols, rifles and heavy weapons have the same three abilities. They still fight normally, but when they finish moving with nothing to shoot they overwatch you, and they suppress targets hiding in full cover. Enemies don't steer around your Overwatch cones and Reflex Shot circles: they move as they would anyway and get caught by the shots.
 [*]Pets never overwatch, even with a ranged weapon: they don't plan ahead.
 [/list]
 

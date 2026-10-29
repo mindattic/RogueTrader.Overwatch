@@ -21,12 +21,17 @@ internal static class AbilityOutline
     private const float LineWidth = 0.025f;
     private const float GroundOffset = 0.06f;
     private const float MinStep = 0.05f; // height difference (grid units) that gets a vertical connector
-    private static readonly Color LineColor = Color.yellow;
+    // 50% transparent: yellow for Reflex Shot's circle, blue for Overwatch's cone.
+    public static readonly Color ReflexColor = new Color(1f, 0.92f, 0.1f, 0.5f);
+    public static readonly Color OverwatchColor = new Color(0.25f, 0.6f, 1f, 0.5f);
+
+    public static Color ColorFor(Kingmaker.UnitLogic.Abilities.AbilityData ability) =>
+        OverwatchCone.IsOurs(ability) ? OverwatchColor : ReflexColor;
 
     private static readonly Dictionary<string, List<LineRenderer>> Active = new();
 
     // One thin LineRenderer per boundary tile edge, pooled per caster; extras are disabled, not destroyed.
-    public static void Show(BaseUnitEntity caster, IReadOnlyCollection<CustomGridNodeBase> area)
+    public static void Show(BaseUnitEntity caster, IReadOnlyCollection<CustomGridNodeBase> area, Color color)
     {
         var edges = Edges(area);
         if (edges.Count == 0)
@@ -49,6 +54,8 @@ internal static class AbilityOutline
                 continue;
             }
             line.enabled = true;
+            line.startColor = color;
+            line.endColor = color;
             line.SetPosition(0, edges[i].A);
             line.SetPosition(1, edges[i].B);
         }
@@ -56,12 +63,16 @@ internal static class AbilityOutline
 
     // The live targeting preview (GetOrientedPattern, every time the aimed area changes). Sync keeps it on screen for
     // as long as the player is still aiming this caster's ability, however long the cursor sits still.
-    public static void ShowPreview(BaseUnitEntity caster, OrientedPatternData pattern)
+    public static void ShowPreview(BaseUnitEntity caster, OrientedPatternData pattern, Color color)
     {
+        // GetOrientedPattern also runs for the AI weighing targets and for the cast itself; only the ability the
+        // player is actually aiming is a preview.
+        if (Game.Instance.SelectedAbilityHandler?.Ability?.Caster != caster)
+            return;
         var cells = new List<CustomGridNodeBase>();
         foreach (var node in pattern.Nodes)
             cells.Add(node);
-        Show(caster, cells);
+        Show(caster, cells, color);
     }
 
     private const float ActiveRefresh = 0.25f;
@@ -83,7 +94,7 @@ internal static class AbilityOutline
                 if (!LastActiveRefresh.TryGetValue(unit.UniqueId, out var at) || Time.unscaledTime - at >= ActiveRefresh)
                 {
                     LastActiveRefresh[unit.UniqueId] = Time.unscaledTime;
-                    Show(unit, part.OverwatchArea);
+                    Show(unit, part.OverwatchArea, ColorFor(part.Ability));
                 }
             }
             else if (unit == aimer)
@@ -118,14 +129,7 @@ internal static class AbilityOutline
         line.useWorldSpace = true;
         line.widthMultiplier = LineWidth;
         // Hidden/Internal-Colored is what Unity's own debug lines use and is always in a player build.
-        var shader = Shader.Find("Hidden/Internal-Colored") ?? Shader.Find("Sprites/Default") ?? Shader.Find("Unlit/Color");
-        if (shader == null)
-            PFLog.Mods.Error("RogueTrader.Overwatch: outline: no usable shader found, the outline won't draw");
-        line.material = new Material(shader);
-        line.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-        line.material.renderQueue = 4000;
-        line.startColor = LineColor;
-        line.endColor = LineColor;
+        line.sharedMaterial = SharedMaterial();
         line.numCornerVertices = 0;
         return line;
     }
@@ -176,6 +180,27 @@ internal static class AbilityOutline
             if (pair.Value.Max - pair.Value.Min > MinStep)
                 result.Add((World(pair.Key, pair.Value.Min), World(pair.Key, pair.Value.Max)));
         return result;
+    }
+
+    // One material for every outline line (a material per line would never be freed). Colours come from the
+    // LineRenderer's vertex colours, which Hidden/Internal-Colored uses.
+    private static Material s_Material;
+
+    private static Material SharedMaterial()
+    {
+        if (s_Material != null)
+            return s_Material;
+        var shader = Shader.Find("Hidden/Internal-Colored") ?? Shader.Find("Sprites/Default") ?? Shader.Find("Unlit/Color");
+        if (shader == null)
+            PFLog.Mods.Error("RogueTrader.Overwatch: outline: no usable shader found, the outline won't draw");
+        s_Material = new Material(shader) { renderQueue = 4000 };
+        // Alpha-blended, so the lines' 50% vertex alpha shows the ground through them.
+        s_Material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        s_Material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        s_Material.SetInt("_ZWrite", 0);
+        s_Material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+        UnityEngine.Object.DontDestroyOnLoad(s_Material);
+        return s_Material;
     }
 
     public static void Log(Exception ex, string where) => PFLog.Mods.Exception(ex, "RogueTrader.Overwatch: outline " + where);

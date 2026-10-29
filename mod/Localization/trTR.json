@@ -4,31 +4,37 @@
       "Text": "Refleks Atışı"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Turu sonlandırır. Düşmanı beklediğin yönü seç. Bir sonraki turunun başlangıcına kadar, herhangi bir yönde 10 hücre içinde hareket eden, itilen veya bir eylem gerçekleştiren ilk düşmana silahınla bir saldırı yaparsın. Bu saldırı tam karşıdan isabet şansına +10 bonus alır; tamamen dönmen gerekiyorsa bu bonus -30'a kadar düşer (45°'de 0, 90°'de -10, 135°'de -20), bu değer silahının normal isabet şansına eklenir."
+      "Text": "Turu sonlandırır. Bedeli 1 EP. Düşmanı beklediğin yönü seç. Bir sonraki turunun başlangıcına kadar, herhangi bir yönde silahının menzili içinde hareket eden, itilen veya bir eylem gerçekleştiren ilk düşmana silahınla hızlı bir tepki saldırısı yaparsın. Saldırının isabet şansı Atış Becerin yerine %33'ten başlar (mesafe, siper ve yetenekler yine uygulanır); tam karşıdan +10 alır, tamamen dönmen gerekiyorsa -30'a kadar düşer (45°'de 0, 90°'de -10, 135°'de -20). Silahının hasarının %33'ünü verir. Ateşlenmeden önce hasar alırsan iptal olur."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Nöbet"
     },
     "0b6da7d3-83c9-4576-8768-2708508ed113": {
-      "Text": "Turu sonlandırır. Bir koni hedefle: Ne kadar uzağı hedeflersen, koni o kadar uzun ve dar olur, silahının menziline kadar. Bir sonraki turunun başlangıcına kadar, koninin içinde hareket eden, itilen veya bir eylem gerçekleştiren düşmanlara, kullanırken sana kalan her Eylem Puanı için bir kez saldırırsın. Ateş önce farklı düşmanlar arasında dağıtılır; daha önce vurulmuş bir düşman ancak en az 2 hücre hareket ettikten sonra tekrar vurulur. Saldırılar silahının normal isabet şansını kullanır."
+      "Text": "Turu sonlandırır. Bedeli 1 EP, ağır silahla 2. Bir koni hedefle: Ne kadar uzağı hedeflersen, koni o kadar uzun ve dar olur, silahının menziline kadar. Bir sonraki turunun başlangıcına kadar, koninin içinde hareket eden, itilen veya bir eylem gerçekleştiren düşmanlara, kullanmadan önce sahip olduğun Eylem Puanlarıyla silahının yapabileceği her saldırı için bir atış yaparsın, en fazla 2. Tetiklendiğinde önce onu tetikleyen düşmana, ardından hemen en yakın sonraki «Nöbet altında» düşmana ateş eder; daha önce ateş edilmiş bir düşmana ancak en az 2 hücre hareket ettikten sonra tekrar ateş edilir. Saldırılar silahının normal isabet şansını kullanır; en kısa menzilde -1'den silahının menzilinde -15'e kadar bir seri atış cezası normal menzil cezasına eklenir. Atışları fırsat saldırısı sayılır, bu yüzden fırsat saldırısı yetenekleri uygulanır. Hasar alırsan sona erer."
     },
     "23c5cadb-1e9b-46f2-9780-597cb0ebbd2c": {
       "Text": "Baskılama"
     },
     "4bd455eb-f1a0-4754-abb6-d18063a5d139": {
-      "Text": "Turu sonlandırır. Hedefi bir sonraki turunun başlangıcına kadar kıstırır: Hedef bulunduğu hücreyi her terk ettiğinde - hareket ederek, hücum ederek, zıplayarak veya itilerek - silahının normal isabet şansını kullanarak ona silahınla bir saldırı yaparsın. Uzun bir hareket tek bir saldırıya yol açar, hücre başına bir saldırıya değil. Hedef olduğu yerde kalıp ateş çekmeden eylem gerçekleştirebilir."
+      "Text": "Turu sonlandırır. Bedeli 1 EP, ağır silahla 2. Hedefi bir sonraki turunun başlangıcına kadar kıstırır: Hedef bulunduğu hücreyi her terk ettiğinde - hareket ederek, hücum ederek, zıplayarak veya itilerek - silahının normal isabet şansını kullanarak ona menzilli bir fırsat saldırısı yaparsın. Uzun bir hareket tek bir saldırıya yol açar, hücre başına bir saldırıya değil. Hedef olduğu yerde kalıp ateş çekmeden eylem gerçekleştirebilir. Hedef «Baskı Altında» olduğu sürece kendi menzilli saldırılarının isabet şansı dörtte bir azalır. Hasar alırsan baskılama sona erer."
     },
     "630607d6-8257-4f38-95e2-740d582311c3": {
       "Text": "Baskı Altında"
     },
     "bc63cd4b-4de3-49f9-bf67-09992c124939": {
-      "Text": "Kıstırılmış durumda. Bu birim bulunduğu hücreyi her terk ettiğinde - hareket ederek, hücum ederek, zıplayarak veya itilerek - onu baskılayan saldırgan ona ateş eder."
+      "Text": "Kıstırılmış durumda. Bu birim bulunduğu hücreyi her terk ettiğinde - hareket ederek, hücum ederek, zıplayarak veya itilerek - onu baskılayan saldırgan ona menzilli bir fırsat saldırısı yapar. Kendi menzilli saldırılarının isabet şansı dörtte bir azalır. Baskılayan hasar alırsa sona erer."
     },
     "7562fc25-f9d9-4f88-86b0-7537272e7b86": {
       "Text": "Nöbet"
     },
     "8e4f3ee9-93af-4e5c-9262-9b76604ff0b2": {
       "Text": "Bir koniyi gözetliyor. Her kademe, koninin içinde hareket eden, itilen veya bir eylem gerçekleştiren düşmanlara karşı kalan bir atışı temsil eder."
+    },
+    "5f089d52-5b20-4dd8-805f-ddeccf862288": {
+      "Text": "Nöbet altında"
+    },
+    "640228ad-add2-44c5-a92a-9baaaceb3c43": {
+      "Text": "Bir Nöbet konisinin içinde duruyor. Her kademe, o koniden yapılan bir atışın isabet şansına bir puanlık cezadır (1 ile 15 arası, koni ne kadar uzağa uzanırsa o kadar fazla) ve normal menzil cezasına eklenir."
     }
   }
 }

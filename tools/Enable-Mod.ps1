@@ -10,11 +10,12 @@ if (Test-Path $path) {
 } else {
   $settings = [pscustomobject]@{ SourceDirectories = @(); EnabledModifications = @(); ActiveModifications = @(); DisabledModifications = @() }
 }
-$enabled = @($settings.EnabledModifications)
-if ($enabled -contains $Name) { Write-Host "$Name is already enabled"; return }
-$settings.EnabledModifications = $enabled + $Name
-if ($settings.PSObject.Properties.Name -contains 'DisabledModifications') {
-  $settings.DisabledModifications = @($settings.DisabledModifications | Where-Object { $_ -ne $Name })
-}
+$enabled = @($settings.EnabledModifications | Where-Object { $_ })
+$disabled = @($settings.DisabledModifications | Where-Object { $_ })
+if ($enabled -contains $Name -and $disabled -notcontains $Name) { Write-Host "$Name is already enabled"; return }
+# Add-Member -Force works whether or not the property exists (a plain assignment throws when it's missing).
+if ($enabled -notcontains $Name) { $enabled += $Name }
+$settings | Add-Member -NotePropertyName EnabledModifications -NotePropertyValue @($enabled) -Force
+$settings | Add-Member -NotePropertyName DisabledModifications -NotePropertyValue @($disabled | Where-Object { $_ -ne $Name }) -Force
 [IO.File]::WriteAllText($path, ($settings | ConvertTo-Json -Compress -Depth 5))
 Write-Host "Enabled $Name in $path"

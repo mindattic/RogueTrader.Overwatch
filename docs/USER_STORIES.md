@@ -91,3 +91,22 @@ _Nothing recorded yet._
 | RTO-T68 | 2026-10-29 | fix | open | Outline vanishes about a second into target selection; it must stay for the whole selection and while Overwatch/Reflex Shot is active | — |
 | RTO-T69 | 2026-10-29 | feature | open | Suppressor holds a firing/aiming pose toward the target for as long as Suppression lasts | — |
 | RTO-T70 | 2026-10-29 | fix | open | Outline gaps across height changes: add vertical connector lines at corners where boundary edges meet at different heights | — |
+| RTO-T71 | 2026-10-29 | feature | open | While aiming Overwatch or Reflex Shot, show each enemy inside the area its projected hit chance, including our modifiers | — |
+| RTO-T72 | 2026-10-29 | feature | open | Reflex Shot: flat -33 reaction penalty on every shot (replaces the distance-scaled penalty), plus the facing modifier | — |
+| RTO-T73 | 2026-10-29 | fix | open | Bughunt: exhaustive sweep of the mod's source, blueprints and localization; fix every confirmed bug | — |
+| RTO-T74 | 2026-10-29 | fix | open | Bughunt pass 2: review the pass-1 fixes, cross-patch interactions, save/load and uninstall safety, design-doc consistency | — |
+| RTO-T75 | 2026-10-29 | docs | open | Bring all docs, README, Nexus page, changelog and in-game ability text in line with the 3.0.0 rules; Overwatch penalty 1-30 so the debuff rank equals it | — |
+| RTO-T76 | 2026-10-29 | feature | open | Overwatch shots = AP before casting / weapon attack cost, capped at 2; outlines 50% transparent, yellow for Reflex Shot, blue for Overwatch | — |
+| RTO-T77 | 2026-10-29 | fix | open | Hit-chance labels overlap the game's overhead unit icon: raise them above it and use a smaller font | — |
+| RTO-T78 | 2026-10-29 | fix | open | Hit-chance labels use the game's own hit-percentage text colour instead of a red-to-green gradient | — |
+| RTO-T79 | 2026-10-29 | fix | open | Bughunt: enemy AI ignores off-hand ranged weapons; drop temporary diag logging and unused LockedRadius | — |
+| RTO-T80 | 2026-10-29 | fix | open | Hit-chance preview: labels off-centre and unlike the game's hit-chance UI; show above the overwatch target icon in the game's own style | — |
+| RTO-T81 | 2026-10-29 | fix | open | Suppression's cosmetic shots fly into the target; aim them at points around it so they always visibly miss | — |
+| RTO-T82 | 2026-10-29 | feature | open | Reflex Shot: 33% base hit chance + modifiers, 33% damage + modifiers, 1 AP, ends turn | — |
+| RTO-T83 | 2026-10-29 | feature | open | Overwatch: on trigger, shoot the unit caught moving, then the next-closest enemy marked Overwatched, then end | — |
+| RTO-T84 | 2026-10-29 | fix | open | Suppression red line only for weapons with no projectile to fire (e.g. Pasqal's staff); projectile weapons rely on their missing cosmetic shots instead | — |
+| RTO-T85 | 2026-10-29 | feature | open | Overwatch shots are attacks of opportunity, so AoO talents and bonuses apply | — |
+| RTO-T86 | 2026-10-29 | feature | open | Suppressed units have their hit chance halved (after modifiers) while Suppressed | — |
+| RTO-T87 | 2026-10-29 | feature | open | Balance pass: Overwatch snap-shot max -15, AI ignores Reflex Shot areas, Suppressed hit chance x0.75 of the capped chance | — |
+| RTO-T88 | 2026-10-29 | feature | open | Enemy AI only routes around an Overwatch cone if it has line of sight to the overwatcher when planning its move | — |
+| RTO-T89 | 2026-10-29 | chore | open | 3.0.0 balance pass and fixes: commit RTO-T79..T88 together (changes interleave in the same files) | — |

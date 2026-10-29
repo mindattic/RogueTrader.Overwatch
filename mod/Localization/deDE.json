@@ -4,31 +4,37 @@
       "Text": "Reflexschuss"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Beende den Zug. Wähle die Richtung, aus der du den Feind erwartest. Bis zum Beginn deines nächsten Zugs führst du einen Angriff mit deiner Waffe gegen den ersten Feind aus, der sich innerhalb von 10 Feldern in beliebiger Richtung bewegt, zurückgeworfen wird oder handelt. Der Angriff erhält +10 Trefferchance geradeaus, die auf -30 abfällt, wenn du dich komplett umdrehen musst (0 bei 45°, -10 bei 90°, -20 bei 135°), zusätzlich zur normalen Trefferchance deiner Waffe."
+      "Text": "Beende den Zug. Kostet 1 AP. Wähle die Richtung, aus der du den Feind erwartest. Bis zum Beginn deines nächsten Zugs führst du einen schnellen Reaktionsangriff mit deiner Waffe gegen den ersten Feind aus, der sich innerhalb der Reichweite deiner Waffe in beliebiger Richtung bewegt, zurückgeworfen wird oder handelt. Seine Trefferchance beginnt bei 33 % statt bei deiner Ballistischen Fertigkeit (Entfernung, Deckung und Talente gelten weiterhin), mit +10 geradeaus, abfallend auf -30, wenn du dich komplett umdrehen musst (0 bei 45°, -10 bei 90°, -20 bei 135°). Er verursacht 33 % des Schadens deiner Waffe. Erleidest du Schaden, bevor er ausgelöst wird, wird er abgebrochen."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Feuerbereitschaft"
     },
     "0b6da7d3-83c9-4576-8768-2708508ed113": {
-      "Text": "Beende den Zug. Ziele einen Kegel: Je weiter du zielst, desto länger und schmaler wird er, bis zur Reichweite deiner Waffe. Bis zum Beginn deines nächsten Zugs greifst du Feinde an, die sich darin bewegen, zurückgeworfen werden oder handeln – einmal für jeden Aktionspunkt, den du noch hattest. Der Beschuss verteilt sich zunächst auf unterschiedliche Feinde; ein bereits getroffener Feind wird erst erneut angegriffen, nachdem er sich mindestens 2 Felder bewegt hat. Angriffe nutzen die normale Trefferchance deiner Waffe."
+      "Text": "Beende den Zug. Kostet 1 AP, 2 mit einer schweren Waffe. Ziele einen Kegel: Je weiter du zielst, desto länger und schmaler wird er, bis zur Reichweite deiner Waffe. Bis zum Beginn deines nächsten Zugs greifst du Feinde an, die sich darin bewegen, zurückgeworfen werden oder handeln – ein Schuss für jeden Angriff, den deine Waffe mit den Aktionspunkten hätte ausführen können, die du vor dem Einsatz hattest, höchstens 2. Wird sie ausgelöst, schießt sie auf den Feind, der sie ausgelöst hat, und sofort danach auf den nächstgelegenen Feind „Unter Feuerbereitschaft“; ein bereits beschossener Feind wird erst erneut angegriffen, nachdem er sich mindestens 2 Felder bewegt hat. Angriffe nutzen die normale Trefferchance deiner Waffe, mit einem Schnellschuss-Malus von -1 bei der kürzesten Reichweite bis -15 bei der Reichweite deiner Waffe, zusätzlich zum normalen Reichweitenmalus. Ihre Schüsse gelten als Gelegenheitsangriffe, daher wirken Talente für Gelegenheitsangriffe. Erleidest du Schaden, endet sie."
     },
     "23c5cadb-1e9b-46f2-9780-597cb0ebbd2c": {
       "Text": "Unterdrückung"
     },
     "4bd455eb-f1a0-4754-abb6-d18063a5d139": {
-      "Text": "Beende den Zug. Halte das Ziel bis zum Beginn deines nächsten Zugs in Schach: Jedes Mal, wenn es sein Feld verlässt, sei es durch Bewegen, Ansturm, Sprung oder weil es zurückgeworfen wird, greifst du es mit deiner Waffe an, mit der normalen Trefferchance deiner Waffe. Eine lange Bewegung löst einen einzigen Angriff aus, nicht einen pro Feld. Es kann auf der Stelle bleiben und handeln, ohne Beschuss auszulösen."
+      "Text": "Beende den Zug. Kostet 1 AP, 2 mit einer schweren Waffe. Halte das Ziel bis zum Beginn deines nächsten Zugs in Schach: Jedes Mal, wenn es sein Feld verlässt, sei es durch Bewegen, Ansturm, Sprung oder weil es zurückgeworfen wird, führst du einen Fernkampf-Gelegenheitsangriff gegen es aus, mit der normalen Trefferchance deiner Waffe. Eine lange Bewegung löst einen einzigen Angriff aus, nicht einen pro Feld. Es kann auf der Stelle bleiben und handeln, ohne Beschuss auszulösen. Solange das Ziel „Unterdrückt“ ist, wird die Trefferchance seiner Fernkampfangriffe um ein Viertel verringert. Erleidest du Schaden, endet die Unterdrückung."
     },
     "630607d6-8257-4f38-95e2-740d582311c3": {
       "Text": "Unterdrückt"
     },
     "bc63cd4b-4de3-49f9-bf67-09992c124939": {
-      "Text": "In Schach gehalten. Jedes Mal, wenn diese Einheit ihr Feld verlässt, sei es durch Bewegen, Ansturm, Sprung oder weil sie zurückgeworfen wird, eröffnet der unterdrückende Angreifer das Feuer auf sie."
+      "Text": "In Schach gehalten. Jedes Mal, wenn diese Einheit ihr Feld verlässt, sei es durch Bewegen, Ansturm, Sprung oder weil sie zurückgeworfen wird, führt der unterdrückende Angreifer einen Fernkampf-Gelegenheitsangriff gegen sie aus. Die Trefferchance ihrer eigenen Fernkampfangriffe wird um ein Viertel verringert. Endet, wenn der Unterdrückende Schaden erleidet."
     },
     "7562fc25-f9d9-4f88-86b0-7537272e7b86": {
       "Text": "Feuerbereitschaft"
     },
     "8e4f3ee9-93af-4e5c-9262-9b76604ff0b2": {
       "Text": "Beobachtet einen Kegel. Jeder Rang ist ein verbleibender Schuss auf Feinde, die sich darin bewegen, zurückgeworfen werden oder handeln."
+    },
+    "5f089d52-5b20-4dd8-805f-ddeccf862288": {
+      "Text": "Unter Feuerbereitschaft"
+    },
+    "640228ad-add2-44c5-a92a-9baaaceb3c43": {
+      "Text": "Steht in einem Feuerbereitschaftskegel. Jeder Rang ist ein Punkt Malus auf die Trefferchance eines Schusses aus diesem Kegel (1 bis 15, je weiter der Kegel reicht, desto mehr), zusätzlich zu dessen normalem Reichweitenmalus."
     }
   }
 }

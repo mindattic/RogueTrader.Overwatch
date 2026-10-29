@@ -4,31 +4,37 @@
       "Text": "Tir réflexe"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Termine le tour. Choisissez la direction d'où vous attendez l'ennemi. Jusqu'au début de votre prochain tour, effectuez une attaque avec votre arme contre le premier ennemi qui se déplace, est repoussé ou agit dans un rayon de 10 cases, dans n'importe quelle direction. L'attaque bénéficie de +10 en précision droit devant, cette valeur chutant jusqu'à -30 si vous devez pivoter complètement (0 à 45°, -10 à 90°, -20 à 135°), en plus de la précision normale de votre arme."
+      "Text": "Termine le tour. Coûte 1 PA. Choisissez la direction d'où vous attendez l'ennemi. Jusqu'au début de votre prochain tour, effectuez une attaque réflexe rapide avec votre arme contre le premier ennemi qui se déplace, est repoussé ou agit à portée de votre arme, dans n'importe quelle direction. Sa précision part de 33 % au lieu de votre Capacité de Tir (la distance, le couvert et les talents s'appliquent toujours), avec +10 droit devant, chutant jusqu'à -30 si vous devez pivoter complètement (0 à 45°, -10 à 90°, -20 à 135°). Elle inflige 33 % des dégâts de votre arme. Subir des dégâts avant le tir l'annule."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Tir de couverture"
     },
     "0b6da7d3-83c9-4576-8768-2708508ed113": {
-      "Text": "Termine le tour. Visez un cône : plus vous visez loin, plus il devient long et étroit, jusqu'à la portée de votre arme. Jusqu'au début de votre prochain tour, attaquez les ennemis qui se déplacent, sont repoussés ou agissent à l'intérieur de ce cône, une fois pour chaque Point d'action qu'il vous restait. Les tirs se répartissent d'abord entre les différents ennemis ; un ennemi déjà touché n'est attaqué de nouveau qu'après s'être déplacé d'au moins 2 cases. Les attaques utilisent la précision normale de votre arme."
+      "Text": "Termine le tour. Coûte 1 PA, 2 avec une arme lourde. Visez un cône : plus vous visez loin, plus il devient long et étroit, jusqu'à la portée de votre arme. Jusqu'au début de votre prochain tour, attaquez les ennemis qui se déplacent, sont repoussés ou agissent à l'intérieur de ce cône, un tir pour chaque attaque que votre arme aurait pu effectuer avec les Points d'action que vous aviez avant de l'utiliser, 2 au maximum. Quand elle se déclenche, elle tire sur l'ennemi qui l'a provoquée, puis aussitôt sur l'ennemi « Sous tir de couverture » le plus proche suivant ; un ennemi déjà pris pour cible n'est attaqué de nouveau qu'après s'être déplacé d'au moins 2 cases. Les attaques utilisent la précision normale de votre arme, avec un malus de tir réflexe allant de -1 à la portée la plus courte jusqu'à -15 à la portée de votre arme, en plus du malus de portée normal. Ses tirs comptent comme des attaques d'opportunité : les talents liés aux attaques d'opportunité s'appliquent. Subir des dégâts y met fin."
     },
     "23c5cadb-1e9b-46f2-9780-597cb0ebbd2c": {
       "Text": "Suppression"
     },
     "4bd455eb-f1a0-4754-abb6-d18063a5d139": {
-      "Text": "Termine le tour. Clouez la cible sur place jusqu'au début de votre prochain tour : chaque fois qu'elle quitte sa case, en se déplaçant, en chargeant, en bondissant ou en étant repoussée, vous l'attaquez avec votre arme, avec la précision normale de votre arme. Un déplacement long ne déclenche qu'une seule attaque, pas une par case. Elle peut rester sur place et agir sans déclencher de tir."
+      "Text": "Termine le tour. Coûte 1 PA, 2 avec une arme lourde. Clouez la cible sur place jusqu'au début de votre prochain tour : chaque fois qu'elle quitte sa case, en se déplaçant, en chargeant, en bondissant ou en étant repoussée, vous effectuez contre elle une attaque d'opportunité à distance, avec la précision normale de votre arme. Un déplacement long ne déclenche qu'une seule attaque, pas une par case. Elle peut rester sur place et agir sans déclencher de tir. Tant qu'elle est « Sous suppression », la précision de ses propres attaques à distance est réduite d'un quart. Subir des dégâts met fin à la suppression."
     },
     "630607d6-8257-4f38-95e2-740d582311c3": {
       "Text": "Sous suppression"
     },
     "bc63cd4b-4de3-49f9-bf67-09992c124939": {
-      "Text": "Clouée sur place. Chaque fois que cette unité quitte sa case, en se déplaçant, en chargeant, en bondissant ou en étant repoussée, l'attaquant qui la maintient sous suppression fait feu sur elle."
+      "Text": "Clouée sur place. Chaque fois que cette unité quitte sa case, en se déplaçant, en chargeant, en bondissant ou en étant repoussée, l'attaquant qui la maintient sous suppression effectue contre elle une attaque d'opportunité à distance. La précision de ses propres attaques à distance est réduite d'un quart. Prend fin si l'attaquant subit des dégâts."
     },
     "7562fc25-f9d9-4f88-86b0-7537272e7b86": {
       "Text": "Tir de couverture"
     },
     "8e4f3ee9-93af-4e5c-9262-9b76604ff0b2": {
       "Text": "Surveille un cône. Chaque rang représente un tir restant contre les ennemis qui se déplacent, sont repoussés ou agissent à l'intérieur de celui-ci."
+    },
+    "5f089d52-5b20-4dd8-805f-ddeccf862288": {
+      "Text": "Sous tir de couverture"
+    },
+    "640228ad-add2-44c5-a92a-9baaaceb3c43": {
+      "Text": "Se trouve dans un cône de Tir de couverture. Chaque rang représente un point de malus à la précision d'un tir depuis ce cône (de 1 à 15, d'autant plus que le cône porte loin), en plus de son malus de portée normal."
     }
   }
 }

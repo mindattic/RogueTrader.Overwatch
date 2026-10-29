@@ -21,25 +21,30 @@ namespace RogueTraderOverwatch;
 internal static class OverwatchDebuff
 {
     public const string BuffGuid = "30f01920a70d4ec28860d0bd5e4193e3";
-    public const int MaxPenalty = 30; // same magnitude as Reflex Shot's own max aim penalty
+    public const int MinPenalty = 1;
+    // On top of the game's own range falloff (half the base chance past half range), so a long cone isn't hit twice
+    // as hard (RTO-T87; was 30).
+    public const int MaxPenalty = 15;
 
     public static int PenaltyFor(int radius, int range)
     {
         int max = Math.Max(OverwatchCone.MinRadius, range);
         float t = max == OverwatchCone.MinRadius ? 1f : Mathf.Clamp01((radius - OverwatchCone.MinRadius) / (float)(max - OverwatchCone.MinRadius));
-        return Mathf.RoundToInt(Mathf.Lerp(0, MaxPenalty, t));
+        // 1 at the shortest reach, not 0: a buff rank can't be 0, and the Overwatched rank shows this exact penalty.
+        return Mathf.RoundToInt(Mathf.Lerp(MinPenalty, MaxPenalty, t));
     }
 
     // The cone's reach is read off the locked zone itself (the farthest cell of PartOverwatch.OverwatchArea from
-    // the shooter), not OverwatchCone.LockedRadius: that one is rewritten by every later GetOrientedPattern call
-    // for the same caster (hover previews, UI refreshes), which after the cast dropped it to the 3-cell minimum,
-    // a 0 penalty, and so stripped the debuff from everyone in the cone.
-    public static int ReachOf(BaseUnitEntity shooter, PartOverwatch part)
+    // the shooter), not the last cursor distance: GetOrientedPattern runs again for the same caster after the cast
+    // (hover previews, UI refreshes), so a remembered radius drifts to the 3-cell minimum.
+    public static int ReachOf(BaseUnitEntity shooter, PartOverwatch part) => ReachOf(shooter, part.OverwatchArea);
+
+    public static int ReachOf(BaseUnitEntity shooter, IEnumerable<CustomGridNodeBase> area)
     {
         if (shooter.CurrentUnwalkableNode is not CustomGridNodeBase from)
             return OverwatchCone.MinRadius;
         int reach = 0;
-        foreach (var node in part.OverwatchArea)
+        foreach (var node in area)
             reach = Math.Max(reach, from.CellDistanceTo(node));
         return Math.Max(reach, OverwatchCone.MinRadius);
     }
@@ -51,6 +56,10 @@ internal static class OverwatchDebuff
         part != null && !part.IsStopped && OverwatchCone.IsOurs(part.Ability);
 
     public static BlueprintBuff Blueprint => ResourcesLibrary.TryGetBlueprint<BlueprintBuff>(BuffGuid);
+
+    // Overwatch shots queued but not yet rolled, by (shooter, target) UniqueId: one overwatcher can queue shots at
+    // two enemies in the same tick before either rolls.
+    public static readonly Dictionary<(string Shooter, string Target), ReflexShot.PendingShot> Pending = new();
 }
 
 [HarmonyPatch(typeof(OverwatchController), nameof(OverwatchController.Tick))]
@@ -84,13 +93,6 @@ internal static class OverwatchDebuff_Tick
                 }
             }
 
-            int cones = 0;
-            foreach (var u in Game.Instance.State.AllBaseAwakeUnits)
-                if (OverwatchDebuff.IsActiveCone(u.GetOptional<PartOverwatch>()))
-                    cones++;
-            if (cones > 0)
-                Diag.Log("debuff", $"inCombat={TurnController.IsInTurnBasedCombat()} activeCones={cones} enemiesInCones={best.Count}");
-
             foreach (var unit in Game.Instance.State.AllBaseAwakeUnits)
             {
                 var buff = unit.Buffs.GetBuff(blueprint);
@@ -122,8 +124,9 @@ internal static class OverwatchDebuff_Tick
 }
 
 // The actual accuracy hit: added to the real attack roll, under the Overwatch ability's name, exactly like Reflex
-// Shot's own aim modifier. An overwatch shot's PartOverwatch is still active (non-stopped) when the roll happens
-// (unlike Reflex Shot, Overwatch's Mode doesn't stop on the first hit), so the penalty is read straight from it.
+// Shot's own aim modifier. Worked out when the overwatch queues the shot (OverwatchCone_ChooseShots) and kept for
+// that shooter and target only: the last shot stops the overwatch before its roll, and the overwatcher's other
+// attacks (e.g. a melee attack of opportunity) must not pick it up.
 [HarmonyPatch(typeof(RulePerformAttackRoll), nameof(RulePerformAttackRoll.OnTrigger))]
 internal static class OverwatchDebuff_AimModifier
 {
@@ -131,14 +134,15 @@ internal static class OverwatchDebuff_AimModifier
     {
         try
         {
-            if (__instance.Initiator is not BaseUnitEntity shooter)
+            if (OverwatchDebuff.Pending.Count == 0 || __instance.Initiator is not BaseUnitEntity shooter || __instance.Target is not BaseUnitEntity target)
                 return;
-            var part = shooter.GetOptional<PartOverwatch>();
-            if (!OverwatchDebuff.IsActiveCone(part))
+            var key = (shooter.UniqueId, target.UniqueId);
+            if (!OverwatchDebuff.Pending.TryGetValue(key, out var shot))
                 return;
-            int penalty = OverwatchDebuff.PenaltyOf(shooter, part);
-            if (penalty > 0)
-                __instance.HitChanceRule.HitChanceValueModifiers.Add(-penalty, part.Ability.Fact);
+            OverwatchDebuff.Pending.Remove(key);
+            if (Time.time - shot.At > ReflexShot.PendingSeconds || shot.Source == null || shot.Modifier == 0)
+                return;
+            __instance.HitChanceRule.HitChanceValueModifiers.Add(shot.Modifier, shot.Source);
         }
         catch (Exception ex)
         {

@@ -74,7 +74,8 @@ internal static class Abilities_RangeFromActiveWeapon
 }
 
 // Weapon size costs more to commit to: a Heavy ranged weapon (WeaponHeaviness.Heavy, the same flag the base
-// game's own AP-cost components key off for Heavy-only surcharges) costs 1 extra AP to cast any of the three,
+// game's own AP-cost components key off for Heavy-only surcharges) costs 1 extra AP to cast Overwatch or Suppression
+// (Reflex Shot stays 1 AP, RTO-T82),
 // on top of the normal 1 AP, so a heavy weapon's wielder can't set up a cone or pin a target as cheaply as a
 // pistol or basic weapon can. Same lookup as the range fix (Abilities.RangedWeapon), so heroes and enemies share
 // the rule: an enemy's weapon-slot ability already carries its own weapon, a hero's reads the active set's.
@@ -88,7 +89,8 @@ internal static class Abilities_ActionPointCostByWeaponSize
         try
         {
             var ability = __instance.AbilityData;
-            if (!Abilities.IsOurs(ability))
+            // Reflex Shot is a quick reaction: 1 AP whatever the weapon.
+            if (!Abilities.IsOurs(ability) || ability.Blueprint.AssetGuid == Abilities.ReflexShot)
                 return;
             var weapon = ability.Weapon ?? Abilities.RangedWeapon(ability.Caster);
             if (weapon?.Blueprint.Heaviness == WeaponHeaviness.Heavy)

@@ -18,7 +18,8 @@ using UnityEngine;
 
 namespace RogueTraderOverwatch;
 
-// The Overwatch ability: a cone sized by the cursor, one shot per AP left at cast, fire spread across enemies.
+// The Overwatch ability: a cone sized by the cursor, one shot per AP left at cast (at most 2): the enemy caught moving,
+// then at once the next-closest one in the cone.
 internal static class OverwatchCone
 {
     public const string AbilityGuid = "b5855687981e4ba9a7dfc8c4af03229f";
@@ -30,6 +31,17 @@ internal static class OverwatchCone
 
     public static bool IsOurs(AbilityData ability) => ability?.Blueprint?.AssetGuid == AbilityGuid;
 
+    // Never more shots than the unit could have fired on its own turn with the AP it held (AP / its weapon's attack
+    // cost), and never more than MaxShots: late-game AP would otherwise turn one cone into a wave-clearer, on both
+    // sides. At least 1.
+    public const int MaxShots = 2;
+
+    public static int ShotsFor(BaseUnitEntity unit, int actionPoints)
+    {
+        int cost = Math.Max(1, Abilities.RangedAttack(unit)?.CalculateActionPointCost() ?? 1);
+        return Mathf.Clamp(actionPoints / cost, 1, MaxShots);
+    }
+
     public static int RadiusFor(int distance, int range) => Mathf.Clamp(distance, MinRadius, Math.Max(MinRadius, range));
 
     public static AoEPattern ConeFor(int distance, int range)
@@ -40,11 +52,6 @@ internal static class OverwatchCone
         int angle = Mathf.RoundToInt(Mathf.Lerp(NearAngle, FarAngle, t));
         return AoEPattern.Cone(angle, radius);
     }
-
-    // The cone's locked-in radius at cast, keyed by caster UniqueId: how far it reaches decides the snap-shot
-    // penalty (OverwatchDebuff.PenaltyFor). Captured alongside the live preview resize, so the last value before
-    // cast is whatever the player clicked.
-    public static readonly Dictionary<string, int> LockedRadius = new();
 
     // Shots left are the rank of this buff, which the engine adds and removes with the overwatch
     // (AbilityEffectOverwatch.ApplyingBuffs) and saves with the unit.
@@ -77,12 +84,10 @@ internal static class OverwatchCone_ResizeByCursor
             if (!OverwatchCone.IsOurs(ability?.Data) || casterNode == null || targetNode == null)
                 return true;
             int distance = casterNode.CellDistanceTo(targetNode);
-            if (ability.Caster is BaseUnitEntity unit)
-                OverwatchCone.LockedRadius[unit.UniqueId] = OverwatchCone.RadiusFor(distance, ability.RangeCells);
             var pattern = OverwatchCone.ConeFor(distance, ability.RangeCells);
             __result = AoEPatternHelper.GetOrientedPattern(ability, ability.Caster, pattern, __instance, casterNode, targetNode, __instance.CastOnSameLevel, true, coveredTargetsOnly, out _);
             if (ability.Caster is BaseUnitEntity previewUnit)
-                AbilityOutline.ShowPreview(previewUnit, __result);
+                AbilityOutline.ShowPreview(previewUnit, __result, AbilityOutline.OverwatchColor);
             return false;
         }
         catch (Exception ex)
@@ -120,13 +125,18 @@ internal static class OverwatchCone_StartBudget
         {
             if (!OverwatchCone.IsOurs(context?.Ability) || context.MaybeCaster is not BaseUnitEntity unit)
                 return;
-            if (!OverwatchCone.PendingShots.TryGetValue(unit.UniqueId, out int shots))
-                shots = unit.CombatState.ActionPointsYellow;
+            if (!OverwatchCone.PendingShots.TryGetValue(unit.UniqueId, out int ap))
+                ap = unit.CombatState.ActionPointsYellow;
             OverwatchCone.PendingShots.Remove(unit.UniqueId);
             OverwatchCone.Watches[unit.UniqueId] = new OverwatchCone.Watch();
+            int shots = OverwatchCone.ShotsFor(unit, ap);
             var buff = OverwatchCone.ShotsBuff(unit);
-            if (buff != null)
-                buff.AddRank(Math.Max(1, shots) - buff.Rank);
+            if (buff == null)
+                return;
+            if (buff.Rank < shots)
+                buff.AddRank(shots - buff.Rank);
+            else if (buff.Rank > shots)
+                buff.RemoveRank(buff.Rank - shots);
         }
         catch (Exception ex)
         {
@@ -165,6 +175,22 @@ internal static class OverwatchCone_ChooseShots
             }
 
             watch.LastShotAt[target.UniqueId] = here;
+            // The reach penalty, captured now: the last shot stops the overwatch before its attack rolls.
+            int penalty = OverwatchDebuff.PenaltyOf(owner, __instance);
+            if (penalty > 0 && __instance.Ability?.Fact != null)
+                OverwatchDebuff.Pending[(owner.UniqueId, target.UniqueId)] = new ReflexShot.PendingShot(target.UniqueId, -penalty, __instance.Ability.Fact, Time.time);
+            // An Overwatch shot is a prepared attack of opportunity (RTO-T85): fired with a clone flagged
+            // IsAttackOfOpportunity, so feats and traits that key off that flag (CheckIfAttackOfOpportunityGetter,
+            // AttackOfOpportunityModifier) apply, as for Suppression's attack. The saved trigger ability is put back
+            // in the postfix.
+            var trigger = __instance.AbilityOnTrigger;
+            if (trigger != null && !trigger.IsAttackOfOpportunity)
+            {
+                var aoo = trigger.Clone(isPreview: false);
+                aoo.IsAttackOfOpportunity = true;
+                s_SavedTrigger[__instance] = trigger;
+                TriggerField(__instance) = aoo;
+            }
             __state = true;
             return true;
         }
@@ -175,23 +201,74 @@ internal static class OverwatchCone_ChooseShots
         }
     }
 
-    private static void Postfix(PartOverwatch __instance, bool __state)
+    // True while the follow-up shot is being fired, so it doesn't chain a follow-up of its own.
+    private static bool s_FollowingUp;
+
+    private static readonly AccessTools.FieldRef<PartOverwatch, AbilityData> TriggerField =
+        AccessTools.FieldRefAccess<PartOverwatch, AbilityData>("m_AbilityOnTrigger");
+
+    // The part's own trigger ability while an attack-of-opportunity clone stands in for it during one shot.
+    private static readonly Dictionary<PartOverwatch, AbilityData> s_SavedTrigger = new();
+
+    private static void Postfix(PartOverwatch __instance, BaseUnitEntity target, bool __state)
     {
         try
         {
+            if (s_SavedTrigger.TryGetValue(__instance, out var saved))
+            {
+                s_SavedTrigger.Remove(__instance);
+                TriggerField(__instance) = saved;
+            }
             if (!__state)
                 return;
             // The last shot stops the overwatch, which also removes the buff; otherwise spend one rank.
-            var buff = OverwatchCone.ShotsBuff((BaseUnitEntity)__instance.Owner);
+            var owner = (BaseUnitEntity)__instance.Owner;
+            var buff = OverwatchCone.ShotsBuff(owner);
             if (buff == null || buff.Rank <= 1)
+            {
                 __instance.Stop();
-            else
-                buff.RemoveRank(1);
+                return;
+            }
+            buff.RemoveRank(1);
+            // A shot left: fire it at once at the next-closest enemy marked Overwatched (in this cone), not yet shot
+            // at. With no such enemy it waits for the next trigger.
+            if (s_FollowingUp || !OverwatchCone.Watches.TryGetValue(owner.UniqueId, out var watch))
+                return;
+            var next = NextClosest(__instance, owner, target, watch);
+            if (next == null)
+                return;
+            s_FollowingUp = true;
+            try
+            {
+                __instance.TryTriggerAttack(next);
+            }
+            finally
+            {
+                s_FollowingUp = false;
+            }
         }
         catch (Exception ex)
         {
             OverwatchCone.Log(ex, "ending overwatch");
         }
+    }
+
+    private static BaseUnitEntity NextClosest(PartOverwatch part, BaseUnitEntity owner, BaseUnitEntity shot, OverwatchCone.Watch watch)
+    {
+        BaseUnitEntity best = null;
+        float bestDistance = float.MaxValue;
+        foreach (var unit in Game.Instance.State.AllBaseAwakeUnits)
+        {
+            if (unit == shot || unit.LifeState.IsDeadOrUnconscious || !owner.IsEnemy(unit) || watch.LastShotAt.ContainsKey(unit.UniqueId) || !part.Contains(unit))
+                continue;
+            float distance = (unit.Position - owner.Position).sqrMagnitude;
+            if (distance < bestDistance)
+            {
+                bestDistance = distance;
+                best = unit;
+            }
+        }
+        return best;
     }
 
     private static bool AnyUnshotEnemyInZone(PartOverwatch part, BaseUnitEntity owner, OverwatchCone.Watch watch)
