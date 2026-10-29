@@ -20,9 +20,13 @@ public static class Main
     public static void Load(OwlcatModification modification)
     {
         RogueTrader.Shared.ModLog.Name = "RogueTrader.Overwatch";
-        new Harmony("RogueTrader.Overwatch").PatchAll(typeof(Main).Assembly);
+        var harmony = new Harmony("RogueTrader.Overwatch");
+        harmony.PatchAll(typeof(Main).Assembly);
+        foreach (var method in harmony.GetPatchedMethods())
+            PFLog.Mods.Log($"RogueTrader.Overwatch: patched {method.DeclaringType?.Name}.{method.Name}");
         EventBus.Subscribe(new PartyGrant());
         EventBus.Subscribe(Suppression.Instance);
+        VisualsDriver.Ensure();
     }
 }
 

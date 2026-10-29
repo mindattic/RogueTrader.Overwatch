@@ -14,24 +14,52 @@
 - Each shot is the weapon's normal single shot, with normal hit chance: ranged hit chance already
   scales with distance (`RuleCalculateHitChances.OnTriggerRanged` multiplies by
   `RuleCalculateAbilityDistanceFactor`).
-- All three cost 1 AP (the blueprints' `ActionPointCost`, and the slot `AP` on enemy weapons), end
+- All three cost 1 AP (the blueprints' `ActionPointCost`, and the slot `AP` on enemy weapons), plus 1
+  more AP when the active ranged weapon is Heavy (`WeaponHeaviness.Heavy`, RTO-T51): a prefix on
+  `RuleCalculateAbilityActionPointCost.OnTrigger` adds to `CostBonus`, the same field the base game's
+  own Heavy-only AP surcharges use (`WarhammerOverrideAbilityApCost`, `AffectOnlyHeavy`). Heavy hits
+  harder per shot (see Overwatch below), so it costs more to commit to any of the three. They end
   the turn (`WarhammerEndTurn`) and only work in combat (`CombatStateRestriction: InCombatOnly`).
 - Overwatch ends when the overwatcher starts its next turn, acts, or combat ends
   (`OverwatchController`).
+- **Damage interrupts (RTO-T67):** any real damage (`RuleDealDamage`, not fake previews, result > 0)
+  stops the victim's Overwatch or Reflex Shot (`PartOverwatch.Stop`) and removes every Suppressed buff it
+  cast (`DamageInterrupt.cs`).
 - In-game checks for every rule here are in [TESTING.md](TESTING.md).
 - The enemy AI already treats overwatch areas as threats when choosing paths (`AiBrainHelper`
   reads `PartOverwatch.OverwatchArea`). How enemies use the abilities is under "Enemy AI" below.
+- **Outline (RTO-T56):** the game's own area highlight is a shared red fill used for every hostile
+  area in the game and isn't easy to see, so a postfix on `OverwatchController.Tick`
+  (`AbilityOutline_Tick`) draws a bright yellow line around the actual boundary of any caster's active
+  Reflex Shot circle or Overwatch cone: the convex hull of `PartOverwatch.OverwatchArea`'s own cells
+  (so it's exactly whichever shape is in effect, no separate circle/cone geometry to maintain),
+  rendered with a plain `LineRenderer` and Unity's built-in `Sprites/Default` shader — no new art
+  asset. Shown both during the live cursor preview while aiming (the same `GetOrientedPattern` prefixes
+  that resize the preview also call `AbilityOutline.ShowPreview` with the freshly computed pattern) and
+  once the ability is actually active, and removed the instant the overwatch stops. Preview has no
+  `PartOverwatch` to key off, so a per-caster timestamp stands in: `GetOrientedPattern` fires every
+  frame the cursor moves while targeting, so `AbilityOutline_Tick` hides the preview outline once that
+  timestamp goes stale (`PreviewTimeout`, 0.3 s) — covers cancelling the cast, picking another ability,
+  or just letting the cursor sit still past a frame or two after backing out.
 
 ### Reflex Shot (RTO-T5, RTO-T21)
-XCOM 2 overwatch: a 10-cell circle around the unit, every direction. It fires once at the first enemy
-that moves or acts inside (`Mode: Overwatch`, `HitOnce`), then ends. Ends the turn.
-- **Facing:** casting asks for a point within 10 cells (`Range: Custom`, `CustomRange: 10`,
-  `CanTargetPoint`, `ShouldTurnToTarget`); the unit turns to face it, the direction it expects
+XCOM 2 overwatch: a circle around the unit, every direction, whose radius is the equipped weapon's own
+range (RTO-T62; no fixed size). It fires once at the first enemy that moves or acts inside
+(`Mode: Overwatch`, `HitOnce`), then ends. Ends the turn.
+- **Radius:** the blueprint's circle (radius 10) is only a placeholder; `ReflexShot_CentreOnShooter`
+  rebuilds it with `AoEPattern.CopyAndOverrideRadius` at the weapon's `RangeCells`, and that one prefix
+  feeds the preview, `GetOverwatchArea` (the real trigger zone) and the outline. The tooltip's
+  "10-cell radius" line is drawn from the static blueprint pattern and can't follow it.
+- **Facing:** casting asks for a point within that radius (`Range: Custom`, `CanTargetPoint`,
+  `ShouldTurnToTarget`; the click range is set to the weapon's range by a postfix on
+  `RuleCalculateAbilityRange.OnTrigger`, `ReflexShot_RangeFromWeapon`); the unit turns to face it, the direction it expects
   enemies from, lateral or diagonal. The circle stays centred on the unit whatever is clicked: a
   prefix on `AbilityAoEPatternSettings.GetOrientedPattern` passes the caster's node as the target node
   (`ReflexShot_CentreOnShooter`), the same seam the preview and `GetOverwatchArea` use.
 - **Aim modifier:** the shot's hit chance gets `+10` dead ahead, falling linearly to `-30` for a full
-  180-degree spin (0 at 45, -10 at 90, -20 at 135; `ReflexShot.AimBonusAhead`/`AimPenaltyBehind`).
+  180-degree spin (0 at 45, -10 at 90, -20 at 135; `ReflexShot.AimBonusAhead`/`AimPenaltyBehind`), plus
+  a distance penalty from 0 next to the shooter to `-33` at the weapon's full range
+  (`ReflexShot.DistanceModifier`, RTO-T62), summed into the same "Reflex Shot" line.
   The angle is between the facing (unit toward `PartOverwatch`'s saved target point, `m_Target`) and
   the unit-to-target direction on the ground. `Overwatch` mode stops the part as soon as the shot is
   queued, so a prefix on `PartOverwatch.TryTriggerAttack` works the modifier out and keeps it per
@@ -63,18 +91,39 @@ that moves or acts inside (`Mode: Overwatch`, `HitOnce`), then ends. Ends the tu
   trigger); an already-shot enemy acting without moving never draws another one.
 - The rules live in a prefix and postfix on `PartOverwatch.TryTriggerAttack` (the cast uses
   `MultipleTargetOverwatch` + `HitManyTimes` so the engine never stops or skips on its own).
+- **Snap-shot penalty (RTO-T54):** on top of the weapon's normal range falloff, a shot from the cone
+  gets an extra hit-chance penalty that grows with how far the cone was aimed: 0 at the minimum reach
+  (3 cells), linearly down to -30 at the weapon's full range (`OverwatchDebuff.PenaltyFor`, the same
+  magnitude as Reflex Shot's own max aim penalty). The locked-in radius is captured alongside the cone
+  resize (`OverwatchCone.LockedRadius`, keyed by shooter). Added to the real roll's
+  `HitChanceValueModifiers` under the Overwatch ability's name, the same seam Reflex Shot uses, so it
+  shows in the hit-chance breakdown and combat log. Read straight off the shooter's own `PartOverwatch`
+  at roll time (it's still active, since Overwatch's `MultipleTargetOverwatch` mode doesn't stop on the
+  first hit the way Reflex Shot's does): no pending-shot bookkeeping needed.
+- **Overwatched debuff (RTO-T54):** every enemy currently standing in an active Overwatch cone carries
+  a visible `Overwatched_Buff`, whose rank is the penalty (percent) that cone's shots carry; a postfix
+  on `OverwatchController.Tick` adds, updates and removes it live as enemies cross in or out, or when
+  the overwatch ends, independent of the engine's own buff lifecycle. An enemy covered by several
+  overwatchers shows the worst (highest) of their penalties. Placeholder icon (no custom art yet).
 
 ### Suppression (RTO-T8)
 - Target one enemy. Until your next turn, it takes a ranged attack of opportunity (normal hit and
   damage) each time it leaves the square it's standing on, by any means: walking, a charge or jump,
   or being pushed. One shot per command, so a long move is one shot, not one per square. Shooting or
   using abilities in place draws nothing, and other enemies are ignored. Ends the turn.
-- During that enemy's turn the hero keeps up cosmetic fire: shoot animation and the weapon's
-  projectiles, always aimed to miss, with no damage, hit rolls, ammo or combat-log lines. The first
-  burst comes 0.6–1.2 s into the turn, then every 1.5–2.5 s while the hero is idle and has line of
-  sight. It pauses while the real attack of opportunity plays.
+- For the whole suppression, on every turn, the hero keeps firing at the target as a visual cue only
+  (RTO-T66, RTO-T67): the weapon's firing animation and its projectile flying at the target, with
+  `SetDoNotDeliverHit` and `SetDoNotPlayHitEffect`, so no hit, damage, ammo, rolls or combat-log lines.
+  Between shots the suppressor holds a firing pose (RTO-T69): each shot's attack animation is frozen at
+  45% of its length (`AnimationBase.SetSpeed(0)`) until the next shot replaces it, and released when the
+  suppression ends or the unit has a real command to play. The first one comes 0.3–0.8 s after the target is Suppressed, then every 0.9–1.5 s
+  while the hero is idle and has line of sight; it pauses while the real attack of opportunity plays.
 - The real attack only fires if the target can still be targeted (`CanTarget`: range and line of
   sight). Several suppressors each fire once per move.
+- **Tether (RTO-T65):** while the Suppressed buff lasts, a glowing red line runs from each suppressor's
+  eyes to the target's chest (`SuppressionLine.cs`, synced every `OverwatchController.Tick` from the
+  buffs themselves): a thin bright core over a wide translucent halo, additive-blended so it reads as a
+  glow, pulsing slowly. No asset, Unity's built-in `Hidden/Internal-Colored` shader.
 - How it's built (`Suppression.cs`): the ability applies a visible **Suppressed** buff to the
   target (1 round, `BuffEndCondition.TurnStartOrCombatEnd`, which `BuffsController` removes when
   the buff's *caster* starts its turn). It doesn't use `PartOverwatch`, so the target's actions
@@ -82,7 +131,11 @@ that moves or acts inside (`Mode: Overwatch`, `HitOnce`), then ends. Ends the tu
   rebuilt from the saved buffs after a load. When a position change (`IEntityPositionChangedHandler`)
   puts it on a different square, one shot per suppressor is queued, unless the target's current
   command already drew one; a displacement with no command (a push) always draws one. A postfix on `OverwatchController.Tick` fires the queue as `UnitOverwatchAttackParams`,
-  the engine's own out-of-turn path, so hit chance and damage are normal. The same tick runs the
+  the engine's own out-of-turn path, so hit chance and damage are normal. The ability data is a fresh
+  `Clone(false)` of the weapon's attack, not the shared instance the unit also fires its normal shots
+  with, flagged `IsAttackOfOpportunity = true` (RTO-T50) so feats and traits that key off that flag
+  (`CheckIfAttackOfOpportunityGetter`, `AttackOfOpportunityModifier`) apply here too, matching the
+  "ranged attack of opportunity" description above — they didn't before, despite the description. The same tick runs the
   cosmetic fire: `UnitAnimationManager.CreateHandle(MainHandAttack)`, then a `ProjectileLauncher`
   aimed 30 m out past a point 1.6–2.4 m beside the target, with `SetDoNotDeliverHit`, using Unity's
   random so the game's seeded random and state hash are untouched.
@@ -155,10 +208,14 @@ from anyone an earlier build gave it to.
   checks the active set's main hand, off hand and extra limbs. The bar re-reads availability on weapon-set
   swaps (`IUnitActiveEquipmentSetHandler`) and when the inventory and other full-screen windows close.
   Melee only, two melee weapons or nothing in the hands greys all three out; a gun in either hand lights them.
-  Two quirks of that game component, untested: a hand weapon with any burst-delivery ability also passes
-  it, and its extra-limb loop reads `additionalLimb.Weapon` even when the limb is empty (a possible
-  error for characters with mechadendrites; see TESTING.md C9). Out of combat they're unusable
-  (`InCombatOnly`).
+  One quirk of that game component: a hand weapon with any burst-delivery ability also passes it. The
+  other is confirmed, not just a risk (RTO-T53): its extra-limb loop reads `additionalLimb.Weapon` even
+  when the limb is empty, throwing a `NullReferenceException` for any caster with an unfilled additional
+  limb — confirmed in game on Pasqal, who has mechadendrites, and it greys out all three regardless of
+  what's in his hands. A prefix on `AbilityCasterHasWeaponWithRangeType.IsCasterRestrictionPassed`,
+  scoped to our three abilities only (`Abilities.IsOurs(OwnerBlueprint)`), redoes the same check with the
+  empty-limb case skipped instead of dereferenced; every other ability in the game keeps hitting the
+  original, unpatched method. Out of combat they're unusable (`InCombatOnly`).
 - **Placement** (`ActionBar.cs`): slots 8–10 of the first 10-slot row (the bar is
   `PartUnitUISettings.Slots`), else the free slots among the last three of row 2, then row 3, else the
   first free slot. Runs on grant and as a prefix on `PartUnitUISettings.TryToInitialize`, which the bar

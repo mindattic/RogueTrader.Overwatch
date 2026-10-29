@@ -29,9 +29,6 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
 {
     public const string BuffGuid = "c6af42a8c37040a49f86559e80959c5f";
 
-    private const float MissOffset = 1.6f;
-    private const float MissDistance = 30f;
-
     public static readonly Suppression Instance = new Suppression();
 
     // The square each suppressed target holds, and the command that already drew its shot for leaving it.
@@ -41,7 +38,6 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
     private bool m_NeedsScan = true;
     private readonly List<(BaseUnitEntity Caster, BaseUnitEntity Target)> m_ShotsToFire = new List<(BaseUnitEntity, BaseUnitEntity)>();
     private readonly Dictionary<BaseUnitEntity, float> m_NextCosmeticShot = new Dictionary<BaseUnitEntity, float>();
-    private MechanicEntity m_CosmeticTurnUnit;
 
     private static IEnumerable<Buff> SuppressedBuffs(MechanicEntity unit) =>
         unit?.Buffs?.Enumerable.Where(b => b.Blueprint?.AssetGuid == BuffGuid) ?? Enumerable.Empty<Buff>();
@@ -61,7 +57,10 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
         try
         {
             if (buff?.Blueprint?.AssetGuid == BuffGuid && buff.Owner is BaseUnitEntity target)
+            {
                 m_Anchors[target] = Square(target);
+                PFLog.Mods.Log($"RogueTrader.Overwatch: Suppressed applied to {target.CharacterName} by {(buff.Context?.MaybeCaster as BaseUnitEntity)?.CharacterName ?? "?"}");
+            }
         }
         catch (Exception ex)
         {
@@ -155,6 +154,8 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
         {
             m_ShotsToFire.Clear();
             m_NextCosmeticShot.Clear();
+            foreach (var caster in m_Pose.Keys.ToList())
+                ReleasePose(caster);
             return;
         }
         ScanIfNeeded();
@@ -177,7 +178,12 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
                 var ability = FirstWeaponAbility(caster);
                 if (ability == null || !ability.CanTarget(target, out _))
                     continue;
-                caster.Commands.Run(new UnitOverwatchAttackParams(ability, new TargetWrapper(target)));
+                // A real clone, not the shared AbilityData the unit also fires its normal attacks with: flagging
+                // it IsAttackOfOpportunity so feats/traits that key off that flag (CheckIfAttackOfOpportunityGetter)
+                // apply here too, matching the Suppressed description ("a ranged attack of opportunity").
+                var aooAbility = ability.Clone(isPreview: false);
+                aooAbility.IsAttackOfOpportunity = true;
+                caster.Commands.Run(new UnitOverwatchAttackParams(aooAbility, new TargetWrapper(target)));
                 m_NextCosmeticShot[caster] = Time.time + UnityEngine.Random.Range(1.5f, 2.5f);
             }
             catch (Exception ex)
@@ -187,79 +193,109 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
         }
     }
 
+    // While any unit is Suppressed, its suppressors hold a firing pose trained on it and keep firing at it, on every
+    // turn, as a visual cue only (see AimAndFire). Paused while the suppressor is busy (e.g. playing a real attack of
+    // opportunity) or can't see the target.
     private void CosmeticFire()
     {
-        if (!(Game.Instance.TurnController.CurrentUnit is BaseUnitEntity target) || target.IsDeadOrUnconscious)
-            return;
-        if (target != m_CosmeticTurnUnit)
+        var suppressing = new HashSet<BaseUnitEntity>();
+        foreach (var target in m_Anchors.Keys.ToList())
         {
-            m_CosmeticTurnUnit = target;
-            m_NextCosmeticShot.Clear();
-        }
-        foreach (var caster in Suppressors(target))
-        {
-            try
+            if (target.IsDeadOrUnconscious)
+                continue;
+            foreach (var caster in Suppressors(target))
             {
-                if (!m_NextCosmeticShot.TryGetValue(caster, out var next))
+                suppressing.Add(caster);
+                try
                 {
-                    m_NextCosmeticShot[caster] = Time.time + UnityEngine.Random.Range(0.6f, 1.2f);
-                    continue;
+                    if (!m_NextCosmeticShot.TryGetValue(caster, out var next))
+                    {
+                        m_NextCosmeticShot[caster] = Time.time + UnityEngine.Random.Range(0.3f, 0.8f);
+                        continue;
+                    }
+                    if (Time.time < next || !caster.Commands.Empty || !caster.HasLOS(target))
+                        continue;
+                    ReleasePose(caster);
+                    var handle = AimAndFire(caster, target);
+                    if (handle != null)
+                        m_Pose[caster] = handle;
+                    m_NextCosmeticShot[caster] = Time.time + UnityEngine.Random.Range(0.9f, 1.5f);
                 }
-                // Pause while the caster is busy, e.g. playing a real attack of opportunity.
-                if (Time.time < next || !caster.Commands.Empty || !caster.HasLOS(target))
-                    continue;
-                ShootToMiss(caster, target);
-                m_NextCosmeticShot[caster] = Time.time + UnityEngine.Random.Range(1.5f, 2.5f);
+                catch (Exception ex)
+                {
+                    PFLog.Mods.Exception(ex, "Suppression: cosmetic fire");
+                    m_NextCosmeticShot[caster] = Time.time + 5f;
+                }
             }
-            catch (Exception ex)
+        }
+        HoldPoses(suppressing);
+    }
+
+    // The firing pose: each cosmetic shot's attack animation is frozen at HoldAt of its length (weapon raised, just
+    // after the shot) until the next shot replaces it, so the suppressor stays aimed at the target the whole time.
+    // Released (and its speed restored) when the suppression ends or the unit has a real command to play.
+    private const float HoldAt = 0.45f;
+    private readonly Dictionary<BaseUnitEntity, UnitAnimationActionHandle> m_Pose = new Dictionary<BaseUnitEntity, UnitAnimationActionHandle>();
+
+    private void HoldPoses(HashSet<BaseUnitEntity> suppressing)
+    {
+        foreach (var caster in m_Pose.Keys.ToList())
+        {
+            var handle = m_Pose[caster];
+            if (!suppressing.Contains(caster) || !caster.Commands.Empty || handle == null || handle.IsReleased || handle.IsFinished)
             {
-                PFLog.Mods.Exception(ex, "Suppression: cosmetic fire");
-                m_NextCosmeticShot[caster] = Time.time + 5f;
+                ReleasePose(caster);
+                continue;
             }
+            var animation = handle.ActiveAnimation;
+            if (animation != null && animation.GetSpeed() > 0f && animation.GetTime() >= animation.GetDuration() * HoldAt)
+                animation.SetSpeed(0f);
         }
     }
 
-    // Visual only: the shoot animation plus a projectile aimed past the target, with no hit delivered.
-    // Uses Unity's random, not the game's seeded one, so the game state and its hash are untouched.
-    private static void ShootToMiss(BaseUnitEntity caster, BaseUnitEntity target)
+    private void ReleasePose(BaseUnitEntity caster)
+    {
+        if (!m_Pose.TryGetValue(caster, out var handle))
+            return;
+        m_Pose.Remove(caster);
+        if (handle == null || handle.IsReleased)
+            return;
+        handle.ActiveAnimation?.SetSpeed(1f);
+        handle.Release();
+    }
+
+    // The weapon's firing animation turned toward the target, plus the weapon's own projectile flying at it with no
+    // hit delivered and no impact effect: a visual cue only. Nothing is rolled, logged or spent, and Unity's random
+    // is used, so the game state and its hash are untouched.
+    private static UnitAnimationActionHandle AimAndFire(BaseUnitEntity caster, BaseUnitEntity target)
     {
         var ability = FirstWeaponAbility(caster);
         var weapon = ability?.Weapon;
-        if (ability == null || weapon == null)
-            return;
-
-        var from = caster.EyePosition;
-        var aim = target.Position + Vector3.up;
-        var flat = aim - from;
+        var animation = caster.View?.AnimationManager;
+        if (weapon == null || animation == null)
+            return null;
+        var flat = target.Position - caster.Position;
         flat.y = 0f;
         if (flat.sqrMagnitude < 0.01f)
-            return;
-        var side = Vector3.Cross(Vector3.up, flat.normalized) * (UnityEngine.Random.value < 0.5f ? -1f : 1f);
-        var missAt = aim + side * UnityEngine.Random.Range(MissOffset, MissOffset * 1.5f) + Vector3.up * UnityEngine.Random.Range(0.2f, 1.2f);
-        var missPoint = from + (missAt - from).normalized * MissDistance;
-
-        var animation = caster.View?.AnimationManager;
-        if (animation != null)
-        {
-            animation.UseAbilityDirection = Quaternion.LookRotation(flat).eulerAngles.y;
-            var handle = animation.CreateHandle(UnitAnimationType.MainHandAttack, errorOnEmpty: false);
-            if (handle != null)
-            {
-                handle.AttackWeaponStyle = caster.View.HandsEquipment?.GetWeaponStyleForWeapon(weapon) ?? weapon.GetAnimationStyle();
-                handle.AttackTargetDistance = flat.magnitude;
-                handle.IsBurst = false;
-                animation.Execute(handle);
-            }
-        }
+            return null;
+        animation.UseAbilityDirection = Quaternion.LookRotation(flat).eulerAngles.y;
+        var handle = animation.CreateHandle(UnitAnimationType.MainHandAttack, errorOnEmpty: false);
+        if (handle == null)
+            return null;
+        handle.AttackWeaponStyle = caster.View.HandsEquipment?.GetWeaponStyleForWeapon(weapon) ?? weapon.GetAnimationStyle();
+        handle.AttackTargetDistance = flat.magnitude;
+        handle.IsBurst = false;
+        animation.Execute(handle);
 
         var projectiles = ability.ProjectileVariants?.ToList();
         if (projectiles == null || projectiles.Count == 0)
-            return;
-        new ProjectileLauncher(projectiles[UnityEngine.Random.Range(0, projectiles.Count)], caster, new TargetWrapper(missPoint))
+            return handle;
+        new ProjectileLauncher(projectiles[UnityEngine.Random.Range(0, projectiles.Count)], caster, new TargetWrapper(target))
             .Ability(ability)
             .SetDoNotDeliverHit(true)
             .SetDoNotPlayHitEffect(true)
             .Launch();
+        return handle;
     }
 }
 

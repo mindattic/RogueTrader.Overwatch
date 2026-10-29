@@ -86,6 +86,7 @@ unusable out of combat. Check each case in combat, on a party member's ability b
 | C7 | Nothing (unarmed) | Greyed |
 | C8 | Grenades or other thrown weapons only | Greyed |
 | C9 | A character with mechadendrites (e.g. Pasqal) holding only melee weapons | Greyed, and no errors in the log |
+| C9a | A character with mechadendrites (e.g. Pasqal) with a ranged weapon in a hand (RTO-T53) | Lit, and no errors in the log |
 
 **C10. Swapping weapon sets.** Set 1 a rifle, set 2 a sword. Swap sets in combat.
 Expected: the buttons grey out and light up with each swap, immediately.
@@ -129,6 +130,16 @@ Expected: one shot at it (acting also triggers Reflex Shot), then it ends.
 
 **D4. Enemy outside 10 cells.** Only enemies more than 10 cells away move.
 Expected: no shot.
+
+**D4a. Radius follows the weapon (RTO-T62).** Cast Reflex Shot with a pistol, then with a long rifle.
+Expected: the circle (and the yellow outline) reaches exactly the weapon's own range each time, shorter
+for the pistol and longer than 10 cells for a long-range rifle; an enemy beyond it draws no shot. (The
+tooltip's "10-cell radius" line is static and won't change.)
+
+**D4b. Distance penalty (RTO-T62).** Let a Reflex Shot fire at an enemy right next to you, and another
+at one near the edge of the circle.
+Expected: the "Reflex Shot" line in the hit-chance breakdown is about 0 from distance close up and about
+-33 from distance at the edge, on top of the facing modifier.
 
 **D5. Ends at your turn.** Nobody triggers it before your next turn.
 Expected: it's gone when your turn starts.
@@ -258,6 +269,75 @@ Tooltips show the names and descriptions from `mod/Localization/enGB.json`.
 **I1.** Outside combat, disable the mod in the mod window, restart, load the save.
 Expected: the save loads. The buttons are gone. Note any errors in the log.
 
+## J. Heavy weapon AP cost (RTO-T51)
+
+Reflex Shot, Overwatch and Suppression cost 1 extra AP (2 total) when the active ranged weapon is
+Heavy, on top of the normal 1 AP for a Pistol or Basic weapon.
+
+**J1. Heavy weapon, 1 AP left.** Equip a Heavy weapon (e.g. a heavy bolter) with only 1 AP available.
+Expected: Reflex Shot, Overwatch and Suppression are all unusable (not enough AP for the 2 AP cost).
+
+**J2. Heavy weapon, 2+ AP.** Same, with 2 or more AP available.
+Expected: casting any of the three costs 2 AP, not 1. Repeat with a Pistol or Basic weapon active: each
+still costs 1 AP.
+
+## K. Suppression as a real attack of opportunity (RTO-T50)
+
+**K1. Talent/trait bonus.** With a character who has a talent, feat or weapon trait that specifically
+boosts attacks of opportunity (bonus to-hit or damage), cast Suppression and let the target move.
+Expected: the triggered shot's hit-chance or damage breakdown shows that bonus, the same as it would on
+a real melee attack of opportunity.
+
+## L. Overwatch snap-shot penalty and the Overwatched debuff (RTO-T54)
+
+**L1. Close, wide cone.** Cast Overwatch at the minimum reach (3 cells, 90°).
+Expected: enemies inside get the Overwatched debuff at rank 0 (or none at all), and a shot at one shows
+no extra "Overwatch" penalty in the hit-chance breakdown beyond the weapon's normal range falloff.
+
+**L2. Far, narrow cone.** Cast Overwatch aimed at the weapon's full range (narrowest cone).
+Expected: enemies inside get the Overwatched debuff at rank 30, and a shot at one shows an extra -30
+"Overwatch" line in the hit-chance breakdown, on top of the normal range penalty.
+
+**L3. Live tracking.** With an active Overwatch cone, walk an enemy into it, then out of it, without
+drawing a shot (e.g. moving less than the minimum re-shot distance isn't relevant here — any entry
+should apply the debuff immediately).
+Expected: the Overwatched debuff appears the instant the enemy's square is inside the cone and
+disappears the instant it leaves, independent of whether it has been shot.
+
+**L4. Multiple overwatchers.** Two party members overwatch the same enemy with cones of different
+reach (e.g. one close, one far).
+Expected: the enemy's Overwatched rank shows the higher of the two penalties.
+
+**L5. Ends with the overwatch.** Let an Overwatch run out of shots, end from the shooter's next turn, or
+get cancelled.
+Expected: the Overwatched debuff is removed from everyone it covered within the next tick.
+
+## M. Yellow outline on an active overwatch (RTO-T56)
+
+**M1. Reflex Shot.** Cast Reflex Shot.
+Expected: a bright yellow line traces the circle's actual boundary (out to the weapon-range cap from
+RTO-T55), on top of the game's own red highlight. It disappears when Reflex Shot fires or your next
+turn starts.
+
+**M2. Overwatch.** Cast Overwatch at various reaches.
+Expected: a yellow line traces the cone's actual boundary, matching its current size exactly (a short
+wide cone or a long narrow one). It disappears when the overwatch runs out of shots, is cancelled, or
+your next turn starts.
+
+**M3. Live preview.** Press Reflex Shot or Overwatch and move the cursor before clicking.
+Expected: the yellow outline already tracks the live preview as it resizes, not just after you click to
+cast it.
+
+**M3a. Pausing while aiming.** While aiming (before clicking), hold the cursor still for a couple of
+seconds, then move it again.
+Expected: the outline stays visible the whole time, not just while the cursor is actively moving. If it
+disappears during the pause, `PreviewTimeout` in `AbilityOutline.cs` needs widening — note it rather
+than treating a brief flicker as a one-off.
+
+**M3b. Cancelling.** Press Reflex Shot or Overwatch, move the cursor to preview it, then cancel
+(right-click, Escape, or select a different ability) without casting.
+Expected: the outline disappears within about a second of cancelling.
+
 ## Results
 
 | Case | Pass / Fail | Notes |
@@ -272,7 +352,7 @@ Expected: the save loads. The buttons are gone. Note any errors in the log.
 | B5 |  |  |
 | B6 |  |  |
 | B7 |  |  |
-| C1–C9 |  |  |
+| C1–C9, C9a |  |  |
 | C10 |  |  |
 | C11 |  |  |
 | C12 |  |  |
@@ -283,6 +363,8 @@ Expected: the save loads. The buttons are gone. Note any errors in the log.
 | D2c |  |  |
 | D3 |  |  |
 | D4 |  |  |
+| D4a |  |  |
+| D4b |  |  |
 | D5 |  |  |
 | E1 |  |  |
 | E2 |  |  |
@@ -314,3 +396,16 @@ Expected: the save loads. The buttons are gone. Note any errors in the log.
 | G7 |  |  |
 | H1 |  |  |
 | I1 |  |  |
+| J1 |  |  |
+| J2 |  |  |
+| K1 |  |  |
+| L1 |  |  |
+| L2 |  |  |
+| L3 |  |  |
+| L4 |  |  |
+| L5 |  |  |
+| M1 |  |  |
+| M2 |  |  |
+| M3 |  |  |
+| M3a |  |  |
+| M3b |  |  |

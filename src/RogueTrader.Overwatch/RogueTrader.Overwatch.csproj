@@ -39,6 +39,9 @@
     <MakeDir Directories="$(ModInstallDir)\Bundles" />
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\..\tools\Enable-Mod.ps1&quot; -GameDataDir &quot;$(GameDataDir)&quot; -Name $(ModFolderName)" />
     <Message Importance="high" Text="Installed to $(ModInstallDir)" />
+    <!-- Proof the install really landed: the installed DLL's write time, so it's obvious in the build output
+         whether the running game (once restarted) will pick up this build or a stale one. -->
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Write-Host ('Deployed DLL last written: ' + (Get-Item '$(ModInstallDir)\Assemblies\RogueTrader.Overwatch.dll').LastWriteTime)&quot;" />
   </Target>
 
 </Project>

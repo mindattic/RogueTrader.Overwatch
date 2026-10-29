@@ -30,14 +30,21 @@ internal static class OverwatchCone
 
     public static bool IsOurs(AbilityData ability) => ability?.Blueprint?.AssetGuid == AbilityGuid;
 
+    public static int RadiusFor(int distance, int range) => Mathf.Clamp(distance, MinRadius, Math.Max(MinRadius, range));
+
     public static AoEPattern ConeFor(int distance, int range)
     {
+        int radius = RadiusFor(distance, range);
         int max = Math.Max(MinRadius, range);
-        int radius = Mathf.Clamp(distance, MinRadius, max);
         float t = max == MinRadius ? 1f : (radius - MinRadius) / (float)(max - MinRadius);
         int angle = Mathf.RoundToInt(Mathf.Lerp(NearAngle, FarAngle, t));
         return AoEPattern.Cone(angle, radius);
     }
+
+    // The cone's locked-in radius at cast, keyed by caster UniqueId: how far it reaches decides the snap-shot
+    // penalty (OverwatchDebuff.PenaltyFor). Captured alongside the live preview resize, so the last value before
+    // cast is whatever the player clicked.
+    public static readonly Dictionary<string, int> LockedRadius = new();
 
     // Shots left are the rank of this buff, which the engine adds and removes with the overwatch
     // (AbilityEffectOverwatch.ApplyingBuffs) and saves with the unit.
@@ -69,8 +76,13 @@ internal static class OverwatchCone_ResizeByCursor
         {
             if (!OverwatchCone.IsOurs(ability?.Data) || casterNode == null || targetNode == null)
                 return true;
-            var pattern = OverwatchCone.ConeFor(casterNode.CellDistanceTo(targetNode), ability.RangeCells);
+            int distance = casterNode.CellDistanceTo(targetNode);
+            if (ability.Caster is BaseUnitEntity unit)
+                OverwatchCone.LockedRadius[unit.UniqueId] = OverwatchCone.RadiusFor(distance, ability.RangeCells);
+            var pattern = OverwatchCone.ConeFor(distance, ability.RangeCells);
             __result = AoEPatternHelper.GetOrientedPattern(ability, ability.Caster, pattern, __instance, casterNode, targetNode, __instance.CastOnSameLevel, true, coveredTargetsOnly, out _);
+            if (ability.Caster is BaseUnitEntity previewUnit)
+                AbilityOutline.ShowPreview(previewUnit, __result);
             return false;
         }
         catch (Exception ex)

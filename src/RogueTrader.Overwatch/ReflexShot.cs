@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
@@ -33,6 +34,13 @@ internal static class ReflexShot
 
     public static int AimModifier(float degrees) =>
         Mathf.RoundToInt(AimBonusAhead - (AimBonusAhead + AimPenaltyBehind) * Mathf.Clamp(degrees, 0f, 180f) / 180f);
+
+    // The circle reaches the weapon's full range; a snap shot at the far edge is harder: 0 next to the shooter,
+    // falling linearly to -DistancePenaltyMax at the weapon's range. On top of the turn modifier above.
+    public const int DistancePenaltyMax = 33;
+
+    public static int DistanceModifier(int cells, int range) =>
+        range <= 0 ? 0 : -Mathf.RoundToInt(DistancePenaltyMax * Mathf.Clamp01(cells / (float)range));
 
     // The angle between the facing (shooter toward the clicked point) and the shooter-to-target direction, on the ground.
     public static float TurnAngle(BaseUnitEntity shooter, Vector3 facingPoint, Vector3 targetPosition)
@@ -84,7 +92,13 @@ internal static class ReflexShot_CentreOnShooter
             if (!ReflexShot.IsOurs(ability?.Data) || casterNode == null)
                 return true;
             var pattern = ((IAbilityAoEPatternProvider)__instance).Pattern;
+            // The circle's size comes from the pattern, not the ability range: it's the weapon's full range.
+            var attack = Abilities.RangedAttack(ability.Caster);
+            if (attack != null && attack.RangeCells > 0 && attack.RangeCells != pattern.Radius)
+                pattern = AoEPattern.CopyAndOverrideRadius(pattern, attack.RangeCells);
             __result = AoEPatternHelper.GetOrientedPattern(ability, ability.Caster, pattern, __instance, casterNode, casterNode, __instance.CastOnSameLevel, false, coveredTargetsOnly, out _);
+            if (ability.Caster is BaseUnitEntity caster)
+                AbilityOutline.ShowPreview(caster, __result);
             return false;
         }
         catch (Exception ex)
@@ -108,6 +122,9 @@ internal static class ReflexShot_RecordTurn
             if (facing == null)
                 return;
             int modifier = ReflexShot.AimModifier(ReflexShot.TurnAngle(shooter, facing.Point, target.Position));
+            var attack = Abilities.RangedAttack(shooter);
+            if (attack != null && shooter.CurrentUnwalkableNode is CustomGridNodeBase from && target.CurrentUnwalkableNode is CustomGridNodeBase to)
+                modifier += ReflexShot.DistanceModifier(from.CellDistanceTo(to), attack.RangeCells);
             ReflexShot.Pending[shooter.UniqueId] = new ReflexShot.PendingShot(target.UniqueId, modifier, __instance.Ability.Fact, Time.time);
         }
         catch (Exception ex)
@@ -157,6 +174,30 @@ internal static class ReflexShot_ForgetOnNewOverwatch
         catch (Exception ex)
         {
             ModLog.Exception(ex, "clearing a Reflex Shot");
+        }
+    }
+}
+
+// The facing point can be picked anywhere within the weapon's own range, matching the circle's radius.
+[HarmonyPatch(typeof(RuleCalculateAbilityRange), nameof(RuleCalculateAbilityRange.OnTrigger))]
+internal static class ReflexShot_RangeFromWeapon
+{
+    private static readonly MethodInfo SetResult = AccessTools.PropertySetter(typeof(RuleCalculateAbilityRange), nameof(RuleCalculateAbilityRange.Result));
+
+    private static void Postfix(RuleCalculateAbilityRange __instance)
+    {
+        try
+        {
+            var ability = __instance.Ability;
+            if (!ReflexShot.IsOurs(ability))
+                return;
+            var attack = Abilities.RangedAttack(ability.Caster);
+            if (attack != null && attack.RangeCells > 0 && attack.RangeCells != __instance.Result)
+                SetResult.Invoke(__instance, new object[] { attack.RangeCells });
+        }
+        catch (Exception ex)
+        {
+            ModLog.Exception(ex, "setting Reflex Shot's range from the weapon");
         }
     }
 }

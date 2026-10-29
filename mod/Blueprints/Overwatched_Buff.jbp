@@ -1,0 +1,58 @@
+{
+  "AssetId": "30f01920a70d4ec28860d0bd5e4193e3",
+  "Data": {
+    "$type": "618a7e0d54149064ab3ffa5d9057362c, BlueprintBuff",
+    "PrototypeLink": "",
+    "m_Overrides": [],
+    "Components": [],
+    "Comment": "Overwatched: a visual marker on every enemy currently standing in an active Overwatch cone. Rank is the hit-chance penalty (percent) a shot from that cone carries; added, updated and removed by the mod's assembly every tick, not by the engine.",
+    "m_DisplayName": {
+      "m_Key": "5f089d52-5b20-4dd8-805f-ddeccf862288",
+      "m_OwnerString": "30f01920a70d4ec28860d0bd5e4193e3",
+      "m_OwnerPropertyPath": "m_DisplayName",
+      "m_JsonPath": "",
+      "Shared": null
+    },
+    "m_Description": {
+      "m_Key": "640228ad-add2-44c5-a92a-9baaaceb3c43",
+      "m_OwnerString": "30f01920a70d4ec28860d0bd5e4193e3",
+      "m_OwnerPropertyPath": "m_Description",
+      "m_JsonPath": "",
+      "Shared": null
+    },
+    "m_Icon": {
+      "guid": "cc7f3655ce762a24f924868555d76bda",
+      "fileid": 21300000
+    },
+    "m_AllowNonContextActions": false,
+    "IsClassFeature": false,
+    "m_Flags": 0,
+    "m_SoundTypeSwitch": {
+      "Value": "",
+      "Group": ""
+    },
+    "m_MuffledTypeSwitch": {
+      "Value": "",
+      "Group": ""
+    },
+    "Stacking": "Rank",
+    "PriorityProperty": "Value1",
+    "Initiative": "ByCaster",
+    "Ranks": 30,
+    "TickEachSecond": false,
+    "Frequency": "Rounds",
+    "FxOnStart": {
+      "AssetId": ""
+    },
+    "FxOnRemove": {
+      "AssetId": ""
+    },
+    "m_FXSettings": null,
+    "ResourceAssetIds": [],
+    "PlayOnlyFirstHitSound": false,
+    "m_AbilityGroups": []
+  },
+  "Meta": {
+    "ShadowDeleted": false
+  }
+}
