@@ -12,6 +12,7 @@ using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.Blueprints;
 using Kingmaker.Code.Enums.Helper;
+using Kingmaker.Controllers.Combat;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
@@ -55,6 +56,86 @@ internal static class Abilities
     {
         var weapon = RangedWeapon(caster);
         return weapon == null || weapon.Blueprint.WarhammerMaxAmmo < 0 || weapon.CurrentAmmo > 0;
+    }
+
+    // Whether the shooter can spend a reaction on a shot right now: the same per-round attack-of-opportunity
+    // budget a melee threat already draws from when something walks out of its reach
+    // (PartUnitCombatState.CanAttackOfOpportunity; AttackOfOpportunityCount, 1 by default, raised by talents
+    // and traits the same way Combat Reflexes raises it on the tabletop). Player characters and Elite+ enemies
+    // are never capped by it, by the base game's own rule, so this only reins in regular enemy mooks (RTO-T94).
+    public static bool CanMakeAttackOfOpportunity(BaseUnitEntity shooter) =>
+        shooter?.GetCombatStateOptional()?.CanAttackOfOpportunity(canUseInRange: true, isSpell: false) ?? true;
+
+    // Spends one reaction from that same budget, the same bookkeeping AttackOfOpportunityController does when a
+    // melee threat's free swing actually fires.
+    public static void SpentAttackOfOpportunity(BaseUnitEntity shooter)
+    {
+        var combatState = shooter?.GetCombatStateOptional();
+        if (combatState != null)
+            combatState.AttacksOfOpportunityMadeThisTurnCount++;
+    }
+}
+
+// A triggered Reflex Shot or Overwatch shot is an attack of opportunity: taking a shot in the spur of the
+// moment because the chance presented itself, the same as a melee threat's free swing when something leaves
+// its reach (Suppression's real shot already is one, flagged directly in Suppression.cs since it doesn't run
+// through PartOverwatch). Flagging it (IsAttackOfOpportunity) lets talents and traits that key off that flag
+// (CheckIfAttackOfOpportunityGetter) apply, the same seam Overwatch already used; and it spends from the same
+// per-round reaction budget those melee threats draw from, so a unit that already reacted its allotment away
+// this round can't also loose a Reflex Shot or an Overwatch volley on top of it (RTO-T94). Runs ahead of
+// ReflexShot_RecordTurn and OverwatchCone_ChooseShots (both default priority) so a spent-out shooter never
+// reaches their bookkeeping at all.
+[HarmonyPatch(typeof(PartOverwatch), nameof(PartOverwatch.TryTriggerAttack))]
+internal static class Abilities_AttackOfOpportunity
+{
+    private static readonly AccessTools.FieldRef<PartOverwatch, AbilityData> TriggerField =
+        AccessTools.FieldRefAccess<PartOverwatch, AbilityData>("m_AbilityOnTrigger");
+
+    [HarmonyPriority(Priority.First)]
+    private static bool Prefix(PartOverwatch __instance, out AbilityData __state)
+    {
+        __state = null;
+        try
+        {
+            if (!Abilities.IsOurs(__instance.Ability) || __instance.Owner is not BaseUnitEntity shooter)
+                return true;
+            if (!Abilities.CanMakeAttackOfOpportunity(shooter))
+            {
+                __instance.Stop();
+                return false;
+            }
+            var trigger = __instance.AbilityOnTrigger;
+            if (trigger != null && !trigger.IsAttackOfOpportunity)
+            {
+                var aoo = trigger.Clone(isPreview: false);
+                aoo.IsAttackOfOpportunity = true;
+                __state = trigger;
+                TriggerField(__instance) = aoo;
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            PFLog.Mods.Exception(ex, "RogueTrader.Overwatch: attack-of-opportunity gate");
+            return true;
+        }
+    }
+
+    // __runOriginal reflects every prefix on this method, OverwatchCone_ChooseShots's own veto (out of shots,
+    // too soon to re-shoot) included, so a shot that never actually queued never spends a reaction either.
+    private static void Postfix(PartOverwatch __instance, AbilityData __state, bool __runOriginal)
+    {
+        try
+        {
+            if (__state != null)
+                TriggerField(__instance) = __state;
+            if (__runOriginal && Abilities.IsOurs(__instance.Ability) && __instance.Owner is BaseUnitEntity shooter)
+                Abilities.SpentAttackOfOpportunity(shooter);
+        }
+        catch (Exception ex)
+        {
+            PFLog.Mods.Exception(ex, "RogueTrader.Overwatch: attack-of-opportunity gate (restoring trigger)");
+        }
     }
 }
 

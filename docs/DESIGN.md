@@ -16,12 +16,34 @@
   `RuleCalculateAbilityDistanceFactor`) plus the ability's own modifier on the real roll: Reflex Shot's
   facing, Overwatch's reach penalty (sections below). Suppression's shot has none. Reflex Shot alone
   swaps the base (a flat 33 for Ballistic Skill + 30) and deals 33% damage (RTO-T82, below).
-- Overwatch's and Suppression's shots are attacks of opportunity (`IsAttackOfOpportunity`, RTO-T50,
-  RTO-T85), so talents and traits that boost attacks of opportunity apply to them; Reflex Shot's are
-  not. The three keep distinct roles: Reflex Shot is the low-power, low-chance last move to spend a
-  spare AP on; Overwatch is an intentional setup for a shot with attack-of-opportunity bonuses;
-  Suppression pins an enemy down, and a Suppressed unit's own ranged attacks lose a quarter of their hit
-  chance (RTO-T86, eased from half in RTO-T87).
+- **All three triggered shots are attacks of opportunity (`IsAttackOfOpportunity`; RTO-T50, RTO-T85,
+  RTO-T94):** a Reflex Shot, an Overwatch shot and Suppression's real shot are all the same thing by
+  nature — taking a shot in the spur of the moment because the chance presented itself, exactly what a
+  melee threat's free swing already is when something leaves its reach. Reflex Shot's shot carried the
+  flag only from RTO-T94 on; Overwatch's and Suppression's always did. Fired with a `Clone(false)` of the
+  real trigger ability flagged `IsAttackOfOpportunity = true` (Reflex Shot and Overwatch share one seam,
+  `Abilities_AttackOfOpportunity` on `PartOverwatch.TryTriggerAttack`; Suppression flags its own clone
+  directly, since it doesn't run through `PartOverwatch`), so talents and traits that key off that flag
+  (`CheckIfAttackOfOpportunityGetter`, `AttackOfOpportunityModifier`) apply to all three alike.
+  - **Shared reaction budget (RTO-T94):** the same per-round attack-of-opportunity budget a melee threat
+    already draws from (`PartUnitCombatState.CanAttackOfOpportunity`/`MaxAttacksOfOpportunityPerRound`,
+    the `AttackOfOpportunityCount` stat, 1 by default and raised by talents the way Combat Reflexes
+    raises it on the tabletop) now gates all three shots too, checked at the moment each shot would
+    actually fire and spent only then (`Abilities.CanMakeAttackOfOpportunity`/`SpentAttackOfOpportunity`).
+    A mook who already reacted this round — a melee attack of opportunity, an earlier shot from one of
+    these three — can't also loose another: Overwatch's follow-up shot checks it again, independently of
+    the AP-funded shot budget below, so a two-shot cone can still net only one shot for a capped unit.
+    The base game already exempts player characters and Elite+ enemies from this cap entirely, so this
+    only reins in regular enemy mooks and never costs the player a shot; it was chosen over a bespoke
+    limiter because this ruleset already has its own "Combat Reflexes"-style reaction economy, and
+    reusing it (rather than, say, XCOM's one-reaction-per-overwatching-unit model, which this mod's
+    shot-budget and re-shot rules already cover on their own terms) keeps every kind of reaction —
+    melee, Reflex Shot, Overwatch, Suppression — spent from the one pool the rest of the game already
+    understands.
+  - The three still keep distinct roles: Reflex Shot is the low-power, low-chance last move to spend a
+    spare AP on; Overwatch is an intentional setup for a shot with attack-of-opportunity bonuses;
+    Suppression pins an enemy down, and a Suppressed unit's own ranged attacks lose a quarter of their
+    hit chance (RTO-T86, eased from half in RTO-T87).
 - **Rounds in the chamber (RTO-T93):** Reflex Shot and Overwatch grey out, the same as any other
   ammo-gated ability, once the weapon they'd actually fire has no ammo left (`ItemEntityWeapon.CurrentAmmo
   <= 0`; a weapon that doesn't track ammo, `WarhammerMaxAmmo < 0`, is always available). Both blueprints
@@ -176,13 +198,17 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
   Overwatch ability's name, the same seam Reflex Shot uses, so it shows in the hit-chance breakdown and
   combat log. Captured at queue time because the last shot stops the overwatch before its roll, and so
   the overwatcher's other attacks (e.g. a melee attack of opportunity) never pick it up.
-- **Attack of opportunity (RTO-T85):** an Overwatch shot is a prepared attack of opportunity. For the
-  duration of each shot, `OverwatchCone_ChooseShots` swaps the part's trigger ability
-  (`PartOverwatch.m_AbilityOnTrigger`) for a `Clone(false)` flagged `IsAttackOfOpportunity = true`, and
-  its postfix puts the original back, so feats and traits that key off that flag
-  (`CheckIfAttackOfOpportunityGetter`, `AttackOfOpportunityModifier`) apply, the same as Suppression's
-  attack (RTO-T50). The follow-up shot goes through the same prefix and gets it too. The snap-shot
-  penalty above is unchanged. Reflex Shot's shots are not attacks of opportunity.
+- **Attack of opportunity (RTO-T85, RTO-T94):** an Overwatch shot is a prepared attack of opportunity,
+  same as Reflex Shot's own single shot (see "Shared rules" above). For the duration of each shot,
+  `Abilities_AttackOfOpportunity` swaps the part's trigger ability (`PartOverwatch.m_AbilityOnTrigger`,
+  shared by both abilities) for a `Clone(false)` flagged `IsAttackOfOpportunity = true`, and its postfix
+  puts the original back, so feats and traits that key off that flag (`CheckIfAttackOfOpportunityGetter`,
+  `AttackOfOpportunityModifier`) apply, the same as Suppression's attack (RTO-T50). The same patch gates
+  the shot on the shared per-round reaction budget first, high priority so `OverwatchCone_ChooseShots`
+  never reaches its own shots-left bookkeeping for a shooter with no reaction left. The follow-up shot
+  goes through the same prefix and gets it too (and the earlier shot's reaction has already been spent by
+  the time it's chosen, so a capped unit's follow-up is the one actually likely to be denied). The
+  snap-shot penalty above is unchanged.
 - **Overwatched debuff (RTO-T54):** every enemy currently standing in an active Overwatch cone carries
   a visible `Overwatched_Buff`, whose rank is the penalty (percent) that cone's shots carry; a postfix
   on `OverwatchController.Tick` adds, updates and removes it live as enemies cross in or out, or when

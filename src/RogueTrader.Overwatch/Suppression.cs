@@ -190,6 +190,10 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
             {
                 if (caster.IsDeadOrUnconscious || target.IsDeadOrUnconscious)
                     continue;
+                // The same per-round reaction budget a melee threat or Reflex Shot/Overwatch draws from
+                // (RTO-T94): a mook who's already spent its one reaction this round can't also fire Suppression's.
+                if (!Abilities.CanMakeAttackOfOpportunity(caster))
+                    continue;
                 var ability = FirstWeaponAbility(caster);
                 if (ability == null || !ability.CanTarget(target, out _))
                     continue;
@@ -199,6 +203,7 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
                 var aooAbility = ability.Clone(isPreview: false);
                 aooAbility.IsAttackOfOpportunity = true;
                 caster.Commands.Run(new UnitOverwatchAttackParams(aooAbility, new TargetWrapper(target)));
+                Abilities.SpentAttackOfOpportunity(caster);
                 m_NextCosmeticShot[caster] = Time.time + UnityEngine.Random.Range(1.5f, 2.5f);
             }
             catch (Exception ex)

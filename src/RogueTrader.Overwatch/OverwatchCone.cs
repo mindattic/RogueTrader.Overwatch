@@ -180,18 +180,8 @@ internal static class OverwatchCone_ChooseShots
             int penalty = OverwatchDebuff.PenaltyOf(owner, __instance);
             if (penalty > 0 && __instance.Ability?.Fact != null)
                 OverwatchDebuff.Pending[(owner.UniqueId, target.UniqueId)] = new ReflexShot.PendingShot(target.UniqueId, -penalty, __instance.Ability.Fact, Time.time);
-            // An Overwatch shot is a prepared attack of opportunity (RTO-T85): fired with a clone flagged
-            // IsAttackOfOpportunity, so feats and traits that key off that flag (CheckIfAttackOfOpportunityGetter,
-            // AttackOfOpportunityModifier) apply, as for Suppression's attack. The saved trigger ability is put back
-            // in the postfix.
-            var trigger = __instance.AbilityOnTrigger;
-            if (trigger != null && !trigger.IsAttackOfOpportunity)
-            {
-                var aoo = trigger.Clone(isPreview: false);
-                aoo.IsAttackOfOpportunity = true;
-                s_SavedTrigger[__instance] = trigger;
-                TriggerField(__instance) = aoo;
-            }
+            // The attack-of-opportunity flagging and reaction-budget gate (RTO-T85, T94) run ahead of this prefix
+            // in Abilities_AttackOfOpportunity, which also owns the trigger-ability clone swap.
             __state = true;
             return true;
         }
@@ -205,21 +195,10 @@ internal static class OverwatchCone_ChooseShots
     // True while the follow-up shot is being fired, so it doesn't chain a follow-up of its own.
     private static bool s_FollowingUp;
 
-    private static readonly AccessTools.FieldRef<PartOverwatch, AbilityData> TriggerField =
-        AccessTools.FieldRefAccess<PartOverwatch, AbilityData>("m_AbilityOnTrigger");
-
-    // The part's own trigger ability while an attack-of-opportunity clone stands in for it during one shot.
-    private static readonly Dictionary<PartOverwatch, AbilityData> s_SavedTrigger = new();
-
     private static void Postfix(PartOverwatch __instance, BaseUnitEntity target, bool __state)
     {
         try
         {
-            if (s_SavedTrigger.TryGetValue(__instance, out var saved))
-            {
-                s_SavedTrigger.Remove(__instance);
-                TriggerField(__instance) = saved;
-            }
             if (!__state)
                 return;
             // The last shot stops the overwatch, which also removes the buff; otherwise spend one rank.
