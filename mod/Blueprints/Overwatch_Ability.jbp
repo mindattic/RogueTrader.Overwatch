@@ -18,6 +18,17 @@
         "MustHaveBurst": false
       },
       {
+        "$type": "05f57cde631729b47a2599acad016423, AbilityCasterMainWeaponHasAmmo",
+        "name": "$AbilityCasterMainWeaponHasAmmo$177d51c130b04646872b84a7b7b92c18",
+        "m_Flags": 0,
+        "PrototypeLink": {
+          "guid": "",
+          "name": ""
+        },
+        "m_Overrides": [],
+        "SecondWeapon": false
+      },
+      {
         "$type": "224c1eb24ed98e942ae15b9e10e62724, WarhammerEndTurn",
         "name": "$WarhammerEndTurn$db0c65c34fab4fbfa72753a3c3a24abc",
         "m_Flags": 0,

@@ -47,6 +47,15 @@ internal static class Abilities
     // The ranged weapon's own attack: what every overwatch shot fires.
     public static AbilityData RangedAttack(MechanicEntity unit) =>
         RangedWeapon(unit)?.Abilities.FirstOrDefault()?.Data;
+
+    // Whether the weapon Reflex Shot or Overwatch would actually fire still has a round chambered. Weapons that
+    // don't track ammo (WarhammerMaxAmmo < 0) and a caster with no ranged weapon at all pass: the weapon-type
+    // restriction above already greys the ability out for that case.
+    public static bool HasAmmo(MechanicEntity caster)
+    {
+        var weapon = RangedWeapon(caster);
+        return weapon == null || weapon.Blueprint.WarhammerMaxAmmo < 0 || weapon.CurrentAmmo > 0;
+    }
 }
 
 // A hero's copy has no weapon, so Range: Weapon would resolve to nothing; use the active ranged weapon's range.
@@ -172,6 +181,31 @@ internal static class Abilities_FixEmptyLimbWeaponCheck
         catch (Exception ex)
         {
             PFLog.Mods.Exception(ex, "RogueTrader.Overwatch: weapon-range caster check");
+            return true;
+        }
+    }
+}
+
+// Reflex Shot and Overwatch can't be cast once the active ranged weapon is out of rounds: the stock
+// AbilityCasterMainWeaponHasAmmo only reads the caster's main (or, with SecondWeapon, off) hand, not whichever
+// slot actually holds the weapon our abilities fire with (RTO-T93); redone the same way as the weapon-type
+// check above, scoped to the two ability blueprints that carry the component (ReflexShot_Ability,
+// Overwatch_Ability; Suppression doesn't).
+[HarmonyPatch(typeof(AbilityCasterMainWeaponHasAmmo), nameof(AbilityCasterMainWeaponHasAmmo.IsCasterRestrictionPassed))]
+internal static class Abilities_RequireAmmoToCast
+{
+    private static bool Prefix(AbilityCasterMainWeaponHasAmmo __instance, MechanicEntity caster, ref bool __result)
+    {
+        if (!Abilities.IsOurs(__instance.OwnerBlueprint as BlueprintAbility))
+            return true;
+        try
+        {
+            __result = Abilities.HasAmmo(caster);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            PFLog.Mods.Exception(ex, "RogueTrader.Overwatch: ammo caster check");
             return true;
         }
     }

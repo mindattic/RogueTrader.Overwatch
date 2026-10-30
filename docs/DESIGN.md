@@ -22,6 +22,19 @@
   spare AP on; Overwatch is an intentional setup for a shot with attack-of-opportunity bonuses;
   Suppression pins an enemy down, and a Suppressed unit's own ranged attacks lose a quarter of their hit
   chance (RTO-T86, eased from half in RTO-T87).
+- **Rounds in the chamber (RTO-T93):** Reflex Shot and Overwatch grey out, the same as any other
+  ammo-gated ability, once the weapon they'd actually fire has no ammo left (`ItemEntityWeapon.CurrentAmmo
+  <= 0`; a weapon that doesn't track ammo, `WarhammerMaxAmmo < 0`, is always available). Both blueprints
+  carry the game's own `AbilityCasterMainWeaponHasAmmo`, but its stock check only reads the caster's main
+  (or, with `SecondWeapon`, off) hand; a prefix on `IsCasterRestrictionPassed`, scoped to our two
+  abilities, redoes it against whichever slot `Abilities.RangedWeapon` would actually fire from (main
+  hand, off hand, or an extra limb), the same lookup the weapon-type check above already uses. Suppression
+  doesn't carry the component: it targets an enemy directly rather than firing from a chosen facing or
+  cone, so its own cast-time weapon-type check already covers it the way it always has. Once an overwatch
+  is live, its shots can't outrun the chamber either: `AbilityOnTrigger` is always the weapon's own real
+  attack ability (`Abilities.RangedWeapon`'s `AbilityData`, see "Which gun fires" below), so the engine's
+  own `AbilityData.IsAvailable` ammo gate (`UnitUseAbility.OnAction`) silently withholds a shot that would
+  outrun the magazine, Overwatch's follow-up shot included.
 - All three cost 1 AP (the blueprints' `ActionPointCost`, and the slot `AP` on enemy weapons). Overwatch
   and Suppression cost 1 more AP when the active ranged weapon is Heavy (`WeaponHeaviness.Heavy`,
   RTO-T51): a prefix on `RuleCalculateAbilityActionPointCost.OnTrigger` adds to `CostBonus`, the same

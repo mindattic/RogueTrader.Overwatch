@@ -113,3 +113,4 @@ _Nothing recorded yet._
 | RTO-T90 | 2026-10-29 | feature | closed | Suppressed AI units know they are pinned: they avoid leaving their square and shoot back from where they stand | commits 6869221 9ea8b85 1a3c33e 84b99df |
 | RTO-T91 | 2026-10-29 | feature | closed | Overwatch is the next best thing to a direct shot: shots = AP left after paying its own cost / attack cost (1 to 2), so it never matches shooting directly | commits 6869221 9ea8b85 1a3c33e 84b99df |
 | RTO-T92 | 2026-10-29 | fix | closed | Spanish Overwatch description: use 'que te quedarían' for consistent tense | commits 6869221 9ea8b85 1a3c33e 84b99df |
+| RTO-T93 | 2026-10-30 | fix | closed | Reflex Shot and Overwatch should respect rounds in the chamber and not fire with an empty magazine | — |
