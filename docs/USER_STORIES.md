@@ -36,7 +36,7 @@ _Nothing recorded yet._
 | RTO-T13 | 2026-10-26 | fix | closed | Overwatch shot count is lost on save/load: an active Overwatch reloads with 1 shot instead of the AP-based count | 542091f |
 | RTO-T14 | 2026-10-26 | chore | closed | Rename Reaction Shot to Reflex Shot (in-game name, files, docs) | 7afa83f |
 | RTO-T15 | 2026-10-26 | feature | closed | Release 1.0.0: dist zip of the Owlcat mod folder, built by dotnet build -c Release | dist/RogueTrader.Overwatch-1.0.0.zip, built by dotnet build -c Release; confirmed in game |
-| RTO-T16 | 2026-10-26 | docs | open | Nexus Mods page: header, logo, summary and BBCode description in docs/NEXUS_PAGE.md | — |
+| RTO-T16 | 2026-10-26 | docs | closed | Nexus Mods page: header, logo, summary and BBCode description in docs/NEXUS_PAGE.md | — |
 | RTO-T17 | 2026-10-26 | fix | closed | Ship only the hotbar icons in the mod, not the Nexus header and logo | 0fe4406 |
 | RTO-T18 | 2026-10-26 | feature | closed | Put Reflex Shot, Overwatch and Suppression on every party member's ability bar (last 3 slots, else later rows), greyed out without a ranged weapon in the active set | Confirmed in game by the user, 2026-10-26 |
 | RTO-T19 | 2026-10-26 | docs | closed | In-game validation guide (docs/TESTING.md) covering every rule and equip situation, with README, DESIGN and Nexus page brought up to date | ffca20e |
@@ -70,35 +70,35 @@ _Nothing recorded yet._
 | RTO-T47 | 2026-10-27 | docs | closed | README: add a dedicated Languages section listing all 8 supported UI languages | — |
 | RTO-T48 | 2026-10-27 | docs | closed | NEXUS_PAGE.md: drop the stray trailing comma after Simplified Chinese in the Localization list | — |
 | RTO-T49 | 2026-10-27 | docs | closed | Restore full NEXUS_PAGE.md structure, with a proper Localization section | — |
-| RTO-T50 | 2026-10-28 | feature | open | Suppression's real shot flags IsAttackOfOpportunity so AOO-specific talents/feats apply to it, not just a normal attack | — |
-| RTO-T51 | 2026-10-28 | feature | open | Reflex Shot, Overwatch and Suppression cost +1 AP to cast when the active ranged weapon is Heavy (WeaponHeaviness.Heavy) | — |
-| RTO-T52 | 2026-10-28 | feature | open | Release 3.0.0: bump version for the Suppression AOO fix (RTO-T50) and weapon-size AP cost balance change (RTO-T51) | — |
-| RTO-T53 | 2026-10-29 | fix | open | AbilityCasterHasWeaponWithRangeType crashes (NullReferenceException) for a caster with any empty additional limb, greying out all three abilities; confirmed on Pasqal (mechadendrites) | — |
-| RTO-T54 | 2026-10-29 | feature | open | Overwatch: snap-shot accuracy penalty that grows with the cone's reach, shown via an Overwatched debuff on every enemy currently inside the cone | — |
-| RTO-T55 | 2026-10-29 | feature | open | Reflex Shot's circle never reaches past the equipped weapon's own max range, instead of a flat 10 cells for every weapon | — |
-| RTO-T56 | 2026-10-29 | feature | open | A yellow LineRenderer outline traces the boundary of an active Reflex Shot circle or Overwatch cone, since the game's shared red area highlight is hard to see | — |
-| RTO-T57 | 2026-10-29 | chore | open | Build prints the installed DLL's last-write time after every deploy, so it's obvious whether a restart will pick up stale or current code | — |
-| RTO-T58 | 2026-10-29 | fix | open | Suppression's Suppressed debuff appears on the caster instead of the targeted enemy | — |
-| RTO-T59 | 2026-10-29 | fix | open | Overwatched debuff shows on enemies only while casting, then disappears; only the caster keeps an icon | — |
-| RTO-T60 | 2026-10-29 | fix | open | Reflex Shot circle stays 10 cells regardless of the weapon's range (RTO-T55 not taking effect, tooltip still says 10) | — |
-| RTO-T61 | 2026-10-29 | fix | open | Yellow outline (RTO-T56) never draws, during preview or after cast | — |
-| RTO-T62 | 2026-10-29 | feature | open | Reflex Shot: circle radius = the weapon's full range (no 10-cell ceiling), with a distance aim penalty scaling to -33 at full range | — |
-| RTO-T63 | 2026-10-29 | fix | open | Outline traces a convex hull through cell centres instead of the actual tile edges of the Reflex Shot/Overwatch area | — |
-| RTO-T64 | 2026-10-29 | fix | open | Outline is partial and too thick: draw one thin line per boundary tile edge instead of chained loops | — |
-| RTO-T65 | 2026-10-29 | feature | open | Suppression: a glowing red line from each suppressor to its Suppressed target for as long as the debuff lasts | — |
-| RTO-T66 | 2026-10-29 | feature | open | Suppression cosmetic fire: continuous firing animation for the whole suppression, no projectiles or misses, purely a visual cue | — |
-| RTO-T67 | 2026-10-29 | feature | open | Taking any damage interrupts the unit's Suppression, Overwatch and Reflex Shot; cosmetic suppression fire shoots projectiles at the target that deliver nothing | — |
-| RTO-T68 | 2026-10-29 | fix | open | Outline vanishes about a second into target selection; it must stay for the whole selection and while Overwatch/Reflex Shot is active | — |
-| RTO-T69 | 2026-10-29 | feature | open | Suppressor holds a firing/aiming pose toward the target for as long as Suppression lasts | — |
-| RTO-T70 | 2026-10-29 | fix | open | Outline gaps across height changes: add vertical connector lines at corners where boundary edges meet at different heights | — |
-| RTO-T71 | 2026-10-29 | feature | open | While aiming Overwatch or Reflex Shot, show each enemy inside the area its projected hit chance, including our modifiers | — |
-| RTO-T72 | 2026-10-29 | feature | open | Reflex Shot: flat -33 reaction penalty on every shot (replaces the distance-scaled penalty), plus the facing modifier | — |
+| RTO-T50 | 2026-10-28 | feature | closed | Suppression's real shot flags IsAttackOfOpportunity so AOO-specific talents/feats apply to it, not just a normal attack | commit f52f1c3 |
+| RTO-T51 | 2026-10-28 | feature | closed | Reflex Shot, Overwatch and Suppression cost +1 AP to cast when the active ranged weapon is Heavy (WeaponHeaviness.Heavy) | commit f52f1c3 |
+| RTO-T52 | 2026-10-28 | feature | closed | Release 3.0.0: bump version for the Suppression AOO fix (RTO-T50) and weapon-size AP cost balance change (RTO-T51) | commit f52f1c3 |
+| RTO-T53 | 2026-10-29 | fix | closed | AbilityCasterHasWeaponWithRangeType crashes (NullReferenceException) for a caster with any empty additional limb, greying out all three abilities; confirmed on Pasqal (mechadendrites) | commit f52f1c3 |
+| RTO-T54 | 2026-10-29 | feature | closed | Overwatch: snap-shot accuracy penalty that grows with the cone's reach, shown via an Overwatched debuff on every enemy currently inside the cone | commit f52f1c3 |
+| RTO-T55 | 2026-10-29 | feature | closed | Reflex Shot's circle never reaches past the equipped weapon's own max range, instead of a flat 10 cells for every weapon | commit f52f1c3 |
+| RTO-T56 | 2026-10-29 | feature | closed | A yellow LineRenderer outline traces the boundary of an active Reflex Shot circle or Overwatch cone, since the game's shared red area highlight is hard to see | commit f52f1c3 |
+| RTO-T57 | 2026-10-29 | chore | closed | Build prints the installed DLL's last-write time after every deploy, so it's obvious whether a restart will pick up stale or current code | commit f52f1c3 |
+| RTO-T58 | 2026-10-29 | fix | closed | Suppression's Suppressed debuff appears on the caster instead of the targeted enemy | commit f52f1c3 |
+| RTO-T59 | 2026-10-29 | fix | closed | Overwatched debuff shows on enemies only while casting, then disappears; only the caster keeps an icon | commit f52f1c3 |
+| RTO-T60 | 2026-10-29 | fix | closed | Reflex Shot circle stays 10 cells regardless of the weapon's range (RTO-T55 not taking effect, tooltip still says 10) | commit f52f1c3 |
+| RTO-T61 | 2026-10-29 | fix | closed | Yellow outline (RTO-T56) never draws, during preview or after cast | commit f52f1c3 |
+| RTO-T62 | 2026-10-29 | feature | closed | Reflex Shot: circle radius = the weapon's full range (no 10-cell ceiling), with a distance aim penalty scaling to -33 at full range | commit f52f1c3 |
+| RTO-T63 | 2026-10-29 | fix | closed | Outline traces a convex hull through cell centres instead of the actual tile edges of the Reflex Shot/Overwatch area | commit f52f1c3 |
+| RTO-T64 | 2026-10-29 | fix | closed | Outline is partial and too thick: draw one thin line per boundary tile edge instead of chained loops | commit f52f1c3 |
+| RTO-T65 | 2026-10-29 | feature | closed | Suppression: a glowing red line from each suppressor to its Suppressed target for as long as the debuff lasts | commit f52f1c3 |
+| RTO-T66 | 2026-10-29 | feature | closed | Suppression cosmetic fire: continuous firing animation for the whole suppression, no projectiles or misses, purely a visual cue | commit f52f1c3 |
+| RTO-T67 | 2026-10-29 | feature | closed | Taking any damage interrupts the unit's Suppression, Overwatch and Reflex Shot; cosmetic suppression fire shoots projectiles at the target that deliver nothing | commit f52f1c3 |
+| RTO-T68 | 2026-10-29 | fix | closed | Outline vanishes about a second into target selection; it must stay for the whole selection and while Overwatch/Reflex Shot is active | commit f52f1c3 |
+| RTO-T69 | 2026-10-29 | feature | closed | Suppressor holds a firing/aiming pose toward the target for as long as Suppression lasts | commit f52f1c3 |
+| RTO-T70 | 2026-10-29 | fix | closed | Outline gaps across height changes: add vertical connector lines at corners where boundary edges meet at different heights | commit f52f1c3 |
+| RTO-T71 | 2026-10-29 | feature | wont-do | While aiming Overwatch or Reflex Shot, show each enemy inside the area its projected hit chance, including our modifiers | superseded by RTO-T80 (overtip gauge instead of custom labels) |
+| RTO-T72 | 2026-10-29 | feature | wont-do | Reflex Shot: flat -33 reaction penalty on every shot (replaces the distance-scaled penalty), plus the facing modifier | superseded by RTO-T82: flat -33 reaction penalty replaced by the aim-modifier/base-hit-chance redesign |
 | RTO-T73 | 2026-10-29 | fix | open | Bughunt: exhaustive sweep of the mod's source, blueprints and localization; fix every confirmed bug | — |
 | RTO-T74 | 2026-10-29 | fix | open | Bughunt pass 2: review the pass-1 fixes, cross-patch interactions, save/load and uninstall safety, design-doc consistency | — |
-| RTO-T75 | 2026-10-29 | docs | open | Bring all docs, README, Nexus page, changelog and in-game ability text in line with the 3.0.0 rules; Overwatch penalty 1-30 so the debuff rank equals it | — |
-| RTO-T76 | 2026-10-29 | feature | open | Overwatch shots = AP before casting / weapon attack cost, capped at 2; outlines 50% transparent, yellow for Reflex Shot, blue for Overwatch | — |
-| RTO-T77 | 2026-10-29 | fix | open | Hit-chance labels overlap the game's overhead unit icon: raise them above it and use a smaller font | — |
-| RTO-T78 | 2026-10-29 | fix | open | Hit-chance labels use the game's own hit-percentage text colour instead of a red-to-green gradient | — |
+| RTO-T75 | 2026-10-29 | docs | closed | Bring all docs, README, Nexus page, changelog and in-game ability text in line with the 3.0.0 rules; Overwatch penalty 1-30 so the debuff rank equals it | commit 6869221 |
+| RTO-T76 | 2026-10-29 | feature | closed | Overwatch shots = AP before casting / weapon attack cost, capped at 2; outlines 50% transparent, yellow for Reflex Shot, blue for Overwatch | commit f52f1c3 (outline transparency); commit 6869221 (shot formula, RTO-T91) |
+| RTO-T77 | 2026-10-29 | fix | wont-do | Hit-chance labels overlap the game's overhead unit icon: raise them above it and use a smaller font | superseded by RTO-T80: no custom label exists to reposition, game's own overtip gauge is used |
+| RTO-T78 | 2026-10-29 | fix | wont-do | Hit-chance labels use the game's own hit-percentage text colour instead of a red-to-green gradient | superseded by RTO-T80: no custom label exists to recolor, game's own overtip gauge is used |
 | RTO-T79 | 2026-10-29 | fix | closed | Bughunt: enemy AI ignores off-hand ranged weapons; drop temporary diag logging and unused LockedRadius | commits 6869221 9ea8b85 1a3c33e 84b99df |
 | RTO-T80 | 2026-10-29 | fix | closed | Hit-chance preview: labels off-centre and unlike the game's hit-chance UI; show above the overwatch target icon in the game's own style | commits 6869221 9ea8b85 1a3c33e 84b99df |
 | RTO-T81 | 2026-10-29 | fix | closed | Suppression's cosmetic shots fly into the target; aim them at points around it so they always visibly miss | commits 6869221 9ea8b85 1a3c33e 84b99df |
@@ -115,3 +115,4 @@ _Nothing recorded yet._
 | RTO-T92 | 2026-10-29 | fix | closed | Spanish Overwatch description: use 'que te quedarían' for consistent tense | commits 6869221 9ea8b85 1a3c33e 84b99df |
 | RTO-T93 | 2026-10-30 | fix | closed | Reflex Shot and Overwatch should respect rounds in the chamber and not fire with an empty magazine | — |
 | RTO-T94 | 2026-10-30 | feature | closed | Pipe Reflex Shot's triggered shot through Attack of Opportunity like Overwatch and Suppression already are, and rebalance all three for it | — |
+| RTO-T95 | 2026-10-30 | chore | closed | Audit the open backlog: close 28 tickets already shipped in the 3.0.0 commits (f52f1c3, 6869221) or superseded by later redesigns (T80, T82), leaving only the two bughunt tickets open | docs/USER_STORIES.md |
