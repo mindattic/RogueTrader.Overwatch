@@ -5,6 +5,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Controllers.TurnBased;
 using Kingmaker.Controllers.Units;
+using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Pathfinding;
 using Kingmaker.RuleSystem.Rules;
@@ -58,8 +59,9 @@ internal static class OverwatchDebuff
     public static BlueprintBuff Blueprint => ResourcesLibrary.TryGetBlueprint<BlueprintBuff>(BuffGuid);
 
     // Overwatch shots queued but not yet rolled, by (shooter, target) UniqueId: one overwatcher can queue shots at
-    // two enemies in the same tick before either rolls.
-    public static readonly Dictionary<(string Shooter, string Target), ReflexShot.PendingShot> Pending = new();
+    // two enemies in the same tick before either rolls. An additive hit-chance modifier, unlike Reflex Shot's own
+    // multiplicative retained-aim fraction (RTO-T96): the cone's snap-shot penalty isn't a turn-angle effect.
+    public static readonly Dictionary<(string Shooter, string Target), (int Modifier, EntityFact Source, float At)> Pending = new();
 }
 
 [HarmonyPatch(typeof(OverwatchController), nameof(OverwatchController.Tick))]

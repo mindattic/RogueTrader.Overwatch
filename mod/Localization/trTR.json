@@ -4,7 +4,7 @@
       "Text": "Refleks Atışı"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Turu sonlandırır. Bedeli 1 EP. Düşmanı beklediğin yönü seç. Bir sonraki turunun başlangıcına kadar, herhangi bir yönde silahının menzili içinde hareket eden, itilen veya bir eylem gerçekleştiren ilk düşmana silahınla hızlı bir tepki saldırısı yaparsın. Saldırının isabet şansı Atış Becerin yerine %33'ten başlar (mesafe, siper ve yetenekler yine uygulanır); tam karşıdan +10 alır, tamamen dönmen gerekiyorsa -30'a kadar düşer (45°'de 0, 90°'de -10, 135°'de -20). Silahının hasarının %33'ünü verir. Ateşlenmeden önce hasar alırsan iptal olur."
+      "Text": "Turu sonlandırır. Bedeli 1 EP. Düşmanı beklediğin yönü seç. Bir sonraki turunun başlangıcına kadar, herhangi bir yönde silahının menzili içinde hareket eden, itilen veya bir eylem gerçekleştiren ilk düşmana silahınla hızlı bir tepki saldırısı yaparsın. Saldırının isabet şansı kendi isabet şansındır (mesafe, siper ve yetenekler yine uygulanır); ateş etmek için ne kadar dönmen gerektiğine göre azalır: tam karşıdan tam şans, çeyrek tur veya daha fazlasında onda birine kadar düşer. Silahının hasarının %33'ünü verir. Ateşlenmeden önce hasar alırsan iptal olur."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Nöbet"

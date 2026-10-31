@@ -4,7 +4,7 @@
       "Text": "Reflexschuss"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Beende den Zug. Kostet 1 AP. Wähle die Richtung, aus der du den Feind erwartest. Bis zum Beginn deines nächsten Zugs führst du einen schnellen Reaktionsangriff mit deiner Waffe gegen den ersten Feind aus, der sich innerhalb der Reichweite deiner Waffe in beliebiger Richtung bewegt, zurückgeworfen wird oder handelt. Seine Trefferchance beginnt bei 33 % statt bei deiner Ballistischen Fertigkeit (Entfernung, Deckung und Talente gelten weiterhin), mit +10 geradeaus, abfallend auf -30, wenn du dich komplett umdrehen musst (0 bei 45°, -10 bei 90°, -20 bei 135°). Er verursacht 33 % des Schadens deiner Waffe. Erleidest du Schaden, bevor er ausgelöst wird, wird er abgebrochen."
+      "Text": "Beende den Zug. Kostet 1 AP. Wähle die Richtung, aus der du den Feind erwartest. Bis zum Beginn deines nächsten Zugs führst du einen schnellen Reaktionsangriff mit deiner Waffe gegen den ersten Feind aus, der sich innerhalb der Reichweite deiner Waffe in beliebiger Richtung bewegt, zurückgeworfen wird oder handelt. Seine Trefferchance ist deine eigene (Entfernung, Deckung und Talente gelten weiterhin), verringert je nachdem, wie weit du dich drehen musst, um zu feuern: die volle Chance geradeaus, sinkend auf ein Zehntel davon ab einer Vierteldrehung oder mehr. Er verursacht 33 % des Schadens deiner Waffe. Erleidest du Schaden, bevor er ausgelöst wird, wird er abgebrochen."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Feuerbereitschaft"

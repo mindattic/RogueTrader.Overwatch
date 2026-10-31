@@ -26,46 +26,67 @@ using UnityEngine;
 
 namespace RogueTraderOverwatch;
 
-// Reflex Shot: a circle around the shooter, all directions, aimed toward a facing the player picks. Its shot gets an
-// aim modifier from how far the shooter has to turn: +AimBonusAhead dead ahead, falling linearly to -AimPenaltyBehind
-// for a full 180-degree spin (0 at 45, -10 at 90, -20 at 135 with the defaults).
+// Reflex Shot: a circle around the shooter, all directions, aimed toward a facing the player picks. Its shot keeps
+// the shooter's own hit chance (Ballistic Skill, range, cover, talents, the works), scaled down by how far the
+// muzzle actually was from the target when the shot broke: literally the cosine of the angle between the facing the
+// player picked and the direction the shot had to go, the same fraction of "still pointed that way" a dot product
+// of the two directions gives. All of it dead ahead, none of the geometry's own math left for a shot thrown from
+// more than a quarter-turn off, floored at MinRetainedFraction instead of zero so it's still a sliver of a chance
+// from pure luck (RTO-T96, replacing the old flat 33% base and linear +10/-30 ramp, which ignored the shooter's own
+// skill and made Reflex Shot relatively weaker on better shots the higher that skill got).
 internal static class ReflexShot
 {
-    public const int AimBonusAhead = 10;
-    public const int AimPenaltyBehind = 30;
+    public const float MinRetainedFraction = 0.10f;
 
-    // A reflex shot is a reaction, not an aimed shot: its hit chance starts from a flat BaseHitChance instead of the
-    // shooter's Ballistic Skill + 30 (range falloff, the turn modifier, cover, talents and the weapon's own bonus still
-    // apply on top), and it deals DamagePercent of the weapon's damage (damage modifiers still apply).
-    public const int BaseHitChance = 33;
+    // A reflex shot is still a reaction, not a fully settled aimed shot: it deals DamagePercent of the weapon's
+    // damage regardless of angle (damage modifiers still apply) - a rushed trigger pull places the hit less
+    // precisely even when it lands, which has nothing to do with which way the muzzle was pointed.
     public const int DamagePercent = 33;
 
     public static bool IsOurs(AbilityData ability) => ability?.Blueprint?.AssetGuid == Abilities.ReflexShot;
 
-    public static int AimModifier(float degrees) =>
-        Mathf.RoundToInt(AimBonusAhead - (AimBonusAhead + AimPenaltyBehind) * Mathf.Clamp(degrees, 0f, 180f) / 180f);
+    // The dot product of the muzzle's heading and the direction the shot needed: 1 dead ahead, 0 at a quarter-turn,
+    // negative beyond that (clamped to the floor rather than going negative or hitting zero outright).
+    public static float RetainedFraction(float degrees) =>
+        Mathf.Max(MinRetainedFraction, Mathf.Cos(Mathf.Clamp(degrees, 0f, 180f) * Mathf.Deg2Rad));
 
-    // The modifier a Reflex Shot from this shooter, facing facingPoint, would get against target.
-    public static int TotalModifier(BaseUnitEntity shooter, Vector3 facingPoint, Vector3 targetPosition) =>
-        AimModifier(TurnAngle(shooter, facingPoint, targetPosition));
+    // The fraction of this shooter's own hit chance a Reflex Shot facing facingPoint would keep, firing at target.
+    public static float RetainedFractionFor(BaseUnitEntity shooter, Vector3 facingPoint, Vector3 targetPosition) =>
+        RetainedFraction(TurnAngle(shooter, facingPoint, targetPosition));
 
-    // The real attack rolls a Reflex Shot made, and their hit-chance rules, each mapped to the Reflex Shot fact: the
-    // base hit chance and damage patches below key off them. Weak, so finished rules are collected as usual.
-    public static readonly ConditionalWeakTable<object, EntityFact> Rolls = new();
+    // The real attack rolls a Reflex Shot made, and their hit-chance rules, each mapped to the fact and retained-aim
+    // fraction that should scale this one shot: the hit-chance and damage patches below key off them. Weak, so
+    // finished rules are collected as usual.
+    public static readonly ConditionalWeakTable<object, AimedShot> Rolls = new();
 
-    public static void Mark(object rule, EntityFact source)
+    // A class, not a struct: ConditionalWeakTable's value type must be a reference type.
+    public sealed class AimedShot
     {
-        Rolls.Remove(rule);
-        Rolls.Add(rule, source);
+        public readonly EntityFact Source;
+        public readonly float Fraction;
+
+        public AimedShot(EntityFact source, float fraction)
+        {
+            Source = source;
+            Fraction = fraction;
+        }
     }
 
-    // The Reflex Shot fact a hit-chance or damage rule belongs to, or null: a marked real roll, or the hit-chance
-    // preview working out a Reflex Shot for this shooter.
-    public static EntityFact SourceOf(object rule, MechanicEntity initiator)
+    public static void Mark(object rule, EntityFact source, float fraction)
     {
-        if (rule != null && Rolls.TryGetValue(rule, out var source))
-            return source;
-        return HitChancePreview.Pending is { Reflex: true } pending && pending.Shooter == initiator ? pending.Source : null;
+        Rolls.Remove(rule);
+        Rolls.Add(rule, new AimedShot(source, fraction));
+    }
+
+    // The Reflex Shot fact and retained-aim fraction a hit-chance or damage rule belongs to, or null: a marked real
+    // roll, or the hit-chance preview working out a Reflex Shot for this shooter.
+    public static AimedShot AimedShotOf(object rule, MechanicEntity initiator)
+    {
+        if (rule != null && Rolls.TryGetValue(rule, out var shot))
+            return shot;
+        return HitChancePreview.Pending is { Reflex: true } pending && pending.Shooter == initiator
+            ? new AimedShot(pending.Source, pending.ReflexFraction)
+            : null;
     }
 
     // The angle between the facing (shooter toward the clicked point) and the shooter-to-target direction, on the ground.
@@ -83,14 +104,14 @@ internal static class ReflexShot
     internal readonly struct PendingShot
     {
         public readonly string TargetId;
-        public readonly int Modifier;
+        public readonly float Fraction;
         public readonly EntityFact Source;
         public readonly float At;
 
-        public PendingShot(string targetId, int modifier, EntityFact source, float at)
+        public PendingShot(string targetId, float fraction, EntityFact source, float at)
         {
             TargetId = targetId;
-            Modifier = modifier;
+            Fraction = fraction;
             Source = source;
             At = at;
         }
@@ -147,8 +168,8 @@ internal static class ReflexShot_RecordTurn
             var facing = ReflexShot.TargetField(__instance);
             if (facing == null)
                 return;
-            int modifier = ReflexShot.TotalModifier(shooter, facing.Point, target.Position);
-            ReflexShot.Pending[shooter.UniqueId] = new ReflexShot.PendingShot(target.UniqueId, modifier, __instance.Ability.Fact, Time.time);
+            float fraction = ReflexShot.RetainedFractionFor(shooter, facing.Point, target.Position);
+            ReflexShot.Pending[shooter.UniqueId] = new ReflexShot.PendingShot(target.UniqueId, fraction, __instance.Ability.Fact, Time.time);
         }
         catch (Exception ex)
         {
@@ -157,9 +178,10 @@ internal static class ReflexShot_RecordTurn
     }
 }
 
-// Adds the modifier, under the Reflex Shot ability's name, to the hit chance of that one attack roll. Hooked on the real
-// roll (RulePerformAttackRoll builds its own hit-chance rule and triggers it first thing), so UI hit-chance previews
-// never see or use it up, and it holds even when the attack command has already ended by the time the roll happens.
+// Marks the real roll and its hit-chance rule with the retained-aim fraction worked out at the trigger, under the
+// Reflex Shot ability's name. Hooked on the real roll (RulePerformAttackRoll builds its own hit-chance rule and
+// triggers it first thing), so UI hit-chance previews never see or use it up, and it holds even when the attack
+// command has already ended by the time the roll happens.
 [HarmonyPatch(typeof(RulePerformAttackRoll), nameof(RulePerformAttackRoll.OnTrigger))]
 internal static class ReflexShot_AimModifier
 {
@@ -172,14 +194,12 @@ internal static class ReflexShot_AimModifier
             if (!ReflexShot.Pending.TryGetValue(shooter.UniqueId, out var shot) || shot.TargetId != target.UniqueId)
                 return;
             // Consumed here, win or lose: a Reflex Shot fires once (HitOnce), so nothing should reuse this entry,
-            // and a later unrelated attack at the same target must not inherit its base chance, damage cut or modifier.
+            // and a later unrelated attack at the same target must not inherit its retained-aim fraction or damage cut.
             ReflexShot.Pending.Remove(shooter.UniqueId);
             if (Time.time - shot.At > ReflexShot.PendingSeconds || shot.Source == null)
                 return;
-            ReflexShot.Mark(__instance, shot.Source);
-            ReflexShot.Mark(__instance.HitChanceRule, shot.Source);
-            if (shot.Modifier != 0)
-                __instance.HitChanceRule.HitChanceValueModifiers.Add(shot.Modifier, shot.Source);
+            ReflexShot.Mark(__instance, shot.Source, shot.Fraction);
+            ReflexShot.Mark(__instance.HitChanceRule, shot.Source, shot.Fraction);
         }
         catch (Exception ex)
         {
@@ -188,13 +208,13 @@ internal static class ReflexShot_AimModifier
     }
 }
 
-// A Reflex Shot's base hit chance is BaseHitChance instead of Ballistic Skill + 30: the end of the game's own ranged
-// calculation (OnTriggerRanged) redone with that base, the same range falloff, modifiers and caps. Its overkill crit
-// bonus is redone too, since the old base decided it.
+// A Reflex Shot keeps the shooter's own hit chance (Ballistic Skill, range falloff, cover, talents: the game's own
+// ranged calculation, OnTriggerRanged, left untouched), scaled by the retained-aim fraction worked out at the
+// trigger (RTO-T96). Its overkill crit bonus is redone too, since the scaled chance decides it the same way the old
+// flat base used to.
 [HarmonyPatch(typeof(RuleCalculateHitChances), "OnTriggerRanged")]
 internal static class ReflexShot_BaseHitChance
 {
-    private static readonly MethodInfo SetBase = AccessTools.PropertySetter(typeof(RuleCalculateHitChances), nameof(RuleCalculateHitChances.ResultBaseChancesBeforeRecoil));
     private static readonly MethodInfo SetRaw = AccessTools.PropertySetter(typeof(RuleCalculateHitChances), nameof(RuleCalculateHitChances.RawResult));
     private static readonly MethodInfo SetNoLimit = AccessTools.PropertySetter(typeof(RuleCalculateHitChances), nameof(RuleCalculateHitChances.ResultHitChanceNoUpperLimit));
     private static readonly MethodInfo SetResult = AccessTools.PropertySetter(typeof(RuleCalculateHitChances), nameof(RuleCalculateHitChances.ResultHitChance));
@@ -203,14 +223,12 @@ internal static class ReflexShot_BaseHitChance
     {
         try
         {
-            if (ReflexShot.SourceOf(__instance, (MechanicEntity)__instance.Initiator) == null || __instance.IsScatter)
+            if (ReflexShot.AimedShotOf(__instance, (MechanicEntity)__instance.Initiator) is not { } shot || __instance.IsScatter)
                 return;
             // Destructibles get the border chance from the game; leave that as it is.
             if (!__instance.Ability.IsBurstAttack && __instance.Target is DestructibleEntity)
                 return;
-            int baseChance = __instance.DistanceFactor > 0f ? Mathf.FloorToInt(ReflexShot.BaseHitChance * __instance.DistanceFactor) : 0;
-            SetBase.Invoke(__instance, new object[] { baseChance });
-            SetRawResult(__instance, Mathf.RoundToInt((baseChance + __instance.HitChanceValueModifiers.Value) * __instance.OverpenetrationModifier));
+            SetRawResult(__instance, Mathf.RoundToInt(__instance.ResultHitChance * shot.Fraction));
         }
         catch (Exception ex)
         {
@@ -242,9 +260,9 @@ internal static class ReflexShot_Damage
     {
         try
         {
-            var source = ReflexShot.SourceOf(__instance.RollPerformAttackRule, __instance.ConcreteInitiator);
-            if (source != null)
-                __instance.ValueModifiers.Add(ModifierType.PctMul_Extra, ReflexShot.DamagePercent, source);
+            var shot = ReflexShot.AimedShotOf(__instance.RollPerformAttackRule, __instance.ConcreteInitiator);
+            if (shot is { } s)
+                __instance.ValueModifiers.Add(ModifierType.PctMul_Extra, ReflexShot.DamagePercent, s.Source);
         }
         catch (Exception ex)
         {

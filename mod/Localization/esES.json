@@ -4,7 +4,7 @@
       "Text": "Disparo reflejo"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Termina el turno. Cuesta 1 PA. Elige la dirección desde la que esperas al enemigo. Hasta el inicio de tu próximo turno, realiza un ataque de reacción rápido con tu arma contra el primer enemigo que se mueva, sea empujado o actúe dentro del alcance de tu arma, en cualquier dirección. Su precisión parte de un 33 % en lugar de tu Habilidad de Proyectiles (la distancia, la cobertura y los talentos siguen aplicándose), con +10 justo al frente, que desciende hasta -30 si tienes que girar por completo (0 a 45°, -10 a 90°, -20 a 135°). Inflige el 33 % del daño de tu arma. Recibir daño antes de que se dispare lo cancela."
+      "Text": "Termina el turno. Cuesta 1 PA. Elige la dirección desde la que esperas al enemigo. Hasta el inicio de tu próximo turno, realiza un ataque de reacción rápido con tu arma contra el primer enemigo que se mueva, sea empujado o actúe dentro del alcance de tu arma, en cualquier dirección. Su precisión es la tuya propia (la distancia, la cobertura y los talentos siguen aplicándose), reducida según cuánto tengas que girar para disparar: toda ella de frente, hasta una décima parte si tienes que girar un cuarto de vuelta o más. Inflige el 33 % del daño de tu arma. Recibir daño antes de que se dispare lo cancela."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Vigilancia"

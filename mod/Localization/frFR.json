@@ -4,7 +4,7 @@
       "Text": "Tir réflexe"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Termine le tour. Coûte 1 PA. Choisissez la direction d'où vous attendez l'ennemi. Jusqu'au début de votre prochain tour, effectuez une attaque réflexe rapide avec votre arme contre le premier ennemi qui se déplace, est repoussé ou agit à portée de votre arme, dans n'importe quelle direction. Sa précision part de 33 % au lieu de votre Capacité de Tir (la distance, le couvert et les talents s'appliquent toujours), avec +10 droit devant, chutant jusqu'à -30 si vous devez pivoter complètement (0 à 45°, -10 à 90°, -20 à 135°). Elle inflige 33 % des dégâts de votre arme. Subir des dégâts avant le tir l'annule."
+      "Text": "Termine le tour. Coûte 1 PA. Choisissez la direction d'où vous attendez l'ennemi. Jusqu'au début de votre prochain tour, effectuez une attaque réflexe rapide avec votre arme contre le premier ennemi qui se déplace, est repoussé ou agit à portée de votre arme, dans n'importe quelle direction. Sa précision est la vôtre (la distance, le couvert et les talents s'appliquent toujours), réduite selon l'angle qu'il faut pivoter pour tirer : intégrale droit devant, jusqu'à un dixième à partir d'un quart de tour ou plus. Elle inflige 33 % des dégâts de votre arme. Subir des dégâts avant le tir l'annule."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Tir de couverture"

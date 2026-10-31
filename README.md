@@ -5,7 +5,7 @@ the game's own overwatch engine (Owlcat shipped it in the game but never gave pl
 
 | Ability | What it does |
 |---|---|
-| **Reflex Shot** | XCOM-style overwatch. Pick the direction you expect them from; until your next turn, take one shot at the first enemy that moves (including being pushed) or acts within your weapon's range, in any direction. A reaction, not an aimed shot: it hits from a flat 33% base instead of your Ballistic Skill, adjusted by +10 straight ahead falling to −30 when you have to spin all the way around (plus cover, range and talents as usual), and deals 33% of the weapon's damage. Always 1 AP. |
+| **Reflex Shot** | XCOM-style overwatch. Pick the direction you expect them from; until your next turn, take one shot at the first enemy that moves (including being pushed) or acts within your weapon's range, in any direction. A reaction, not an aimed shot: it keeps your own hit chance (Ballistic Skill, cover, range and talents as usual), scaled by how far you had to swing from the direction you picked — all of it dead ahead, down to a tenth of it a quarter-turn away or more — and deals 33% of the weapon's damage. Always 1 AP. |
 | **Overwatch** | Aim a cone sized by the cursor: close gives a short, wide cone (3 cells, 90°), far a long, narrow one (up to weapon range, 20°). Up to 2 shots (one per attack the AP left after casting it would have paid for, at least 1 and at most 2, so never more than shooting directly), at enemies that move, are pushed or act inside it: the first shot at the enemy caught moving, the second at once at the next-closest enemy in the cone. One already shot is shot again only after it moves 2+ cells. A buff shows the shots left and survives save and load. Shots carry a snap-shot penalty that grows with how far the cone reaches, from -1 at the shortest reach to -15 at full weapon range; everyone currently standing in the cone shows it with an Overwatched debuff. Each shot counts as an attack of opportunity, so talents and traits that boost attacks of opportunity apply. |
 | **Suppression** | Pin one enemy. It can stay put and fight, but every time it leaves its square, by walking, charging, jumping or being pushed, it takes a ranged attack of opportunity (one per move or ability, not per square). While Suppressed, its own ranged attacks lose a quarter of their hit chance, and enemies know it: they'd rather stay put and shoot back than move. For the whole suppression your hero holds a firing pose and keeps firing at it, a visual cue only that never hits; a weapon with no projectile (like Pasqal's staff) shows a glowing red line joining them instead. |
 
@@ -13,9 +13,9 @@ Enemies don't route around your Reflex Shot circles or Overwatch cones: they mov
 
 All three cost 1 AP (Overwatch and Suppression 1 more with a Heavy weapon active), end your turn and
 last until your next turn. Every shot is your weapon's normal attack with its normal hit chance (which
-already drops with distance), plus the ability's own modifier: Reflex Shot's facing, Overwatch's -1 to
--15 reach penalty; Suppression's shot has none. Reflex Shot's base is a flat 33% instead of Ballistic
-Skill + 30, and it deals 33% damage (RTO-T82). Overwatch's and Suppression's shots are real attacks of opportunity
+already drops with distance), plus the ability's own effect: Reflex Shot scales it by how much aim your
+facing retained, Overwatch adds a -1 to -15 reach penalty; Suppression's shot has neither. Reflex Shot
+also deals 33% damage (RTO-T82, RTO-T96). Overwatch's and Suppression's shots are real attacks of opportunity
 (Reflex Shot's are not), so talents and traits that specifically boost attacks of opportunity apply to them (RTO-T50,
 T85). A Suppressed unit's own ranged attacks keep 75% of their final hit chance, shown in the hit-chance gauge too
 (RTO-T86, T87). Taking any damage breaks a unit's concentration: its Overwatch, Reflex Shot

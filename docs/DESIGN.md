@@ -13,9 +13,10 @@
   and the enemy AI never casts the abilities for a pet.
 - Each shot is the weapon's normal single shot, with normal hit chance (ranged hit chance already
   scales with distance: `RuleCalculateHitChances.OnTriggerRanged` multiplies by
-  `RuleCalculateAbilityDistanceFactor`) plus the ability's own modifier on the real roll: Reflex Shot's
-  facing, Overwatch's reach penalty (sections below). Suppression's shot has none. Reflex Shot alone
-  swaps the base (a flat 33 for Ballistic Skill + 30) and deals 33% damage (RTO-T82, below).
+  `RuleCalculateAbilityDistanceFactor`) plus the ability's own effect on the real roll: Reflex Shot
+  scales it by how much aim the facing retained, Overwatch's reach penalty is added on top (sections
+  below). Suppression's shot has neither. Reflex Shot alone deals 33% damage too (RTO-T82, RTO-T96,
+  below).
 - **All three triggered shots are attacks of opportunity (`IsAttackOfOpportunity`; RTO-T50, RTO-T85,
   RTO-T94):** a Reflex Shot, an Overwatch shot and Suppression's real shot are all the same thing by
   nature — taking a shot in the spur of the moment because the chance presented itself, exactly what a
@@ -106,18 +107,22 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
   enemies from, lateral or diagonal. The circle stays centred on the unit whatever is clicked: a
   prefix on `AbilityAoEPatternSettings.GetOrientedPattern` passes the caster's node as the target node
   (`ReflexShot_CentreOnShooter`), the same seam the preview and `GetOverwatchArea` use.
-- **Aim modifier:** the shot's hit chance gets `+10` dead ahead, falling linearly to `-30` for a full
-  180-degree spin (0 at 45, -10 at 90, -20 at 135; `ReflexShot.AimBonusAhead`/`AimPenaltyBehind`),
-  shown as the "Reflex Shot" line. (RTO-T72's flat `-33` reaction penalty on that line is gone,
-  replaced by the base below, RTO-T82.)
-- **Base hit chance (RTO-T82):** a reflex shot is a reaction, not an aimed shot, so its hit chance
-  starts from a flat `33` (`ReflexShot.BaseHitChance`) instead of the shooter's Ballistic Skill + 30. A
-  postfix on `RuleCalculateHitChances.OnTriggerRanged` (`ReflexShot_BaseHitChance`) redoes the end of the
-  game's ranged calculation with that base: range falloff (`DistanceFactor`) still scales it, then every
-  hit-chance modifier applies on top (the turn modifier, cover, talents, the weapon's own bonus), then
-  the game's caps (`ResultOverkillBorder`); the overkill crit bonus (`HitChanceOverkill` on the
-  Righteous Fury rule) is recomputed from the new value. Scatter shots and the border chance against
-  destructibles are left as the game has them.
+- **Retained aim (RTO-T96):** a reflex shot keeps the shooter's own hit chance in full (Ballistic
+  Skill, range falloff, cover, talents, the weapon's own bonus: the game's ranged calculation,
+  `RuleCalculateHitChances.OnTriggerRanged`, runs untouched), then that result is scaled by how much
+  of the weapon's aim was still on target when the shot broke: literally the cosine of the angle
+  between the facing the player picked and the direction the shot actually needed
+  (`ReflexShot.RetainedFraction`) — the dot product of the two directions, 1 dead ahead, 0 at a
+  quarter-turn and beyond, floored at `ReflexShot.MinRetainedFraction` (0.10) instead of going to zero,
+  so a shot thrown from behind is still a sliver of a chance rather than an impossibility. This
+  replaced a flat `33` base with a linear `+10`/`-30` turn modifier (RTO-T82, before it RTO-T72's flat
+  `-33`): tied to nothing about the shooter, it made Reflex Shot relatively *weaker* the better a
+  character's Ballistic Skill got, since a flat base never benefited from that skill the way a normal
+  shot does. A postfix on `OnTriggerRanged` (`ReflexShot_BaseHitChance`) applies the scale after the
+  game's own result is final: the game's caps (`ResultOverkillBorder`) are reapplied, and the overkill
+  crit bonus (`HitChanceOverkill` on the Righteous Fury rule) is recomputed from the scaled value, the
+  same way `Suppression_ReduceHitChance`'s flat percentage cut already does. Scatter shots and the
+  border chance against destructibles are left as the game has them.
 - **Damage (RTO-T82):** a Reflex Shot deals 33% of the weapon's damage (`ReflexShot.DamagePercent`): a
   prefix on `RuleCalculateDamage.OnTrigger` (`ReflexShot_Damage`) adds a `PctMul_Extra` modifier under
   the Reflex Shot ability's name; the game's other damage modifiers still apply.
@@ -126,25 +131,29 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
   normal attack) for the shot it would take. A postfix on `AbilityDataHelper.GatherAffectedTargetsData`
   replaces our ability's per-target `AbilityTargetUIData` (an area ability counts as "always hits", so
   the overtip showed only its icon) with the weapon attack's own, under our ability; while it's built,
-  a prefix on `RuleCalculateHitChances.OnTrigger` adds our modifier to `HitChanceValueModifiers`
-  (Reflex Shot's turn modifier, Overwatch's reach penalty), so caps, cover, dodge and talents
+  a prefix on `RuleCalculateHitChances.OnTrigger` adds Overwatch's reach penalty to
+  `HitChanceValueModifiers` when that's the ability being aimed, so caps, cover, dodge and talents
   apply exactly as on the real roll (`HitChancePreview.cs`). For Reflex Shot, `HitChancePreview.Pending`
-  is flagged `Reflex`, so the base hit chance and damage patches above apply to the preview too (33
-  base, 33% damage; RTO-T82); the one-frame damage rule cache is invalidated around it, keeping the
-  reduced damage out of every other preview.
+  is flagged `Reflex` and carries the retained-aim fraction instead (`ReflexFraction`), so the
+  hit-chance and damage patches above apply to the preview too (scaled chance, 33% damage; RTO-T82,
+  RTO-T96); the one-frame damage rule cache is invalidated around it, keeping the reduced damage out of
+  every other preview.
   The angle is between the facing (unit toward `PartOverwatch`'s saved target point, `m_Target`) and
   the unit-to-target direction on the ground. `Overwatch` mode stops the part as soon as the shot is
-  queued, so a prefix on `PartOverwatch.TryTriggerAttack` works the modifier out and keeps it per
+  queued, so a prefix on `PartOverwatch.TryTriggerAttack` works the fraction out and keeps it per
   shooter; a prefix on `RulePerformAttackRoll.OnTrigger` (the real attack roll, which triggers its own
-  `HitChanceRule` first) adds it to that rule's `HitChanceValueModifiers` with the Reflex Shot ability
-  fact as its source (so the breakdown and log show "Reflex Shot") for that shooter and target, and
-  marks the roll and its hit-chance rule as a Reflex Shot (`ReflexShot.Rolls`), which the base hit
-  chance and damage patches key off. UI hit-chance previews never see it. It isn't used up by the
-  first roll (RTO-T82): every roll the shooter makes at that same target within 5 s
-  (`ReflexShot.PendingSeconds`) gets it, so every round of a burst counts as a Reflex Shot (base 33,
-  33% damage, turn modifier); after that it lapses, so no later attack (e.g. a Suppression shot) picks
-  it up, and a new overwatch of any kind clears it (`ReflexShot_ForgetOnNewOverwatch`). The facing
-  comes from saved state, so it survives save and load.
+  `HitChanceRule` first) marks the roll and its hit-chance rule with that fraction and the ability's
+  fact as its source (`ReflexShot.Rolls`), so the hit-chance and damage patches above know to apply it.
+  The damage breakdown still names Reflex Shot as the reduction (`ReflexShot_Damage`'s `PctMul_Extra`
+  modifier); the hit-chance side has no line of its own since it's a rescale of the final result, not
+  an added modifier — only the number itself changes, the same as Suppression's cut. UI hit-chance
+  previews never see this marking (they go through the `HitChancePreview.Pending` fallback instead). It
+  isn't used up by the first roll
+  (RTO-T82): every roll the shooter makes at that same target within 5 s (`ReflexShot.PendingSeconds`)
+  gets it, so every round of a burst counts as a Reflex Shot (retained-aim scale, 33% damage); after
+  that it lapses, so no later attack (e.g. a Suppression shot) picks it up, and a new overwatch of any
+  kind clears it (`ReflexShot_ForgetOnNewOverwatch`). The facing comes from saved state, so it survives
+  save and load.
 
 ### Overwatch (RTO-T6)
 - After pressing the button the cone resizes live with the cursor: farther gives a longer, narrower
@@ -264,7 +273,7 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
   halved it; RTO-T87 eased it to 75%: Suppression is a pin, not a disable, and can be a turn's last spare
   AP). A low-priority postfix on `RuleCalculateHitChances.OnTriggerRanged` (`Suppression_ReduceHitChance`,
   renamed from `Suppression_HalveHitChance`; `HitChancePercent` 75) runs after every modifier and after
-  Reflex Shot's own base override (so a Suppressed unit's Reflex Shot is reduced too), and sets the
+  Reflex Shot's own retained-aim scale (so a Suppressed unit's Reflex Shot is reduced too), and sets the
   reduced value through `ReflexShot_BaseHitChance.SetRawResult`, which re-applies the cap
   (`ResultOverkillBorder`) and recomputes the overkill crit bonus. Since RTO-T87 it scales the final,
   capped chance (`ResultHitChance`), not the uncapped raw value, so every shooter loses the same quarter
