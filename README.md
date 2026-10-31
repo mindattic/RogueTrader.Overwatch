@@ -83,35 +83,20 @@ expected result, and what to look for in `Player.log`.
 
 ## Status
 
-**3.0.0: ready for in-game testing, not released.** Since 2.0.0:
-- Heavy weapons: Overwatch and Suppression cost 2 AP instead of 1; Reflex Shot stays 1 AP (RTO-T51,
-  T82).
-- Reflex Shot: the circle reaches the weapon's own range (RTO-T60, T62); every shot hits from a flat 33%
-  base instead of Ballistic Skill + 30, plus the facing modifier, and deals 33% of the weapon's damage;
-  every round of a burst counts (RTO-T82, replacing the -33 reaction penalty of RTO-T72).
-- Overwatch: a snap-shot penalty from -1 at the shortest reach to -15 at full weapon range, shown by the
-  Overwatched debuff on every enemy in the cone, rank = penalty (RTO-T54, T59, T75, T87); its shots count as
-  attacks of opportunity, so attack-of-opportunity talents apply (RTO-T85); when it fires, the second shot
-  goes at once to the next-closest enemy in the cone (RTO-T83).
-- Suppression: a real ranged attack of opportunity (RTO-T50); a held firing pose and cosmetic fire that
-  always flies past the target for the whole suppression (RTO-T66, T67, T69, T81), with a glowing red line
-  to the target only for weapons with no projectile, like Pasqal's staff (RTO-T65, T84); a Suppressed
-  unit's own ranged attacks keep 75% of their hit chance (RTO-T86, T87), and a Suppressed enemy knows moving
-  draws fire, so it mostly stays put and shoots back (RTO-T90).
-- Taking damage ends the unit's Suppression, Overwatch or Reflex Shot (RTO-T67).
-- Enemy AI: moves through Reflex Shot circles and Overwatch cones as if they weren't there, so it walks
-  into the shots instead of routing around them (RTO-T87, T88), and uses an off-hand
-  ranged weapon when the main hand holds a melee one (RTO-T79).
-- Overwatch fires at most 2 shots, one per attack the AP left after paying for it could have bought (at
-  least 1), so a direct shot stays the better choice: with a 1-AP attack, 2 AP gives 1 shot and 3 AP gives 2
-  (RTO-T76, T91).
-- Tile-edge outlines while aiming and while active, 50% transparent, yellow for Reflex Shot and blue for
-  Overwatch (RTO-T56, T63, T64, T68, T70, T76), and the game's own hit-chance gauge and damage range on
-  every enemy in the aimed area (RTO-T71, T80).
-- Fixed: characters with mechadendrites (e.g. Pasqal) had all three buttons greyed out (RTO-T53).
-- All in-game text in all 8 languages (RTO-T73, T75).
-Work through TESTING.md before uploading `dist/RogueTrader.Overwatch-3.0.0.zip` with
+**4.0.0: ready for in-game testing, not released.** Since 3.0.0:
+- Reflex Shot and Overwatch grey out once the weapon they'd fire has no rounds chambered, the same as
+  any other ammo-gated ability (RTO-T93).
+- Reflex Shot's triggered shot is now a real attack of opportunity too, like Overwatch's and
+  Suppression's already were, so attack-of-opportunity talents apply to all three alike; all three now
+  also draw from the same per-round reaction budget a melee threat's free swing already does, so a mook
+  that's already reacted this round can't stack a second one for free (RTO-T94).
+- Reflex Shot keeps your own hit chance in full (Ballistic Skill, range, cover, talents) instead of a
+  flat 33% base, scaled by how far you had to turn to fire: all of it dead ahead, down to a tenth of it
+  a quarter-turn away or more, so a skilled shooter's reflexes are worth more than a flat number ever
+  let them be (RTO-T96).
+
+Work through TESTING.md before uploading `dist/RogueTrader.Overwatch-4.0.0.zip` with
 [docs/NEXUS_PAGE.md](docs/NEXUS_PAGE.md).
 
-Versions go up a whole number each release (1.0.0, 2.0.0, 3.0.0): bump `Version` in
+Versions go up a whole number each release (1.0.0, 2.0.0, 3.0.0, 4.0.0): bump `Version` in
 `mod/OwlcatModificationManifest.json`, which names the zip.
