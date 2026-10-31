@@ -171,11 +171,11 @@ internal static class ReflexShot_AimModifier
                 return;
             if (!ReflexShot.Pending.TryGetValue(shooter.UniqueId, out var shot) || shot.TargetId != target.UniqueId)
                 return;
+            // Consumed here, win or lose: a Reflex Shot fires once (HitOnce), so nothing should reuse this entry,
+            // and a later unrelated attack at the same target must not inherit its base chance, damage cut or modifier.
+            ReflexShot.Pending.Remove(shooter.UniqueId);
             if (Time.time - shot.At > ReflexShot.PendingSeconds || shot.Source == null)
-            {
-                ReflexShot.Pending.Remove(shooter.UniqueId);
                 return;
-            }
             ReflexShot.Mark(__instance, shot.Source);
             ReflexShot.Mark(__instance.HitChanceRule, shot.Source);
             if (shot.Modifier != 0)
